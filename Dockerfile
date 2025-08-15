@@ -1,0 +1,68 @@
+# Use an official ROS 2 image as a parent image
+ARG ROS_DISTRO=humble
+FROM osrf/ros:${ROS_DISTRO}-desktop
+
+# Set shell to bash
+SHELL ["/bin/bash", "-c"]
+
+# Set timezone
+ENV TZ=Etc/UTC
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Install system dependencies and tools as root
+RUN apt-get update && apt-get install -y \
+    sudo \
+    build-essential \
+    git \
+    python3-colcon-common-extensions \
+    python3-rosdep \
+    vim \
+    v4l-utils \
+    ros-${ROS_DISTRO}-cv-bridge \
+    ros-${ROS_DISTRO}-camera-calibration \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Initialize rosdep as root
+RUN rosdep init || true && rosdep update
+
+# Create the user
+ARG UID=1000
+ARG GID=1000
+RUN groupadd -g $GID -o docker_user && \
+    useradd -m -u $UID -g $GID -s /bin/bash docker_user
+
+# Add the user to the sudo and video groups
+ARG VIDEO_GID
+RUN if [ -n "$VIDEO_GID" ]; then \
+        if ! getent group $VIDEO_GID > /dev/null; then groupadd -g $VIDEO_GID video; fi; \
+    fi && \
+    usermod -aG sudo,video docker_user
+
+# Give the user password-less sudo privileges
+RUN echo "docker_user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/docker-user-sudo
+
+# Copy the entrypoint script and set its permissions AS ROOT
+COPY entrypoint.sh /home/docker_user/entrypoint.sh
+RUN chown docker_user:docker_user /home/docker_user/entrypoint.sh && \
+    chmod +x /home/docker_user/entrypoint.sh
+
+# NOW we switch to the new user.
+USER docker_user
+WORKDIR /home/docker_user
+
+# --- THE FIX IS HERE ---
+# 1. Install Python packages AS THE USER.
+# The --user flag installs them into /home/docker_user/.local/
+RUN python3 -m pip install --user \
+    'numpy<2.0' \
+    opencv-python \
+    mediapipe \
+    'git+https://github.com/Chandrahas-kasoju/python-st3215.git'
+
+# Create workspace directory as the user
+RUN mkdir -p /home/docker_user/ros2_ws/src
+
+# Set the entrypoint
+ENTRYPOINT ["/home/docker_user/entrypoint.sh"]
+CMD ["bash"]
