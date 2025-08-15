@@ -24,4 +24,14 @@ def generate_launch_description():
             executable='actuators',
             name='actuators_node'
         ),
+        Node(
+            package='sensors_bringup',
+            executable='static_transform',
+            name='static_transform_node'
+        ),
+        Node(
+            package='ti_mmwave_rospkg',
+            executable='6843AOP_FineMotion.py',
+            name='radar_node'
+        ),
     ])
