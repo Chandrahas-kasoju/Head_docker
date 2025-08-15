@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Int32 
@@ -14,10 +15,15 @@ class ServoController(Node):
             self.servo_callback,
             10
         )
+        self.servo = ST3215('/dev/ttyACM0')
 
-    servo = ST3215('/dev/ttyACM0')
+    
+
 
     def servo_callback(self, msg):
+        if self.servo.PingServo(1) == False:
+            self.get_logger().error("Servo not connected")
+            return
         command = msg.data
         if command == 1:
             self.servo.MoveTo(1,int(100*(4095 / 360)), 500)  # Move to 100 degrees
