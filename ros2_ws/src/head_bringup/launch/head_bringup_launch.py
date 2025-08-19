@@ -1,4 +1,8 @@
+import os
+from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
 def generate_launch_description():
@@ -8,6 +12,14 @@ def generate_launch_description():
     Returns:
         LaunchDescription: The launch description object.
     """
+
+    # Get the path to the launch file of the ti_mmwave_rospkg package
+    ti_mmwave_rospkg_launch_file = os.path.join(
+        get_package_share_directory('ti_mmwave_rospkg'),
+        'launch',
+        '6843AOP_FineMotion.launch.py'  # Assuming a standard launch file name and location
+    )
+
     return LaunchDescription([
         Node(
             package='sensors_bringup',
@@ -29,9 +41,8 @@ def generate_launch_description():
             executable='static_transform',
             name='static_transform_node'
         ),
-        Node(
-            package='ti_mmwave_rospkg',
-            executable='6843AOP_FineMotion.py',
-            name='radar_node'
+        # Include the launch file for the radar node
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(ti_mmwave_rospkg_launch_file)
         ),
     ])
