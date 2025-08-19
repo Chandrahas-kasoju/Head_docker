@@ -1,6 +1,6 @@
 # Use an official ROS 2 image as a parent image
 ARG ROS_DISTRO=humble
-FROM ros:${ROS_DISTRO}-desktop
+FROM ros:${ROS_DISTRO}-ros-base
 
 # Set shell to bash
 SHELL ["/bin/bash", "-c"]
