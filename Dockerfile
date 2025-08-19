@@ -39,10 +39,14 @@ RUN groupadd -g $GID -o docker_user && \
 
 # Add the user to the sudo and video groups
 ARG VIDEO_GID
+ARG DIALOUT_GID
 RUN if [ -n "$VIDEO_GID" ]; then \
         if ! getent group $VIDEO_GID > /dev/null; then groupadd -g $VIDEO_GID video; fi; \
     fi && \
-    usermod -aG sudo,video docker_user
+    if [ -n "$DIALOUT_GID" ]; then \
+        if ! getent group $DIALOUT_GID > /dev/null; then groupadd -g $DIALOUT_GID dialout; fi; \
+    fi && \
+    usermod -aG sudo,video,dialout docker_user
 
 # Give the user password-less sudo privileges
 RUN echo "docker_user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/docker-user-sudo
