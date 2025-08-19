@@ -63,7 +63,7 @@ RUN python3 -m pip install --user \
 
 RUN apt-get install -y libboost-all-dev \
     libpcl-dev \
-    ros-${ROS_DISTRO}-pcl-conversions \
+    ros-${ROS_DISTRO}-pcl-conversions 
 
 # Create workspace directory as the user
 RUN mkdir -p /home/docker_user/ros2_ws/src
