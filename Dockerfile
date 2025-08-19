@@ -23,9 +23,6 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get install -y libboost-all-dev \
-    libpcl-dev \
-    ros-${ROS_DISTRO}-pcl-conversions \
 
 # Initialize rosdep as root
 RUN rosdep init || true && rosdep update
@@ -63,6 +60,10 @@ RUN python3 -m pip install --user \
     opencv-python \
     mediapipe \
     'git+https://github.com/Chandrahas-kasoju/python-st3215.git'
+
+RUN apt-get install -y libboost-all-dev \
+    libpcl-dev \
+    ros-${ROS_DISTRO}-pcl-conversions \
 
 # Create workspace directory as the user
 RUN mkdir -p /home/docker_user/ros2_ws/src
