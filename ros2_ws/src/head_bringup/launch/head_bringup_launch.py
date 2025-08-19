@@ -17,7 +17,7 @@ def generate_launch_description():
     ti_mmwave_rospkg_launch_file = os.path.join(
         get_package_share_directory('ti_mmwave_rospkg'),
         'launch',
-        '6843AOP_FineMotion.launch.py'  # Assuming a standard launch file name and location
+        '6843AOP_FineMotion.py'  # Assuming a standard launch file name and location
     )
 
     return LaunchDescription([
