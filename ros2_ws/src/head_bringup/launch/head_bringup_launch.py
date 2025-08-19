@@ -42,7 +42,7 @@ def generate_launch_description():
             name='static_transform_node'
         ),
         # Include the launch file for the radar node
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(ti_mmwave_rospkg_launch_file)
-        ),
+        # IncludeLaunchDescription(
+            # PythonLaunchDescriptionSource(ti_mmwave_rospkg_launch_file)
+        # ),
     ])
