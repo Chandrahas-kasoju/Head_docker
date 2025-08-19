@@ -4,14 +4,14 @@ services:
   ros2_dev:
     build:
       context: .
-      args:
-        # Docker Compose will now read the values for these variables
-        # from the .env file or use the defaults provided.
-        - UID=${UID:-1000}
-        - GID=${GID:-1000}
-        - VIDEO_GID=${VIDEO_GID}
+      # args:
+      #   # Docker Compose will now read the values for these variables
+      #   # from the .env file or use the defaults provided.
+      #   - UID=${UID:-1000}
+      #   - GID=${GID:-1000}
+      #   - VIDEO_GID=${VIDEO_GID}
     image: ros2-dev-sudo-user
-    container_name: ros2_dev_container
+    container_name: ros2_head_container
     environment:
       - ROS_DISTRO=humble
       - DISPLAY=${DISPLAY}
