@@ -23,6 +23,10 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get install -y libboost-all-dev \
+    libpcl-dev \
+    ros-${ROS_DISTRO}-pcl-conversions \
+
 # Initialize rosdep as root
 RUN rosdep init || true && rosdep update
 
