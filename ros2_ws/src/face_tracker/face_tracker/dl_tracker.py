@@ -15,7 +15,7 @@ class MediaPipeTrackerNode(Node):
         self.declare_parameter('image_topic', 'hospibot/image_raw')
         self.declare_parameter('pitch_topic', '/servo_command')
         self.declare_parameter('roll_topic', '/stepper_panther')
-        self.declare_parameter('dead_zone_percent', 10)
+        self.declare_parameter('dead_zone_percent', 30)
         
         # --- MediaPipe Specific Parameters ---
         self.declare_parameter('min_detection_confidence', 0.5)

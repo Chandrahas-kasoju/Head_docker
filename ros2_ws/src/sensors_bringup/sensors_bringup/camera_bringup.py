@@ -30,7 +30,7 @@ class Camera(Node):
         #self.msg.distortion_model = "plumb_bob"
         #self.msg.d = [0.0, 0.0, 0.0, 0.0, 0.0]
         
-        self.timer= self.create_timer(0.01, self.publish_image)
+        self.timer= self.create_timer(0.04, self.publish_image)
         if not self.cap.isOpened():
             self.get_logger().error("Failed to open video capture")
             return

@@ -26,11 +26,11 @@ class ServoController(Node):
             return
         command = msg.data
         if command == 1:
-            self.servo.MoveTo(1,int(100*(4095 / 360)), 500)  # Move to 100 degrees
+            self.servo.MoveTo(1,int(100*(4095 / 360)), 300)  # Move to 100 degrees
         elif command == -1:
-            self.servo.MoveTo(1, 0, 500)  # Move to 0 degrees
+            self.servo.MoveTo(1, int(10*(4095 / 360)), 300)  # Move to 0 degrees
         elif command == 2:
-            self.servo.MoveTo(1, int(48*(4095 / 360)), 500)
+            self.servo.MoveTo(1, int(48*(4095 / 360)), 300)
         else:
             self.servo.StopServo(1)
 
