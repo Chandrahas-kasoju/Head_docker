@@ -19,8 +19,8 @@ services:
       - ./ros2_ws:/home/docker_user/ros2_ws
       - /tmp/.X11-unix:/tmp/.X11-unix
     devices:
-      - /dev/video6:/dev/video6
-      #- /dev/ttyACM0:/dev/ttyACM0
+      - /dev/video0:/dev/video6
+      - /dev/ttyACM0:/dev/ttyACM0
     network_mode: "host"
     stdin_open: true
     tty: true
