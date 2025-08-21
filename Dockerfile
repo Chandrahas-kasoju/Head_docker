@@ -76,3 +76,4 @@ RUN mkdir -p /home/docker_user/ros2_ws/src
 # Set the entrypoint
 ENTRYPOINT ["/home/docker_user/entrypoint.sh"]
 # Set the default command
+CMD ["bash"]
