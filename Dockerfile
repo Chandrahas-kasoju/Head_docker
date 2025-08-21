@@ -67,10 +67,13 @@ RUN python3 -m pip install --user \
     'numpy<2.0' \
     opencv-python \
     mediapipe \
-    'git+https://github.com/Chandrahas-kasoju/python-st3215.git'
+    'git+https://github.com/Chandrahas-kasoju/python-st3215.git' \
+    pygame
 
 # Create workspace directory as the user
 RUN mkdir -p /home/docker_user/ros2_ws/src
 
 # Set the entrypoint
 ENTRYPOINT ["/home/docker_user/entrypoint.sh"]
+# Set the default command
+CMD ["bash"]
