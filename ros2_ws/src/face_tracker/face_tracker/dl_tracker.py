@@ -24,7 +24,7 @@ class MediaPipeTrackerNode(Node):
         
         # --- PERFORMANCE OPTIMIZATION PARAMETERS FOR RASPBERRY PI ---
         self.declare_parameter('model_complexity', 0)
-        self.declare_parameter('enable_visualization', False)
+        self.declare_parameter('enable_visualization', True)
 
         # --- Publishers and Subscribers ---
         image_topic = self.get_parameter('image_topic').get_parameter_value().string_value
