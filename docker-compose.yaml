@@ -4,12 +4,13 @@ services:
   ros2_dev:
     build:
       context: .
-      # args:
-      #   # Docker Compose will now read the values for these variables
-      #   # from the .env file or use the defaults provided.
-      #   - UID=${UID:-1000}
-      #   - GID=${GID:-1000}
-      #   - VIDEO_GID=${VIDEO_GID}
+      args:
+        # Ensure all GIDs from the .env file are passed during the build
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - VIDEO_GID=${VIDEO_GID}
+        - DIALOUT_GID=${DIALOUT_GID}
+        - RENDER_GID=${RENDER_GID}
     image: ros2-dev-sudo-user
     privileged: true
     container_name: ros2_head_container
