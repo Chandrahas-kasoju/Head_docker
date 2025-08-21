@@ -15,8 +15,8 @@ EYE_COLOR = (0, 200, 255)
 MOUTH_COLOR = (0, 200, 255)
 
 # --- Eye Shape & Position ---
-EYE_SIZE = 180                  # The width and normal height of the eyes
-EYE_SPACING = 250               # Distance between the centers of the two eyes
+EYE_SIZE = 260                  # The width and normal height of the eyes
+EYE_SPACING = 400               # Distance between the centers of the two eyes
 EYE_BORDER_RADIUS = 25              # The roundness of the corners
 
 # --- NEW Mouth Shape & Position ---
@@ -28,8 +28,8 @@ MOUTH_VERTICAL_OFFSET = 160
 MOUTH_BORDER_RADIUS = 10
 
 # --- Animation Timings for Smooth Blinking ---
-BLINK_INTERVAL_MIN = 3.0        # Minimum seconds between blinks
-BLINK_INTERVAL_MAX = 7.0        # Maximum seconds between blinks
+BLINK_INTERVAL_MIN = 1.0        # Minimum seconds between blinks
+BLINK_INTERVAL_MAX = 3.0        # Maximum seconds between blinks
 BLINK_ANIMATION_SPEED = 0.075   # How fast the "eyelids" close and open.
 
 # --- End of Configuration ---
