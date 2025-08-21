@@ -17,20 +17,24 @@ services:
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
       - XAUTHORITY=/home/docker_user/.Xauthority
-      # --- FIX IS HERE (1/2) ---
-      # Explicitly tell Mesa where to find the hardware drivers we are mounting.
-      - LIBGL_DRIVERS_PATH=/usr/lib/aarch64-linux-gnu/dri
+      # We no longer need LIBGL_DRIVERS_PATH as the full library stack knows where to find things.
     volumes:
       - ./ros2_ws:/home/docker_user/ros2_ws
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ~/.Xauthority:/home/docker_user/.Xauthority:rw
-      # --- FIX IS HERE (2/2) ---
-      # Mount the host's GPU driver directory into the container (read-only).
-      - /usr/lib/aarch64-linux-gnu/dri:/usr/lib/aarch64-linux-gnu/dri:ro
+
+      # --- THE DEFINITIVE FIX IS HERE ---
+      # Mount the host's entire Mesa/graphics library stack into the container.
+      # This ensures perfect driver compatibility. The ':ro' is for security.
+      - /usr/lib/aarch64-linux-gnu:/usr/lib/aarch64-linux-gnu:ro
+      - /lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu:ro # Some base libraries are here
+      - /usr/share/vulkan:/usr/share/vulkan:ro # Good practice for Vulkan support
+
     devices:
-      - /dev/video0:/dev/video0
+      - /dev/video0:/dev/video6
       - /dev/ttyACM0:/dev/ttyACM0
-      - /dev/dri:/dev/dri
+      - /dev/dri:/dev/dri  # Still need this to see the hardware
       - /dev/fb0:/dev/fb0
     network_mode: "host"
     stdin_open: true
+    tty: true
