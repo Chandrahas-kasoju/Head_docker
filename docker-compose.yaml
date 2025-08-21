@@ -27,9 +27,9 @@ services:
       # --- THE DEFINITIVE FIX IS HERE ---
       # Mount the host's entire Mesa/graphics library stack into the container.
       # This ensures perfect driver compatibility. The ':ro' is for security.
-      - /usr/lib/aarch64-linux-gnu:/usr/lib/aarch64-linux-gnu:ro
-      - /lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu:ro # Some base libraries are here
-      - /usr/share/vulkan:/usr/share/vulkan:ro # Good practice for Vulkan support
+     # - /usr/lib/aarch64-linux-gnu:/usr/lib/aarch64-linux-gnu:ro
+     # - /lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu:ro # Some base libraries are here
+     # - /usr/share/vulkan:/usr/share/vulkan:ro # Good practice for Vulkan support
 
     devices:
       - /dev/video0:/dev/video6
