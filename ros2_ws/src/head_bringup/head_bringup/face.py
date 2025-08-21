@@ -142,7 +142,7 @@ class RobotFaceNode(Node):
 
         pygame.draw.rect(self.screen, self.mouth_color, self.mouth_rect, border_radius=MOUTH_BORDER_RADIUS)
         pygame.display.flip()
-        self.clock.tick(60)
+        #self.clock.tick(60)
 
 def main(args=None):
     rclpy.init(args=args)
