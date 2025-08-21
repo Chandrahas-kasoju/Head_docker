@@ -63,6 +63,10 @@ WORKDIR /home/docker_user
 # --- THE FIX IS HERE ---
 # 1. Install Python packages AS THE USER.
 # The --user flag installs them into /home/docker_user/.local/
+RUN apt update && apt install -y \
+    libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
+    libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev \
+    libfreetype6-dev
 RUN python3 -m pip install --user \
     'numpy<2.0' \
     opencv-python \

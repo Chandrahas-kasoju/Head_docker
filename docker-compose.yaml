@@ -11,11 +11,11 @@ services:
       #   - GID=${GID:-1000}
       #   - VIDEO_GID=${VIDEO_GID}
     image: ros2-dev-sudo-user
-    privileged: true
     container_name: ros2_head_container
     environment:
       - ROS_DISTRO=humble
       - DISPLAY=${DISPLAY}
+      - XDG_RUNTIME_DIR=/tmp/runtime-docker
     volumes:
       - ./ros2_ws:/home/docker_user/ros2_ws
       - /tmp/.X11-unix:/tmp/.X11-unix
@@ -24,7 +24,7 @@ services:
       - /dev/video0:/dev/video6
       - /dev/ttyACM0:/dev/ttyACM0
       - /dev/dri:/dev/dri            # For GPU hardware acceleration
-      - /dev/vchiq:/dev/vchiq
     network_mode: "host"
+    privileged: true
     stdin_open: true
     tty: true
