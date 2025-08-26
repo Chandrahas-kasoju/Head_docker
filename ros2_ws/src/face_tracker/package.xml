@@ -7,6 +7,7 @@
   <maintainer email="chandrahas.kasoju@uni-luebeck.de">Chandrahas Kasoju</maintainer>
   <license>Apache-2.0</license>
 
+  <depend>posture_analysis_msgs</depend>
   <depend>rclpy</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>

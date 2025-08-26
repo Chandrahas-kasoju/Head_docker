@@ -27,6 +27,7 @@ setup(
             'face_tracker = face_tracker.face_tracker:main',
             'thermal_tracker = face_tracker.thermal_tracker:main',
             'dl_tracker = face_tracker.dl_tracker:main',
+            'tracker = face_tracker.tracker:main',
         ],
     },
 )

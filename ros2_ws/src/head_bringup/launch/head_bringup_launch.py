@@ -28,7 +28,7 @@ def generate_launch_description():
         ),
         Node(
             package='face_tracker',
-            executable='dl_tracker',
+            executable='tracker',
             name='face_tracker_node'
         ),
         Node(
