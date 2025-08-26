@@ -135,8 +135,8 @@ class MediaPipeTrackerNode(Node):
                     cv2.circle(cv_image, (target_x, target_y), 7, (255, 0, 0), -1) # Blue for tracking
             else:
                 # State: Target present but obscured. Command is 3 (Hold Position).
-                pitch_cmd.data = 2
-                roll_cmd.data = 2
+                pitch_cmd.data = 3
+                roll_cmd.data = 3
                 self.get_logger().info('Pose detected, but eyes not visible. Publishing hold command (3).', throttle_duration_sec=2)
 
             if self.enable_visualization:
