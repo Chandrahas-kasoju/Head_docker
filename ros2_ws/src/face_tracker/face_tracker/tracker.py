@@ -78,8 +78,8 @@ class MediaPipeTrackerNode(Node):
         roll_cmd = Int32()
         
         # Default State: No target detected. Command is 2 (Go to Home).
-        pitch_cmd.data = 2
-        roll_cmd.data = 2
+        pitch_cmd.data = 3
+        roll_cmd.data = 3
         
         dead_zone_percent = self.get_parameter('dead_zone_percent').get_parameter_value().integer_value
         dead_zone_x = (width * dead_zone_percent) // 200
