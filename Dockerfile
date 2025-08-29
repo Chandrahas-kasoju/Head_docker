@@ -80,6 +80,7 @@ RUN python3 -m pip install --user \
     opencv-python \
     mediapipe \
     'git+https://github.com/Chandrahas-kasoju/python-st3215.git' \
+    requests \
     pygame
 
 # Create workspace directory as the user
