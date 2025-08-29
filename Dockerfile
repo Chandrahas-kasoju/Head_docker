@@ -34,6 +34,10 @@ RUN apt update && apt install -y \
     libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && apt-get install -y \
+    ros-${ROS_DISTRO}-vision-msgs \
+    && rm -rf /var/lib/apt/lists/*
+
 # Initialize rosdep as root
 RUN rosdep init || true && rosdep update
 
