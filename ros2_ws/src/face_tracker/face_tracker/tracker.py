@@ -9,6 +9,9 @@ import mediapipe as mp
 import numpy as np
 from posture_analysis_msgs.msg import Posture
 from vision_msgs.msg import BoundingBox2D, Pose2D, Point2D
+import requests
+import time
+
 
 
 
@@ -68,6 +71,11 @@ class MediaPipeTrackerNode(Node):
         
         self.get_logger().info(f'MediaPipe tracker node started. Model Complexity: {model_complexity}, Visualization: {self.enable_visualization}')
 
+        # --- ALARM LOGIC ---
+        self.NTFY_TOPIC = "hospibot_lying_down_alarm" 
+        self.notification_cooldown = 30.0 
+        self.last_notification_time = 0.0
+
     def image_callback(self, msg):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
@@ -113,6 +121,11 @@ class MediaPipeTrackerNode(Node):
             
             posture_msg.uprightness_score = int(uprightness * 100)
             self.publisher_.publish(posture_msg)
+            
+            #send alert if lying down
+            if posture_msg.posture_class == Posture.LYING_DOWN:
+                self.send_notification()
+
             landmarks = results.pose_landmarks.landmark
             left_eye = landmarks[self.mp_pose.PoseLandmark.LEFT_EYE.value]
             right_eye = landmarks[self.mp_pose.PoseLandmark.RIGHT_EYE.value]
@@ -266,6 +279,31 @@ class MediaPipeTrackerNode(Node):
         self.bb_pub.publish(bbox_msg)
         # Optional: Draw the bounding box and landmarks on the image for visualization
         cv2.rectangle(image, (int(x_min * w), int(y_min * h)), (int(x_max * w), int(y_max * h)), (0, 255, 0), 2)
+
+    def send_notification(self):
+        """Sends a push notification via ntfy if cooldown has passed."""
+        current_time = time.time()
+        if (current_time - self.last_notification_time) > self.notification_cooldown:
+            self.get_logger().warn('LYING DOWN DETECTED! Sending ntfy notification...')
+            try:
+                
+                #sound_url = "https://drive.google.com/uc?export=download&id=12zvG0EZ5uab9bDT_Z_B9i83zCWdeAztg"
+
+                requests.post(
+                    f"https://ntfy.sh/{self.NTFY_TOPIC}",
+                    data="Fall detected! A person is lying down.".encode(encoding='utf-8'),
+                    headers={
+                        "Title": "TurtleBot Alert: Possible Fall Detected",
+                        "Priority": "urgent",
+                        "Tags": "warning,rotating_light",
+                        #"Attach": sound_url,
+                        #"Actions": f"view, Play Alarm Sound, {sound_url}"
+                    })
+                self.last_notification_time = current_time
+            except requests.exceptions.RequestException as e:
+                self.get_logger().error(f"Could not send notification: {e}")
+        else:
+            self.get_logger().info('Lying down detected, but in notification cooldown period.')
     
 
 
