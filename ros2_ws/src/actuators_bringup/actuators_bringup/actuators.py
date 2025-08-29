@@ -33,7 +33,7 @@ class ServoController(Node):
         elif command == 3:
             self.servo.MoveTo(1, int(56*(4095 / 360)), 100)
         else:
-            self.servo.StopServo(1)
+            self.HoldPosition(1)
 
         
     def HoldPosition(self, sts_id):
