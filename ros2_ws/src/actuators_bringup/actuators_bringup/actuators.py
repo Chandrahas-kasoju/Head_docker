@@ -16,6 +16,7 @@ class ServoController(Node):
             10
         )
         self.servo = ST3215('/dev/ttyACM0')
+        self.sts_id = 1
 
     
 
@@ -33,6 +34,27 @@ class ServoController(Node):
             self.servo.MoveTo(1, int(56*(4095 / 360)), 100)
         else:
             self.servo.StopServo(1)
+
+        
+    def HoldPosition(self, sts_id):
+        """
+        Stops the servo's movement and makes it hold its current position.
+
+        :param sts_id: Servo ID
+
+        :return: True if the command was successful, otherwise None.
+        """
+        # Read the current position of the servo
+        current_position = self.servo.ReadPosition(self.sts_id)
+
+        if current_position is not None:
+            # Command the servo to move to its current position with a speed of 0
+            # This will cause the servo to hold its position with active torque.
+            return self.servo.MoveTo(sts_id, current_position, 0)
+        else:
+            return None
+
+  
 
 
 
