@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, CameraInfo
 from std_msgs.msg import Int32
 from cv_bridge import CvBridge
 import cv2
 import mediapipe as mp
 import numpy as np
 from posture_analysis_msgs.msg import Posture
+from vision_msgs.msg import BoundingBox2D, Pose2D, Point2D
+
 
 
 
@@ -37,11 +39,17 @@ class MediaPipeTrackerNode(Node):
         roll_topic = self.get_parameter('roll_topic').get_parameter_value().string_value
         
         self.subscription = self.create_subscription(Image, image_topic, self.image_callback, 10)
+        self.info_subscription = self.create_subscription(CameraInfo, 'hospibot/camera_info', self.camera_info_callback, 10)
         self.pitch_publisher = self.create_publisher(Int32, pitch_topic, 10)
         self.roll_publisher = self.create_publisher(Int32, roll_topic, 10)
         self.publisher_ = self.create_publisher(Posture, 'human_posture', 10)
+        self.bb_pub = self.create_publisher(BoundingBox2D, 'person_bounding_box', 10)
+        self.image_pub = self.create_publisher(Image, 'bb_box/Image_raw', 10)
+        self.image_info_pub = self.create_publisher(CameraInfo, 'bb_box/camera_info', 10)
         
         self.bridge = CvBridge()
+        self.center_pose = Pose2D()
+        self.bbox_msg = BoundingBox2D()
         
         # --- MediaPipe Model Setup ---
         self.get_logger().info("Loading MediaPipe Pose model...")
@@ -142,6 +150,9 @@ class MediaPipeTrackerNode(Node):
             if self.enable_visualization:
                 self.mp_drawing.draw_landmarks(
                     cv_image, results.pose_landmarks, self.mp_pose.POSE_CONNECTIONS)
+                self.process_frame_and_publish_bbox(landmarks, cv_image, height, width)
+                #self.process_frame_and_publish_bbox(landmarks, cv_image, height, width)
+                
         
         else:
             # This 'else' corresponds to 'if results.pose_landmarks:'
@@ -154,8 +165,19 @@ class MediaPipeTrackerNode(Node):
         if self.enable_visualization:
             cv2.rectangle(cv_image, (center_x - dead_zone_x, center_y - dead_zone_y), 
                           (center_x + dead_zone_x, center_y + dead_zone_y), (0, 0, 255), 2)
-            cv2.imshow("MediaPipe Tracker", cv_image)
-            cv2.waitKey(1)
+            # cv2.imshow("MediaPipe Tracker", cv_image)
+            # cv2.waitKey(1)
+
+            cv_image = self.bridge.cv2_to_imgmsg(cv_image, 'bgr8')
+            cv_image.header.stamp = self.get_clock().now().to_msg()
+            cv_image.header.frame_id = "thermal_camera_link"
+            self.image_pub.publish(cv_image)
+          
+            
+            
+    def camera_info_callback(self, msg):
+        # Directly republish the received CameraInfo message
+        self.image_info_pub.publish(msg)
 
     def calculate_angle(self, a, b, c):
         a, b, c = np.array(a), np.array(b), np.array(c)
@@ -221,6 +243,32 @@ class MediaPipeTrackerNode(Node):
             return "Standing", uprightness_score, spine_vector_normalized, hip_angle, side_used, vertical_hip_knee_dist
 
         return "Upright", uprightness_score, spine_vector_normalized, hip_angle, side_used, vertical_hip_knee_dist
+    
+    def process_frame_and_publish_bbox(self, landmarks, image, h, w):
+        x_min = min([lm.x for lm in landmarks])
+        y_min = min([lm.y for lm in landmarks])
+        x_max = max([lm.x for lm in landmarks])
+        y_max = max([lm.y for lm in landmarks])
+        # 2. CREATE AN INSTANCE OF THE Pose2D MESSAGE
+        center_point = Point2D()
+        center_pose = Pose2D()
+        center_point.x = ((x_min + x_max) / 2) * w
+        center_point.y = ((y_min + y_max) / 2) * h
+        center_pose.position = center_point
+        center_pose.theta = 0.0
+        # 'theta' is the third field of Pose2D, representing rotation.
+        # We can leave it as the default 0.0 for a non-rotated bounding box
+        # 3. CREATE THE BoundingBox2D MESSAGE AND ASSIGN THE FIELDS
+        bbox_msg = BoundingBox2D()
+        bbox_msg.center = center_pose # Assign the Pose2D object
+        bbox_msg.size_x = (x_max - x_min) * w
+        bbox_msg.size_y = (y_max - y_min) * h
+        self.bb_pub.publish(bbox_msg)
+        # Optional: Draw the bounding box and landmarks on the image for visualization
+        cv2.rectangle(image, (int(x_min * w), int(y_min * h)), (int(x_max * w), int(y_max * h)), (0, 255, 0), 2)
+    
+
+
 
 def main(args=None):
     rclpy.init(args=args)

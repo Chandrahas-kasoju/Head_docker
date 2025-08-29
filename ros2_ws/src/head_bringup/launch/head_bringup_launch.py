@@ -41,13 +41,18 @@ def generate_launch_description():
             executable='static_transform',
             name='static_transform_node'
         ),
+        Node(
+            package='sensors_bringup',
+            executable='person_detect',
+            name='person_detect_node'
+        ),
         # Node(
         #     package='head_bringup',
         #     executable='face',
         #     name='face_node'
         # ),
         # Include the launch file for the radar node
-        # IncludeLaunchDescription(
-            # PythonLaunchDescriptionSource(ti_mmwave_rospkg_launch_file)
-        # ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(ti_mmwave_rospkg_launch_file)
+        ),
     ])
