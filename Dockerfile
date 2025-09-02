@@ -40,6 +40,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     curl \
     gnupg \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Initialize rosdep as root
@@ -69,10 +70,17 @@ COPY entrypoint.sh /home/docker_user/entrypoint.sh
 RUN chown docker_user:docker_user /home/docker_user/entrypoint.sh && \
     chmod +x /home/docker_user/entrypoint.sh
 
+RUN apt-get update && sudo apt-get install -y \
+    ffmpeg python3-virtualenv gcc-12 g++-12 python-gi-dev pkg-config \
+    libcairo2-dev libgirepository1.0-dev libgstreamer1.0-dev cmake \
+    libgstreamer-plugins-base1.0-dev libzmq3-dev libgstreamer-plugins-bad1.0-dev \
+    gstreamer1.0-plugins-bad gstreamer1.0-libav libopencv-dev \
+    python3-opencv rapidjson-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN git clone https://github.com/hailo-ai/hailo-apps-infra.git && \
     cd hailo-apps-infra && \
     apt-get update && \
-    ./scripts/hailo_installer.sh && \
     ./install.sh
 
 # Run the installer
