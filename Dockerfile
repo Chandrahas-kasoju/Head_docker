@@ -36,10 +36,25 @@ RUN apt update && apt install -y \
 
 RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-vision-msgs \
+    python3-venv \
+    wget \
+    curl \
+    gnupg \
     && rm -rf /var/lib/apt/lists/*
 
 # Initialize rosdep as root
 RUN rosdep init || true && rosdep update
+
+# ### HAILO ### Add the Hailo APT repository
+RUN curl -s https://hailo-cs.s3.eu-west-2.amazonaws.com/public/Hailo-LTS/hailo.gpg.key | gpg --dearmor -o /usr/share/keyrings/hailo-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/hailo-archive-keyring.gpg] https://hailo-cs.s3.eu-west-2.amazonaws.com/public/Hailo-LTS/raspi/ bookworm main" \
+    | tee /etc/apt/sources.list.d/hailo.list > /dev/null
+
+RUN apt-get update && apt-get install -y \
+    hailo-all \
+    python3-hailort \
+    && rm -rf /var/lib/apt/lists/*
+
 
 # Create the user
 ARG UID=1000
@@ -66,13 +81,17 @@ COPY entrypoint.sh /home/docker_user/entrypoint.sh
 RUN chown docker_user:docker_user /home/docker_user/entrypoint.sh && \
     chmod +x /home/docker_user/entrypoint.sh
 
-# NOW we switch to the new user.
+
 USER docker_user
 WORKDIR /home/docker_user
 
-# --- THE FIX IS HERE ---
-# 1. Install Python packages AS THE USER.
-# The --user flag installs them into /home/docker_user/.local/
+# ### HAILO ### Set the environment variable to ensure only HAILO8L models are downloaded
+ENV DEVICE_ARCHITECTURE=HAILO8L
+
+# ### HAILO ### Clone the examples repo and download the resources
+RUN git clone https://github.com/hailo-ai/hailo-rpi5-examples.git && \
+    cd hailo-rpi5-examples && \
+    ./download_resources.sh
 
 
 RUN python3 -m pip install --user \
