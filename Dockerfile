@@ -46,9 +46,9 @@ RUN apt-get update && apt-get install -y \
 RUN rosdep init || true && rosdep update
 
 # ### HAILO ### Add the Hailo APT repository
-RUN curl -s https://hailo-cs.s3.eu-west-2.amazonaws.com/public/Hailo-LTS/hailo.gpg.key | gpg --dearmor -o /usr/share/keyrings/hailo-archive-keyring.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/hailo-archive-keyring.gpg] https://hailo-cs.s3.eu-west-2.amazonaws.com/public/Hailo-LTS/raspi/ bookworm main" \
-    | tee /etc/apt/sources.list.d/hailo.list > /dev/null
+# RUN curl -s https://hailo-cs.s3.eu-west-2.amazonaws.com/public/Hailo-LTS/hailo.gpg.key | gpg --dearmor -o /usr/share/keyrings/hailo-archive-keyring.gpg && \
+#     echo "deb [signed-by=/usr/share/keyrings/hailo-archive-keyring.gpg] https://hailo-cs.s3.eu-west-2.amazonaws.com/public/Hailo-LTS/raspi/ bookworm main" \
+#     | tee /etc/apt/sources.list.d/hailo.list > /dev/null
 
 RUN apt-get update && apt-get install -y \
     hailo-all \
