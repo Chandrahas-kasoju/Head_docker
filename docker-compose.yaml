@@ -25,6 +25,7 @@ services:
       - /dev/ttyACM0:/dev/ttyACM0
       - /dev/dri:/dev/dri            # For GPU hardware acceleration
       - /dev/hailo0:/dev/hailo0    # Hailo device
+      - /lib/firmware:/lib/firmware
     network_mode: "host"
     privileged: true
     stdin_open: true

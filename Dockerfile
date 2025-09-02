@@ -78,10 +78,7 @@ RUN apt-get update && sudo apt-get install -y \
     python3-opencv rapidjson-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN git clone https://github.com/hailo-ai/hailo-apps-infra.git && \
-    cd hailo-apps-infra && \
-    apt-get update && \
-    ./install.sh
+RUN git clone https://github.com/hailo-ai/hailo-apps-infra.git /home/docker_user/hailo-apps-infra
 
 # Run the installer
 USER docker_user
