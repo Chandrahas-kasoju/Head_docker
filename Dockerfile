@@ -54,8 +54,8 @@ ENV DEVICE_ARCHITECTURE=HAILO8L
 RUN mkdir -p /home/docker_user/ros2_ws/src
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/docker_user/.bashrc
 
-COPY entrypoint.sh /home/docker/ros_entrypoint.sh
-RUN chmod +x /home/docker/ros_entrypoint.sh
+COPY entrypoint.sh /home/docker_user/entrypoint.sh
+RUN chmod +x /home/docker_user/entrypoint.sh
 
 # Set the entrypoint
 ENTRYPOINT ["/home/docker_user/entrypoint.sh"]
