@@ -54,6 +54,7 @@ ENV DEVICE_ARCHITECTURE=HAILO8L
 RUN git clone https://github.com/hailo-ai/hailo-rpi5-examples.git /home/docker_user/hailo-rpi5-examples && \
     cd /home/docker_user/hailo-rpi5-examples && \
     apt-get update && \
+    ./download_resources.sh && \
     ./install.sh
 
 COPY entrypoint.sh /entrypoint.sh
