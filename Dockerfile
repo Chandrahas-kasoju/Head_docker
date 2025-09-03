@@ -32,8 +32,8 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 82B129927FA3303E &&
 #     gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-libcamera libopencv-dev \
 #     python3-opencv
 
-# # Dependencies for rpicam-apps-hailo-postprocess
-# RUN apt-get update && apt-get install -y rpicam-apps hailo-tappas-core=3.31.0+1-1 hailo-all=4.20.0
+# Dependencies for rpicam-apps-hailo-postprocess
+RUN apt-get update && apt-get install -y hailo-tappas-core=3.31.0+1-1 hailo-all=4.20.0
 
 RUN apt-get update && apt-get install -y \
     v4l-utils \
