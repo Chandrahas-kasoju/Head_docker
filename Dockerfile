@@ -54,7 +54,9 @@ ENV DEVICE_ARCHITECTURE=HAILO8L
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+WORKDIR /home/docker_user
+
 # Set the entrypoint
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["~/entrypoint.sh"]
 # Set the default command
 CMD ["bash"]
