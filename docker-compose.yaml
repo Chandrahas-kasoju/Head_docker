@@ -17,13 +17,12 @@ services:
       - DISPLAY=${DISPLAY}
       - XDG_RUNTIME_DIR=/tmp/runtime-docker
     volumes:
-      - ./ros2_ws:/home/docker_user/ros2_ws
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ~/.Xauthority:/home/docker_user/.Xauthority:rw
       - /usr/lib/aarch64-linux-gnu:/usr/lib/aarch64-linux-gnu:ro
       - /lib/firmware:/lib/firmware
       - /lib/udev/rules.d:/lib/udev/rules.d 
-      - lib/modules:/lib/modules
+      - /lib/modules:/lib/modules
 
     devices:
       - /dev/video0:/dev/video6
