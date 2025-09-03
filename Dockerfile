@@ -23,17 +23,17 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 82B129927FA3303E &&
     apt-add-repository -y -S deb http://archive.raspberrypi.com/debian/ bookworm main
 
 # Dependencies for hailo-tappas-core
-RUN apt-get update && apt-get install -y python3 ffmpeg x11-utils python3-dev python3-pip \
-    gcc-12 g++-12 python-gi-dev pkg-config libcairo2-dev \
-    libgirepository1.0-dev libgstreamer1.0-dev cmake \
-    libgstreamer-plugins-base1.0-dev libzmq3-dev rsync git \
-    libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base \
-    gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav \
-    gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-libcamera libopencv-dev \
-    python3-opencv
+# RUN apt-get update && apt-get install -y python3 ffmpeg x11-utils python3-dev python3-pip \
+#     gcc-12 g++-12 python-gi-dev pkg-config libcairo2-dev \
+#     libgirepository1.0-dev libgstreamer1.0-dev cmake \
+#     libgstreamer-plugins-base1.0-dev libzmq3-dev rsync git \
+#     libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base \
+#     gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav \
+#     gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-libcamera libopencv-dev \
+#     python3-opencv
 
-# Dependencies for rpicam-apps-hailo-postprocess
-RUN apt-get update && apt-get install -y rpicam-apps hailo-tappas-core=3.31.0+1-1 hailo-all=4.20.0
+# # Dependencies for rpicam-apps-hailo-postprocess
+# RUN apt-get update && apt-get install -y rpicam-apps hailo-tappas-core=3.31.0+1-1 hailo-all=4.20.0
 
 RUN apt-get update && apt-get install -y \
     v4l-utils \
