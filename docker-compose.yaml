@@ -13,7 +13,7 @@ services:
     image: ros2-dev-sudo-user
     container_name: ros2_head_container
     environment:
-      - ROS_DISTRO=humble
+      - ROS_DISTRO=jazzy
       - DISPLAY=${DISPLAY}
       - XDG_RUNTIME_DIR=/tmp/runtime-docker
     volumes:

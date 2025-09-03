@@ -43,36 +43,10 @@ RUN apt-get update && apt-get install -y \
 # Initialize rosdep as root
 RUN rosdep init || true && rosdep update
 # Create the user
-ARG UID=1000
-ARG GID=1000
-RUN groupadd -g $GID -o docker_user && \
-    useradd -m -u $UID -g $GID -s /bin/bash docker_user
-
-# Add the user to the sudo and video groups
-ARG VIDEO_GID
-ARG DIALOUT_GID
-RUN if [ -n "$VIDEO_GID" ]; then \
-        if ! getent group $VIDEO_GID > /dev/null; then groupadd -g $VIDEO_GID video; fi; \
-    fi && \
-    if [ -n "$DIALOUT_GID" ]; then \
-        if ! getent group $DIALOUT_GID > /dev/null; then groupadd -g $DIALOUT_GID dialout; fi; \
-    fi && \
-    usermod -aG sudo,video,dialout docker_user
-
-# Give the user password-less sudo privileges
-RUN echo "docker_user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/docker-user-sudo
-
-# Copy the entrypoint script and set its permissions AS ROOT
-COPY entrypoint.sh /home/docker_user/entrypoint.sh
-RUN chown docker_user:docker_user /home/docker_user/entrypoint.sh && \
-    chmod +x /home/docker_user/entrypoint.sh
 
 RUN git clone https://github.com/hailo-ai/hailo-apps-infra.git /home/docker_user/hailo-apps-infra
 
 # Run the installer
-USER docker_user
-WORKDIR /home/docker_user
-
 # ### HAILO ### Set the environment variable to ensure only HAILO8L models are downloaded
 ENV DEVICE_ARCHITECTURE=HAILO8L
 
