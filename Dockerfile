@@ -50,12 +50,9 @@ RUN git clone https://github.com/hailo-ai/hailo-apps-infra.git /home/docker_user
 # ### HAILO ### Set the environment variable to ensure only HAILO8L models are downloaded
 ENV DEVICE_ARCHITECTURE=HAILO8L
 
-# Create workspace directory as the user
-RUN mkdir -p /home/docker_user/ros2_ws/src
-RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/docker_user/.bashrc
 
-COPY entrypoint.sh /home/docker_user/entrypoint.sh
-RUN chmod +x /home/docker_user/entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # Set the entrypoint
 ENTRYPOINT ["/home/docker_user/entrypoint.sh"]
