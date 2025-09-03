@@ -38,19 +38,23 @@ RUN apt-get update && apt-get install -y rpicam-apps hailo-tappas-core=3.31.0+1-
 RUN apt-get update && apt-get install -y \
     v4l-utils \
     python3-venv \
+    sudo \
+    meson \
     && rm -rf /var/lib/apt/lists/*
 
 # Initialize rosdep as root
 RUN rosdep init || true && rosdep update
 # Create the user
 
-RUN git clone https://github.com/hailo-ai/hailo-apps-infra.git /home/docker_user/hailo-apps-infra
 
 # Run the installer
 # ### HAILO ### Set the environment variable to ensure only HAILO8L models are downloaded
 ENV DEVICE_ARCHITECTURE=HAILO8L
 
-
+RUN git clone https://github.com/hailo-ai/hailo-rpi5-examples.git /home/docker_user/hailo-rpi5-examples && \
+    cd /home/docker_user/hailo-rpi5-examples && \
+    ./install.sh
+    
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
