@@ -37,21 +37,7 @@ RUN apt-get update && apt-get install -y rpicam-apps hailo-tappas-core=3.31.0+1-
 
 RUN apt-get update && apt-get install -y \
     v4l-utils \
-    ros-${ROS_DISTRO}-cv-bridge \
-    ros-${ROS_DISTRO}-camera-calibration \
-    ros-${ROS_DISTRO}-vision-msgs \
     python3-venv \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -y \
-    libboost-all-dev \
-    libpcl-dev \
-    ros-${ROS_DISTRO}-pcl-conversions 
-
-RUN apt update && apt install -y \
-    libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
-    libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev \
-    libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Initialize rosdep as root
@@ -81,16 +67,6 @@ COPY entrypoint.sh /home/docker_user/entrypoint.sh
 RUN chown docker_user:docker_user /home/docker_user/entrypoint.sh && \
     chmod +x /home/docker_user/entrypoint.sh
 
-RUN apt-get update && sudo apt-get install -y \
-    ffmpeg python3-virtualenv gcc-12 g++-12 python-gi-dev pkg-config \
-    libcairo2-dev libgirepository1.0-dev libgstreamer1.0-dev cmake \
-    libgstreamer-plugins-base1.0-dev libzmq3-dev libgstreamer-plugins-bad1.0-dev \
-    gstreamer1.0-plugins-bad gstreamer1.0-libav libopencv-dev \
-    python3-opencv rapidjson-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -y hailo-tappas-core=3.31.0+1-1 hailo-all=4.20.0
-
 RUN git clone https://github.com/hailo-ai/hailo-apps-infra.git /home/docker_user/hailo-apps-infra
 
 # Run the installer
@@ -99,17 +75,6 @@ WORKDIR /home/docker_user
 
 # ### HAILO ### Set the environment variable to ensure only HAILO8L models are downloaded
 ENV DEVICE_ARCHITECTURE=HAILO8L
-
-
-
-
-RUN python3 -m pip install --user \
-    'numpy<2.0' \
-    opencv-python \
-    mediapipe \
-    'git+https://github.com/Chandrahas-kasoju/python-st3215.git' \
-    requests \
-    pygame
 
 # Create workspace directory as the user
 RUN mkdir -p /home/docker_user/ros2_ws/src
