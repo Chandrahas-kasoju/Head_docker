@@ -36,6 +36,7 @@ RUN apt update && apt install -y \
 
 RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-vision-msgs \
+    apt install ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     && rm -rf /var/lib/apt/lists/*
 
 # Initialize rosdep as root
@@ -86,7 +87,8 @@ RUN python3 -m pip install --user \
 # Create workspace directory as the user
 RUN mkdir -p /home/docker_user/ros2_ws/src
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/docker_user/.bashrc
-
+RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> /home/docker_user/.bashrc
+RUN echo "source /home/docker_user/ros2_ws/install/setup.bash" >> /home/docker_user/.bashrc
 # Set the entrypoint
 ENTRYPOINT ["/home/docker_user/entrypoint.sh"]
 # Set the default command
