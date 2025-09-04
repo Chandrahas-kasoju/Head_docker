@@ -36,7 +36,7 @@ RUN apt update && apt install -y \
 
 RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-vision-msgs \
-    apt install ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
+    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     && rm -rf /var/lib/apt/lists/*
 
 # Initialize rosdep as root
