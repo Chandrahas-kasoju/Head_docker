@@ -78,7 +78,7 @@ class MediaPipeTrackerNode(Node):
 
         # --- Multiple Frame Debouncing ---
         self.lying_down_frame_count = 0
-        self.LYING_DOWN_FRAME_TRIGGER = 50 # Requires 15 consecutive frames of lying down
+        self.LYING_DOWN_FRAME_TRIGGER = 20 # Requires 15 consecutive frames of lying down
 
     def image_callback(self, msg):
         try:
