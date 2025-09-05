@@ -26,11 +26,11 @@ def generate_launch_description():
             executable='camera_bringup',
             name='camera_node'
         ),
-        Node(
-            package='face_tracker',
-            executable='tracker',
-            name='face_tracker_node'
-        ),
+        # Node(
+        #     package='face_tracker',
+        #     executable='tracker',
+        #     name='face_tracker_node'
+        # ),
         Node(
             package='actuators_bringup',
             executable='actuators',
