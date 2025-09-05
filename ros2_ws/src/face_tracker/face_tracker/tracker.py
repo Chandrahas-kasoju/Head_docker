@@ -235,7 +235,7 @@ class MediaPipeTrackerNode(Node):
         spine_vector_normalized = spine_vector / norm_spine
         uprightness_score = abs(spine_vector_normalized[1])
 
-        if uprightness_score < 0.7:
+        if uprightness_score < 0.4:
             return "Lying Down", uprightness_score, spine_vector_normalized, 0.0, "", 0.0
 
         hip_angle, side_used, vertical_hip_knee_dist = 0.0, "", 0.0
