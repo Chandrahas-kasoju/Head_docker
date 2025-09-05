@@ -52,8 +52,8 @@ def generate_launch_description():
         #     name='face_node'
         # ),
         # Include the launch file for the radar node
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(ti_mmwave_rospkg_launch_file),
-            launch_arguments={'rviz': 'false'}.items()
-        ),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource(ti_mmwave_rospkg_launch_file),
+        #     launch_arguments={'rviz': 'false'}.items()
+        # ),
     ])
