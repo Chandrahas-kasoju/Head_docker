@@ -76,6 +76,10 @@ class MediaPipeTrackerNode(Node):
         self.notification_cooldown = 30.0 
         self.last_notification_time = 0.0
 
+        # --- Multiple Frame Debouncing ---
+        self.lying_down_frame_count = 0
+        self.LYING_DOWN_FRAME_TRIGGER = 50 # Requires 15 consecutive frames of lying down
+
     def image_callback(self, msg):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
@@ -122,9 +126,19 @@ class MediaPipeTrackerNode(Node):
             posture_msg.uprightness_score = int(uprightness * 100)
             self.publisher_.publish(posture_msg)
             
-            #send alert if lying down
+            #send alert if lying down, loggers are not necessary but might be good for testing and debugging..
             if posture_msg.posture_class == Posture.LYING_DOWN:
+                self.lying_down_frame_count += 1
+                self.get_logger().info(f'Possible Lying Down... Count: {self.lying_down_frame_count}/{self.LYING_DOWN_FRAME_TRIGGER}', throttle_duration_sec=1)
+            else:
+                if self.lying_down_frame_count > 0:
+                    self.get_logger().info('Lying down state was temporary. Resetting counter.')
+                self.lying_down_frame_count = 0
+            
+            if self.lying_down_frame_count >= self.LYING_DOWN_FRAME_TRIGGER:
                 self.send_notification()
+                self.lying_down_frame_count = 0 # Reset after sending
+            
 
             landmarks = results.pose_landmarks.landmark
             left_eye = landmarks[self.mp_pose.PoseLandmark.LEFT_EYE.value]
@@ -321,4 +335,3 @@ def main(args=None):
         cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    main()
