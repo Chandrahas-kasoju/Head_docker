@@ -87,7 +87,7 @@ RUN python3 -m pip install --user \
 # Create workspace directory as the user
 RUN mkdir -p /home/docker_user/ros2_ws/src
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/docker_user/.bashrc
-RUN echo "export RMW_IMPLEMENTATION=rmw_fastrtps_cpp" >> /home/docker_user/.bashrc
+RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> /home/docker_user/.bashrc
 RUN echo "source /home/docker_user/ros2_ws/install/setup.bash" >> /home/docker_user/.bashrc
 RUN echo "export ROS_SUPER_CLIENT=True" >> /home/docker_user/.bashrc
 RUN echo "export ROS_SUPER_CLIENT=False" >> /home/docker_user/.bashrc
