@@ -92,7 +92,7 @@ RUN echo "source /home/docker_user/ros2_ws/install/setup.bash" >> /home/docker_u
 RUN echo "export ROS_SUPER_CLIENT=True" >> /home/docker_user/.bashrc
 RUN echo "export ROS_SUPER_CLIENT=False" >> /home/docker_user/.bashrc
 RUN echo "export ROS_DOMAIN_ID=0" >> /home/docker_user/.bashrc
-RUN echo "export ROS_DISCOVERY_SERVER="192.168.0.129:11811;"" >> /home/docker_user/.bashrc
+RUN echo "export ROS_DISCOVERY_SERVER=192.168.0.129:11811" >> /home/docker_user/.bashrc
 # Set the entrypoint
 ENTRYPOINT ["/home/docker_user/entrypoint.sh"]
 # Set the default command
