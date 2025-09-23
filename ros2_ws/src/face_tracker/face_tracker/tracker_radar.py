@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import Image, CameraInfo
-from std_msgs.msg import Int32
+from sensor_msgs.msg import Image, CameraInfo, PointCloud2
+from std_msgs.msg import Int32, String
 from cv_bridge import CvBridge
 import cv2
 import mediapipe as mp
@@ -25,6 +25,7 @@ class MediaPipeTrackerNode(Node):
         self.declare_parameter('image_topic', 'hospibot/image_raw')
         self.declare_parameter('pitch_topic', '/servo_command')
         self.declare_parameter('roll_topic', '/stepper_panther')
+        self.declare_parameter('radar_topic', '/person_detect/filtered_points')
         self.declare_parameter('dead_zone_percent', 30)
         
         # --- MediaPipe Specific Parameters ---
@@ -40,15 +41,20 @@ class MediaPipeTrackerNode(Node):
         image_topic = self.get_parameter('image_topic').get_parameter_value().string_value
         pitch_topic = self.get_parameter('pitch_topic').get_parameter_value().string_value
         roll_topic = self.get_parameter('roll_topic').get_parameter_value().string_value
+        radar_topic = self.get_parameter('radar_topic').get_parameter_value().string_value
         
         self.subscription = self.create_subscription(Image, image_topic, self.image_callback, 10)
         self.info_subscription = self.create_subscription(CameraInfo, 'hospibot/camera_info', self.camera_info_callback, 10)
+        self.radar_subscription = self.create_subscription(PointCloud2, 'person_detect/filtered_points', self.breathing_points, 10)
         self.pitch_publisher = self.create_publisher(Int32, pitch_topic, 10)
         self.roll_publisher = self.create_publisher(Int32, roll_topic, 10)
         self.publisher_ = self.create_publisher(Posture, 'human_posture', 10)
         self.bb_pub = self.create_publisher(BoundingBox2D, 'person_bounding_box', 10)
         self.image_pub = self.create_publisher(Image, 'bb_box/Image_raw', 10)
         self.image_info_pub = self.create_publisher(CameraInfo, 'bb_box/camera_info', 10)
+        self.status_pub = self.create_publisher(Int32, '/posture_status', 10)
+        self.check_timer = self.create_timer(1.0, self.timer_callback)
+        self.region_subscription = self.create_subscription(String, '/current_region', self.region_callback, 10)
         
         self.bridge = CvBridge()
         self.center_pose = Pose2D()
@@ -79,6 +85,8 @@ class MediaPipeTrackerNode(Node):
         # --- Multiple Frame Debouncing ---
         self.lying_down_frame_count = 0
         self.LYING_DOWN_FRAME_TRIGGER = 20 # Requires 15 consecutive frames of lying down
+        self.status = "Unknown"
+        self.data_recieved = False
 
     def image_callback(self, msg):
         try:
@@ -137,7 +145,10 @@ class MediaPipeTrackerNode(Node):
             
             if self.lying_down_frame_count >= self.LYING_DOWN_FRAME_TRIGGER:
                 self.send_notification()
+                self.status_pub.publish(Int32(data=1)) # 1 indicates lying down detected
                 self.lying_down_frame_count = 0 # Reset after sending
+            else:
+                self.status_pub.publish(Int32(data=0)) # 0 indicates normal posture or not lying down   
             
 
             landmarks = results.pose_landmarks.landmark
@@ -168,18 +179,19 @@ class MediaPipeTrackerNode(Node):
 
                 if self.enable_visualization:
                     cv2.circle(cv_image, (target_x, target_y), 7, (255, 0, 0), -1) # Blue for tracking
+
             else:
                 # State: Target present but obscured. Command is 3 (Hold Position).
-                pitch_cmd.data = 3
-                roll_cmd.data = 3
+                pitch_cmd.data = 2
+                roll_cmd.data = 2
                 self.get_logger().info('Pose detected, but eyes not visible. Publishing hold command (3).', throttle_duration_sec=2)
 
             if self.enable_visualization:
                 self.mp_drawing.draw_landmarks(
                     cv_image, results.pose_landmarks, self.mp_pose.POSE_CONNECTIONS)
                 self.process_frame_and_publish_bbox(landmarks, cv_image, height, width)
-                #self.process_frame_and_publish_bbox(landmarks, cv_image, height, width)
-                
+                cv2.putText(cv_image, f'Status: {self.status}', (10, 50), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)     
         
         else:
             # This 'else' corresponds to 'if results.pose_landmarks:'
@@ -310,7 +322,7 @@ class MediaPipeTrackerNode(Node):
                     f"https://ntfy.sh/{self.NTFY_TOPIC}",
                     data="Fall detected! A person is lying down.".encode(encoding='utf-8'),
                     headers={
-                        "Title": "TurtleBot Alert: Possible Fall Detected",
+                        "Title": "HospibotBot Alert: Possible Fall Detected in %s" % self.region,
                         "Priority": "urgent",
                         "Tags": "warning,rotating_light",
                         #"Attach": sound_url,
@@ -321,7 +333,19 @@ class MediaPipeTrackerNode(Node):
                 self.get_logger().error(f"Could not send notification: {e}")
         else:
             self.get_logger().info('Lying down detected, but in notification cooldown period.')
-    
+
+    def breathing_points(self, msg):
+        self.data_recieved = True
+
+    def timer_callback(self):
+        if self.data_recieved:
+            self.status = "breathing"
+            self.data_recieved = False
+        else:
+            self.status = "No breathing"
+
+    def region_callback(self, msg):
+        self.region = msg.data
 
 
 
