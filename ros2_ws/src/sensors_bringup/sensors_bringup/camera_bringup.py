@@ -8,6 +8,7 @@ from sensor_msgs_py import point_cloud2
 from cv_bridge import CvBridge
 from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud
 import image_geometry
+import numpy as np
 
 
 
@@ -19,17 +20,31 @@ class Camera(Node):
             Image , "/hospibot/image_raw", 10)
         self.pub = self.create_publisher(CameraInfo, '/hospibot/camera_info', 10)
         self.bridge = CvBridge()
-        self.cap = cv2.VideoCapture('/dev/video6')  # Open the thermalcamera
+        self.cap = cv2.VideoCapture('/dev/video4')  # Open the thermalcamera
         
+        camera_matrix = np.array([
+            [262.45607046, 0.0, 98.71235158],
+            [0.0, 260.0900099, 120.74086798],
+            [0.0,   0.0,   1.0]
+        ], dtype=np.float32)
+
+        # Distortion Coefficients (D) in the format: [k1, k2, p1, p2, k3]
+        # k1, k2, k3: radial distortion coefficients
+        # p1, p2: tangential distortion coefficients
+        dist_coeffs = np.array([-0.22447367, 0.01457183, -0.00027492, -0.01633117, 0.07505037], dtype=np.float32)
         self.msg = CameraInfo()
         self.msg.header.frame_id = "thermal_camera_link"
         self.msg.width = 256
         self.msg.height = 192
-        self.msg.k = [267.0, 0.0, 128.0, 0.0, 267.0, 99.0, 0.0, 0.0, 1.0]
-        self.msg.p = [267.0, 0.0, 128.0, 0.0, 0.0, 267.0, 99.0, 0.0, 0.0, 0.0, 1.0, 0.0]
-        #self.msg.distortion_model = "plumb_bob"
+        self.msg.k = camera_matrix.flatten().tolist()  #[267.0, 0.0, 128.0, 0.0, 267.0, 99.0, 0.0, 0.0, 1.0]
+        self.msg.p = self.msg.p = [
+            camera_matrix[0,0], camera_matrix[0,1], camera_matrix[0,2], 0.0,
+            camera_matrix[1,0], camera_matrix[1,1], camera_matrix[1,2], 0.0,
+            camera_matrix[2,0], camera_matrix[2,1], camera_matrix[2,2], 0.0
+        ] # [267.0, 0.0, 128.0, 0.0, 0.0, 267.0, 99.0, 0.0, 0.0, 0.0, 1.0, 0.0]
+        self.msg.distortion_model = "plumb_bob"
         #self.msg.d = [0.0, 0.0, 0.0, 0.0, 0.0]
-        
+        self.msg.d = dist_coeffs.tolist()
         self.timer= self.create_timer(0.04, self.publish_image)
         if not self.cap.isOpened():
             self.get_logger().error("Failed to open video capture")
