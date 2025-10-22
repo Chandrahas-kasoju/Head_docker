@@ -36,13 +36,12 @@ class Camera(Node):
         self.msg.header.frame_id = "thermal_camera_link"
         self.msg.width = 256
         self.msg.height = 192
-        self.msg.k = camera_matrix.flatten().tolist()  #[267.0, 0.0, 128.0, 0.0, 267.0, 99.0, 0.0, 0.0, 1.0]
-        self.msg.p = self.msg.p = [
-            camera_matrix[0,0], camera_matrix[0,1], camera_matrix[0,2], 0.0,
-            camera_matrix[1,0], camera_matrix[1,1], camera_matrix[1,2], 0.0,
-            camera_matrix[2,0], camera_matrix[2,1], camera_matrix[2,2], 0.0,
-            0.0, 0.0, 0.0, 1.0
-        ] # [267.0, 0.0, 128.0, 0.0, 0.0, 267.0, 99.0, 0.0, 0.0, 0.0, 1.0, 0.0]
+        self.msg.k = [262.45607046, 0.0, 98.71235158,
+                 0.0, 260.0900099, 120.74086798,
+                 0.0, 0.0, 1.0]  #[267.0, 0.0, 128.0, 0.0, 267.0, 99.0, 0.0, 0.0, 1.0]
+        self.msg.p = [262.45607046, 0.0, 98.71235158, 0.0,
+                 0.0, 260.0900099, 120.74086798, 0.0,
+                 0.0, 0.0, 1.0, 0.0] # [267.0, 0.0, 128.0, 0.0, 0.0, 267.0, 99.0, 0.0, 0.0, 0.0, 1.0, 0.0]
         self.msg.distortion_model = "plumb_bob"
         #self.msg.d = [0.0, 0.0, 0.0, 0.0, 0.0]
         self.msg.d = dist_coeffs.tolist()
