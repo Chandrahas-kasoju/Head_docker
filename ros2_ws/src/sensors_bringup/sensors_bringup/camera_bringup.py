@@ -40,7 +40,8 @@ class Camera(Node):
         self.msg.p = self.msg.p = [
             camera_matrix[0,0], camera_matrix[0,1], camera_matrix[0,2], 0.0,
             camera_matrix[1,0], camera_matrix[1,1], camera_matrix[1,2], 0.0,
-            camera_matrix[2,0], camera_matrix[2,1], camera_matrix[2,2], 0.0
+            camera_matrix[2,0], camera_matrix[2,1], camera_matrix[2,2], 0.0,
+            0.0, 0.0, 0.0, 1.0
         ] # [267.0, 0.0, 128.0, 0.0, 0.0, 267.0, 99.0, 0.0, 0.0, 0.0, 1.0, 0.0]
         self.msg.distortion_model = "plumb_bob"
         #self.msg.d = [0.0, 0.0, 0.0, 0.0, 0.0]
