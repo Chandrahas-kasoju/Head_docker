@@ -59,7 +59,7 @@ class Camera(Node):
         top_half = frame[:height, :] 
         top_flipped = cv2.flip(top_half, 0)
         top_flipped = cv2.flip(top_flipped, 1)
-        ros_image = self.bridge.cv2_to_imgmsg(top_flipped, encoding="bgr8")
+        ros_image = self.bridge.cv2_to_imgmsg(top_flipped, encoding="mono8")
         stamp = self.get_clock().now().to_msg()
         ros_image.header.stamp = stamp
         self.msg.header.stamp = stamp
