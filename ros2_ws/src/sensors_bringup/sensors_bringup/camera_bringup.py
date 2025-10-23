@@ -60,9 +60,11 @@ class Camera(Node):
         top_flipped = cv2.flip(top_half, 0)
         top_flipped = cv2.flip(top_flipped, 1)
         ros_image = self.bridge.cv2_to_imgmsg(top_flipped, encoding="bgr8")
-        ros_image.header.stamp = self.get_clock().now().to_msg()
-        self.msg.header.stamp = ros_image.header.stamp
+        stamp = self.get_clock().now().to_msg()
+        ros_image.header.stamp = stamp
+        self.msg.header.stamp = stamp
         ros_image.header.frame_id = "thermal_camera_link"
+        self.msg.header.frame_id = "thermal_camera_link"
         self.det_pub.publish(ros_image)
         self.pub.publish(self.msg)
 
