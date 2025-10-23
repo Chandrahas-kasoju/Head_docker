@@ -17,7 +17,7 @@ class Camera(Node):
     def __init__(self):
         super().__init__("camera_node")
         self.det_pub = self.create_publisher(
-            Image , "/hospibot/image", 10)
+            Image , "/hospibot/image_raw", 10)
         self.pub = self.create_publisher(CameraInfo, '/hospibot/camera_info', 10)
         self.bridge = CvBridge()
         self.cap = cv2.VideoCapture('/dev/video6')  # Open the thermalcamera
