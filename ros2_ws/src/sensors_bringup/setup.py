@@ -28,6 +28,7 @@ setup(
             'static_transform = sensors_bringup.static_transform:main',
             'person_points = sensors_bringup.person_points:main',
             'camera_bringup = sensors_bringup.camera_bringup:main',
+            'undistort = sensors_bringup.undistort:main',
         ],
     },
 )
