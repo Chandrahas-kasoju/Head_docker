@@ -25,7 +25,7 @@ class ImageRectifierNode(Node):
 
         # Create subscribers for the raw image and camera info topics
         # These subscribers are for the message_filters
-        image_sub = message_filters.Subscriber(self, Image, '/hospibot/image')
+        image_sub = message_filters.Subscriber(self, Image, '/hospibot/image_raw')
         info_sub = message_filters.Subscriber(self, CameraInfo, '/hospibot/camera_info')
 
         # Synchronize the image and camera info topics using an approximate time synchronizer
