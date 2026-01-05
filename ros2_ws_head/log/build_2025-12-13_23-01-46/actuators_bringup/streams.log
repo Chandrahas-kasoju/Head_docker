@@ -1,0 +1,28 @@
+[0.685s] Invoking command in '/home/docker_user/ros2_ws_head/build/actuators_bringup': PYTHONPATH=/home/docker_user/ros2_ws_head/build/actuators_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/actuators_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/docker_user/ros2_ws_head/build/actuators_bringup/build --no-deps symlink_data
+[0.869s] running develop
+[0.931s] running egg_info
+[0.931s] creating actuators_bringup.egg-info
+[0.931s] writing actuators_bringup.egg-info/PKG-INFO
+[0.931s] writing dependency_links to actuators_bringup.egg-info/dependency_links.txt
+[0.931s] writing entry points to actuators_bringup.egg-info/entry_points.txt
+[0.932s] writing requirements to actuators_bringup.egg-info/requires.txt
+[0.932s] writing top-level names to actuators_bringup.egg-info/top_level.txt
+[0.932s] writing manifest file 'actuators_bringup.egg-info/SOURCES.txt'
+[0.933s] reading manifest file 'actuators_bringup.egg-info/SOURCES.txt'
+[0.933s] writing manifest file 'actuators_bringup.egg-info/SOURCES.txt'
+[0.934s] running build_ext
+[0.935s] Creating /home/docker_user/ros2_ws_head/install/actuators_bringup/lib/python3.10/site-packages/actuators-bringup.egg-link (link to .)
+[0.935s] Installing actuators script to /home/docker_user/ros2_ws_head/install/actuators_bringup/lib/actuators_bringup
+[0.936s] 
+[0.936s] Installed /home/docker_user/ros2_ws_head/build/actuators_bringup
+[0.936s] running symlink_data
+[0.936s] creating /home/docker_user/ros2_ws_head/install/actuators_bringup/share/ament_index
+[0.936s] creating /home/docker_user/ros2_ws_head/install/actuators_bringup/share/ament_index/resource_index
+[0.936s] creating /home/docker_user/ros2_ws_head/install/actuators_bringup/share/ament_index/resource_index/packages
+[0.936s] symbolically linking /home/docker_user/ros2_ws_head/build/actuators_bringup/resource/actuators_bringup -> /home/docker_user/ros2_ws_head/install/actuators_bringup/share/ament_index/resource_index/packages
+[0.936s] symbolically linking /home/docker_user/ros2_ws_head/build/actuators_bringup/package.xml -> /home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup
+[0.936s] creating /home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/config
+[0.936s] symbolically linking /home/docker_user/ros2_ws_head/build/actuators_bringup/config/actuators_bringup_params.yaml -> /home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/config
+[0.937s] creating /home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/launch
+[0.937s] symbolically linking /home/docker_user/ros2_ws_head/build/actuators_bringup/launch/actuators_bringup_launch.py -> /home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/launch
+[0.964s] Invoked command in '/home/docker_user/ros2_ws_head/build/actuators_bringup' returned '0': PYTHONPATH=/home/docker_user/ros2_ws_head/build/actuators_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/actuators_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/docker_user/ros2_ws_head/build/actuators_bringup/build --no-deps symlink_data

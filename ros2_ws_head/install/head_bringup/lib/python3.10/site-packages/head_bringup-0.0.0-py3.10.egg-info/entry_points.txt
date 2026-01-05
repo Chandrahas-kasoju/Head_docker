@@ -1,0 +1,3 @@
+[console_scripts]
+face = head_bringup.face:main
+

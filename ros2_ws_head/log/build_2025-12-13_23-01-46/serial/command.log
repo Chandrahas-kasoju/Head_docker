@@ -1,0 +1,6 @@
+Invoking command in '/home/docker_user/ros2_ws_head/build/serial': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/docker_user/ros2_ws_head/src/ros2_driver/src/serial-ros2-master -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/docker_user/ros2_ws_head/install/serial
+Invoked command in '/home/docker_user/ros2_ws_head/build/serial' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/docker_user/ros2_ws_head/src/ros2_driver/src/serial-ros2-master -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/docker_user/ros2_ws_head/install/serial
+Invoking command in '/home/docker_user/ros2_ws_head/build/serial': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/docker_user/ros2_ws_head/build/serial -- -j16 -l16
+Invoked command in '/home/docker_user/ros2_ws_head/build/serial' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/docker_user/ros2_ws_head/build/serial -- -j16 -l16
+Invoking command in '/home/docker_user/ros2_ws_head/build/serial': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/docker_user/ros2_ws_head/build/serial
+Invoked command in '/home/docker_user/ros2_ws_head/build/serial' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/docker_user/ros2_ws_head/build/serial

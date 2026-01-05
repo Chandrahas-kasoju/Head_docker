@@ -1,0 +1,4 @@
+# generated from rosidl_cmake/cmake/rosidl_cmake-extras.cmake.in
+
+set(ti_mmwave_rospkg_msgs_IDL_FILES "msg/RadarScan.idl;msg/RadarOccupancy.idl;msg/RadarClassifier.idl;msg/RadarTrackArray.idl;msg/RadarTrackContents.idl;msg/RadarPointTrackID.idl;msg/RadarMicroDopplerDataArray.idl;msg/RadarMicroDopplerDataContents.idl;msg/RadarMicroDopplerFeatureArray.idl;msg/RadarMicroDopplerFeatureContents.idl;srv/MmwaveCli.idl")
+set(ti_mmwave_rospkg_msgs_INTERFACE_FILES "msg/RadarScan.msg;msg/RadarOccupancy.msg;msg/RadarClassifier.msg;msg/RadarTrackArray.msg;msg/RadarTrackContents.msg;msg/RadarPointTrackID.msg;msg/RadarMicroDopplerDataArray.msg;msg/RadarMicroDopplerDataContents.msg;msg/RadarMicroDopplerFeatureArray.msg;msg/RadarMicroDopplerFeatureContents.msg;srv/MmwaveCli.srv;srv/MmwaveCli_Request.msg;srv/MmwaveCli_Response.msg")

@@ -1,0 +1,10 @@
+/home/docker_user/ros2_ws_head/build/serial/CMakeFiles/uninstall.dir
+/home/docker_user/ros2_ws_head/build/serial/CMakeFiles/serial_uninstall.dir
+/home/docker_user/ros2_ws_head/build/serial/CMakeFiles/serial.dir
+/home/docker_user/ros2_ws_head/build/serial/CMakeFiles/test.dir
+/home/docker_user/ros2_ws_head/build/serial/CMakeFiles/edit_cache.dir
+/home/docker_user/ros2_ws_head/build/serial/CMakeFiles/rebuild_cache.dir
+/home/docker_user/ros2_ws_head/build/serial/CMakeFiles/list_install_components.dir
+/home/docker_user/ros2_ws_head/build/serial/CMakeFiles/install.dir
+/home/docker_user/ros2_ws_head/build/serial/CMakeFiles/install/local.dir
+/home/docker_user/ros2_ws_head/build/serial/CMakeFiles/install/strip.dir

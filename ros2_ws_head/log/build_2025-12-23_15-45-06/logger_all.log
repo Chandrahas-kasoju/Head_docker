@@ -1,0 +1,604 @@
+[0.095s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.095s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=28, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x7f059322f520>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7f059322ef50>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7f059322ef50>>, mixin_verb=('build',))
+[0.174s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.174s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.174s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.174s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.174s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.174s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.174s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/docker_user/ros2_ws_head'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuators_bringup) by extensions ['ignore', 'ignore_ament_install']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuators_bringup) by extension 'ignore'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuators_bringup) by extension 'ignore_ament_install'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuators_bringup) by extensions ['colcon_pkg']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuators_bringup) by extension 'colcon_pkg'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuators_bringup) by extensions ['colcon_meta']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuators_bringup) by extension 'colcon_meta'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuators_bringup) by extensions ['ros']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuators_bringup) by extension 'ros'
+[0.185s] DEBUG:colcon.colcon_core.package_identification:Package 'src/actuators_bringup' with type 'ros.ament_python' and name 'actuators_bringup'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(src/face_tracker) by extensions ['ignore', 'ignore_ament_install']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(src/face_tracker) by extension 'ignore'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(src/face_tracker) by extension 'ignore_ament_install'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(src/face_tracker) by extensions ['colcon_pkg']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(src/face_tracker) by extension 'colcon_pkg'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(src/face_tracker) by extensions ['colcon_meta']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(src/face_tracker) by extension 'colcon_meta'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(src/face_tracker) by extensions ['ros']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(src/face_tracker) by extension 'ros'
+[0.186s] DEBUG:colcon.colcon_core.package_identification:Package 'src/face_tracker' with type 'ros.ament_python' and name 'face_tracker'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/head_bringup) by extensions ['ignore', 'ignore_ament_install']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/head_bringup) by extension 'ignore'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/head_bringup) by extension 'ignore_ament_install'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/head_bringup) by extensions ['colcon_pkg']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/head_bringup) by extension 'colcon_pkg'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/head_bringup) by extensions ['colcon_meta']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/head_bringup) by extension 'colcon_meta'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/head_bringup) by extensions ['ros']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/head_bringup) by extension 'ros'
+[0.186s] DEBUG:colcon.colcon_core.package_identification:Package 'src/head_bringup' with type 'ros.ament_python' and name 'head_bringup'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/posture_analysis_msgs) by extensions ['ignore', 'ignore_ament_install']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/posture_analysis_msgs) by extension 'ignore'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/posture_analysis_msgs) by extension 'ignore_ament_install'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/posture_analysis_msgs) by extensions ['colcon_pkg']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/posture_analysis_msgs) by extension 'colcon_pkg'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/posture_analysis_msgs) by extensions ['colcon_meta']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/posture_analysis_msgs) by extension 'colcon_meta'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/posture_analysis_msgs) by extensions ['ros']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(src/posture_analysis_msgs) by extension 'ros'
+[0.187s] DEBUG:colcon.colcon_core.package_identification:Package 'src/posture_analysis_msgs' with type 'ros.ament_cmake' and name 'posture_analysis_msgs'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extensions ['ignore', 'ignore_ament_install']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extension 'ignore'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extension 'ignore_ament_install'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extensions ['colcon_pkg']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extension 'colcon_pkg'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extensions ['colcon_meta']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extension 'colcon_meta'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extensions ['ros']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extension 'ros'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extensions ['cmake', 'python']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extension 'cmake'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extension 'python'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extensions ['python_setup_py']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver) by extension 'python_setup_py'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extensions ['ignore', 'ignore_ament_install']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extension 'ignore'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extension 'ignore_ament_install'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extensions ['colcon_pkg']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extension 'colcon_pkg'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extensions ['colcon_meta']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extension 'colcon_meta'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extensions ['ros']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extension 'ros'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extensions ['cmake', 'python']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extension 'cmake'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extension 'python'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extensions ['python_setup_py']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src) by extension 'python_setup_py'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/serial-ros2-master) by extensions ['ignore', 'ignore_ament_install']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/serial-ros2-master) by extension 'ignore'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/serial-ros2-master) by extension 'ignore_ament_install'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/serial-ros2-master) by extensions ['colcon_pkg']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/serial-ros2-master) by extension 'colcon_pkg'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/serial-ros2-master) by extensions ['colcon_meta']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/serial-ros2-master) by extension 'colcon_meta'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/serial-ros2-master) by extensions ['ros']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/serial-ros2-master) by extension 'ros'
+[0.188s] DEBUG:colcon.colcon_core.package_identification:Package 'src/ros2_driver/src/serial-ros2-master' with type 'ros.ament_cmake' and name 'serial'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg) by extensions ['ignore', 'ignore_ament_install']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg) by extension 'ignore'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg) by extension 'ignore_ament_install'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg) by extensions ['colcon_pkg']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg) by extension 'colcon_pkg'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg) by extensions ['colcon_meta']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg) by extension 'colcon_meta'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg) by extensions ['ros']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg) by extension 'ros'
+[0.189s] DEBUG:colcon.colcon_core.package_identification:Package 'src/ros2_driver/src/ti_mmwave_rospkg' with type 'ros.ament_cmake' and name 'ti_mmwave_rospkg'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg_msgs) by extensions ['ignore', 'ignore_ament_install']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg_msgs) by extension 'ignore'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg_msgs) by extension 'ignore_ament_install'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg_msgs) by extensions ['colcon_pkg']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg_msgs) by extension 'colcon_pkg'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg_msgs) by extensions ['colcon_meta']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg_msgs) by extension 'colcon_meta'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg_msgs) by extensions ['ros']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(src/ros2_driver/src/ti_mmwave_rospkg_msgs) by extension 'ros'
+[0.190s] DEBUG:colcon.colcon_core.package_identification:Package 'src/ros2_driver/src/ti_mmwave_rospkg_msgs' with type 'ros.ament_cmake' and name 'ti_mmwave_rospkg_msgs'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(src/sensors_bringup) by extensions ['ignore', 'ignore_ament_install']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(src/sensors_bringup) by extension 'ignore'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(src/sensors_bringup) by extension 'ignore_ament_install'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(src/sensors_bringup) by extensions ['colcon_pkg']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(src/sensors_bringup) by extension 'colcon_pkg'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(src/sensors_bringup) by extensions ['colcon_meta']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(src/sensors_bringup) by extension 'colcon_meta'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(src/sensors_bringup) by extensions ['ros']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(src/sensors_bringup) by extension 'ros'
+[0.190s] DEBUG:colcon.colcon_core.package_identification:Package 'src/sensors_bringup' with type 'ros.ament_python' and name 'sensors_bringup'
+[0.190s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.190s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.190s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.190s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.190s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.206s] Level 5:colcon.colcon_core.verb:set package 'actuators_bringup' build argument 'cmake_args' from command line to 'None'
+[0.206s] Level 5:colcon.colcon_core.verb:set package 'actuators_bringup' build argument 'cmake_target' from command line to 'None'
+[0.206s] Level 5:colcon.colcon_core.verb:set package 'actuators_bringup' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.206s] Level 5:colcon.colcon_core.verb:set package 'actuators_bringup' build argument 'cmake_clean_cache' from command line to 'False'
+[0.206s] Level 5:colcon.colcon_core.verb:set package 'actuators_bringup' build argument 'cmake_clean_first' from command line to 'False'
+[0.206s] Level 5:colcon.colcon_core.verb:set package 'actuators_bringup' build argument 'cmake_force_configure' from command line to 'False'
+[0.206s] Level 5:colcon.colcon_core.verb:set package 'actuators_bringup' build argument 'ament_cmake_args' from command line to 'None'
+[0.206s] Level 5:colcon.colcon_core.verb:set package 'actuators_bringup' build argument 'catkin_cmake_args' from command line to 'None'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'actuators_bringup' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.207s] DEBUG:colcon.colcon_core.verb:Building package 'actuators_bringup' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/docker_user/ros2_ws_head/build/actuators_bringup', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/docker_user/ros2_ws_head/install/actuators_bringup', 'merge_install': False, 'path': '/home/docker_user/ros2_ws_head/src/actuators_bringup', 'symlink_install': False, 'test_result_base': None}
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'head_bringup' build argument 'cmake_args' from command line to 'None'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'head_bringup' build argument 'cmake_target' from command line to 'None'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'head_bringup' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'head_bringup' build argument 'cmake_clean_cache' from command line to 'False'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'head_bringup' build argument 'cmake_clean_first' from command line to 'False'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'head_bringup' build argument 'cmake_force_configure' from command line to 'False'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'head_bringup' build argument 'ament_cmake_args' from command line to 'None'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'head_bringup' build argument 'catkin_cmake_args' from command line to 'None'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'head_bringup' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.207s] DEBUG:colcon.colcon_core.verb:Building package 'head_bringup' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/docker_user/ros2_ws_head/build/head_bringup', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/docker_user/ros2_ws_head/install/head_bringup', 'merge_install': False, 'path': '/home/docker_user/ros2_ws_head/src/head_bringup', 'symlink_install': False, 'test_result_base': None}
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'posture_analysis_msgs' build argument 'cmake_args' from command line to 'None'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'posture_analysis_msgs' build argument 'cmake_target' from command line to 'None'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'posture_analysis_msgs' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'posture_analysis_msgs' build argument 'cmake_clean_cache' from command line to 'False'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'posture_analysis_msgs' build argument 'cmake_clean_first' from command line to 'False'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'posture_analysis_msgs' build argument 'cmake_force_configure' from command line to 'False'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'posture_analysis_msgs' build argument 'ament_cmake_args' from command line to 'None'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'posture_analysis_msgs' build argument 'catkin_cmake_args' from command line to 'None'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'posture_analysis_msgs' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.207s] DEBUG:colcon.colcon_core.verb:Building package 'posture_analysis_msgs' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/docker_user/ros2_ws_head/build/posture_analysis_msgs', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs', 'merge_install': False, 'path': '/home/docker_user/ros2_ws_head/src/posture_analysis_msgs', 'symlink_install': False, 'test_result_base': None}
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'sensors_bringup' build argument 'cmake_args' from command line to 'None'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'sensors_bringup' build argument 'cmake_target' from command line to 'None'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'sensors_bringup' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'sensors_bringup' build argument 'cmake_clean_cache' from command line to 'False'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'sensors_bringup' build argument 'cmake_clean_first' from command line to 'False'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'sensors_bringup' build argument 'cmake_force_configure' from command line to 'False'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'sensors_bringup' build argument 'ament_cmake_args' from command line to 'None'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'sensors_bringup' build argument 'catkin_cmake_args' from command line to 'None'
+[0.207s] Level 5:colcon.colcon_core.verb:set package 'sensors_bringup' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.207s] DEBUG:colcon.colcon_core.verb:Building package 'sensors_bringup' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/docker_user/ros2_ws_head/build/sensors_bringup', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/docker_user/ros2_ws_head/install/sensors_bringup', 'merge_install': False, 'path': '/home/docker_user/ros2_ws_head/src/sensors_bringup', 'symlink_install': False, 'test_result_base': None}
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'serial' build argument 'cmake_args' from command line to 'None'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'serial' build argument 'cmake_target' from command line to 'None'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'serial' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'serial' build argument 'cmake_clean_cache' from command line to 'False'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'serial' build argument 'cmake_clean_first' from command line to 'False'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'serial' build argument 'cmake_force_configure' from command line to 'False'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'serial' build argument 'ament_cmake_args' from command line to 'None'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'serial' build argument 'catkin_cmake_args' from command line to 'None'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'serial' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.208s] DEBUG:colcon.colcon_core.verb:Building package 'serial' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/docker_user/ros2_ws_head/build/serial', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/docker_user/ros2_ws_head/install/serial', 'merge_install': False, 'path': '/home/docker_user/ros2_ws_head/src/ros2_driver/src/serial-ros2-master', 'symlink_install': False, 'test_result_base': None}
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg_msgs' build argument 'cmake_args' from command line to 'None'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg_msgs' build argument 'cmake_target' from command line to 'None'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg_msgs' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg_msgs' build argument 'cmake_clean_cache' from command line to 'False'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg_msgs' build argument 'cmake_clean_first' from command line to 'False'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg_msgs' build argument 'cmake_force_configure' from command line to 'False'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg_msgs' build argument 'ament_cmake_args' from command line to 'None'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg_msgs' build argument 'catkin_cmake_args' from command line to 'None'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg_msgs' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.208s] DEBUG:colcon.colcon_core.verb:Building package 'ti_mmwave_rospkg_msgs' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg_msgs', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs', 'merge_install': False, 'path': '/home/docker_user/ros2_ws_head/src/ros2_driver/src/ti_mmwave_rospkg_msgs', 'symlink_install': False, 'test_result_base': None}
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'face_tracker' build argument 'cmake_args' from command line to 'None'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'face_tracker' build argument 'cmake_target' from command line to 'None'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'face_tracker' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'face_tracker' build argument 'cmake_clean_cache' from command line to 'False'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'face_tracker' build argument 'cmake_clean_first' from command line to 'False'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'face_tracker' build argument 'cmake_force_configure' from command line to 'False'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'face_tracker' build argument 'ament_cmake_args' from command line to 'None'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'face_tracker' build argument 'catkin_cmake_args' from command line to 'None'
+[0.208s] Level 5:colcon.colcon_core.verb:set package 'face_tracker' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.208s] DEBUG:colcon.colcon_core.verb:Building package 'face_tracker' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/docker_user/ros2_ws_head/build/face_tracker', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/docker_user/ros2_ws_head/install/face_tracker', 'merge_install': False, 'path': '/home/docker_user/ros2_ws_head/src/face_tracker', 'symlink_install': False, 'test_result_base': None}
+[0.209s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg' build argument 'cmake_args' from command line to 'None'
+[0.209s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg' build argument 'cmake_target' from command line to 'None'
+[0.209s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.209s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg' build argument 'cmake_clean_cache' from command line to 'False'
+[0.209s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg' build argument 'cmake_clean_first' from command line to 'False'
+[0.209s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg' build argument 'cmake_force_configure' from command line to 'False'
+[0.209s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg' build argument 'ament_cmake_args' from command line to 'None'
+[0.209s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg' build argument 'catkin_cmake_args' from command line to 'None'
+[0.209s] Level 5:colcon.colcon_core.verb:set package 'ti_mmwave_rospkg' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.209s] DEBUG:colcon.colcon_core.verb:Building package 'ti_mmwave_rospkg' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg', 'merge_install': False, 'path': '/home/docker_user/ros2_ws_head/src/ros2_driver/src/ti_mmwave_rospkg', 'symlink_install': False, 'test_result_base': None}
+[0.209s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.210s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.210s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/docker_user/ros2_ws_head/src/posture_analysis_msgs' with build type 'ament_cmake'
+[0.210s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/docker_user/ros2_ws_head/src/posture_analysis_msgs'
+[0.213s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.213s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.213s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.216s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/docker_user/ros2_ws_head/src/ros2_driver/src/serial-ros2-master' with build type 'ament_cmake'
+[0.216s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/docker_user/ros2_ws_head/src/ros2_driver/src/serial-ros2-master'
+[0.216s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.216s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.218s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/docker_user/ros2_ws_head/src/ros2_driver/src/ti_mmwave_rospkg_msgs' with build type 'ament_cmake'
+[0.218s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/docker_user/ros2_ws_head/src/ros2_driver/src/ti_mmwave_rospkg_msgs'
+[0.218s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.218s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.220s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/docker_user/ros2_ws_head/src/actuators_bringup' with build type 'ament_python'
+[0.220s] Level 1:colcon.colcon_core.shell:create_environment_hook('actuators_bringup', 'ament_prefix_path')
+[0.220s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/hook/ament_prefix_path.ps1'
+[0.221s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/hook/ament_prefix_path.dsv'
+[0.221s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/hook/ament_prefix_path.sh'
+[0.222s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.222s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.223s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/docker_user/ros2_ws_head/src/head_bringup' with build type 'ament_python'
+[0.223s] Level 1:colcon.colcon_core.shell:create_environment_hook('head_bringup', 'ament_prefix_path')
+[0.223s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup/hook/ament_prefix_path.ps1'
+[0.224s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup/hook/ament_prefix_path.dsv'
+[0.224s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup/hook/ament_prefix_path.sh'
+[0.224s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.224s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.226s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/docker_user/ros2_ws_head/src/sensors_bringup' with build type 'ament_python'
+[0.226s] Level 1:colcon.colcon_core.shell:create_environment_hook('sensors_bringup', 'ament_prefix_path')
+[0.226s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/hook/ament_prefix_path.ps1'
+[0.227s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/hook/ament_prefix_path.dsv'
+[0.227s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/hook/ament_prefix_path.sh'
+[0.227s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.227s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.232s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/posture_analysis_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake /home/docker_user/ros2_ws_head/src/posture_analysis_msgs -DCMAKE_INSTALL_PREFIX=/home/docker_user/ros2_ws_head/install/posture_analysis_msgs
+[0.234s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/serial': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake /home/docker_user/ros2_ws_head/src/ros2_driver/src/serial-ros2-master -DCMAKE_INSTALL_PREFIX=/home/docker_user/ros2_ws_head/install/serial
+[0.235s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake /home/docker_user/ros2_ws_head/src/ros2_driver/src/ti_mmwave_rospkg_msgs -DCMAKE_INSTALL_PREFIX=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs
+[0.368s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/docker_user/ros2_ws_head/src/actuators_bringup'
+[0.369s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.369s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.497s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/docker_user/ros2_ws_head/src/head_bringup'
+[0.497s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.497s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.627s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/docker_user/ros2_ws_head/src/sensors_bringup'
+[0.628s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.628s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.633s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/serial' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake /home/docker_user/ros2_ws_head/src/ros2_driver/src/serial-ros2-master -DCMAKE_INSTALL_PREFIX=/home/docker_user/ros2_ws_head/install/serial
+[0.633s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/serial': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake --build /home/docker_user/ros2_ws_head/build/serial -- -j28 -l28
+[0.688s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/serial' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake --build /home/docker_user/ros2_ws_head/build/serial -- -j28 -l28
+[0.697s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/serial': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake --install /home/docker_user/ros2_ws_head/build/serial
+[0.711s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(serial)
+[0.712s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/serial' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake --install /home/docker_user/ros2_ws_head/build/serial
+[0.715s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial' for CMake module files
+[0.715s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial' for CMake config files
+[0.715s] Level 1:colcon.colcon_core.shell:create_environment_hook('serial', 'cmake_prefix_path')
+[0.715s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/serial/share/serial/hook/cmake_prefix_path.ps1'
+[0.716s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/serial/share/serial/hook/cmake_prefix_path.dsv'
+[0.716s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/serial/share/serial/hook/cmake_prefix_path.sh'
+[0.716s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial/lib'
+[0.716s] Level 1:colcon.colcon_core.shell:create_environment_hook('serial', 'ld_library_path_lib')
+[0.717s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/serial/share/serial/hook/ld_library_path_lib.ps1'
+[0.717s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/serial/share/serial/hook/ld_library_path_lib.dsv'
+[0.717s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/serial/share/serial/hook/ld_library_path_lib.sh'
+[0.717s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial/bin'
+[0.717s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial/lib/pkgconfig/serial.pc'
+[0.718s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial/lib/python3.10/site-packages'
+[0.718s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial/bin'
+[0.718s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/serial/share/serial/package.ps1'
+[0.719s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/docker_user/ros2_ws_head/install/serial/share/serial/package.dsv'
+[0.719s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/serial/share/serial/package.sh'
+[0.720s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/serial/share/serial/package.bash'
+[0.720s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/serial/share/serial/package.zsh'
+[0.721s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/docker_user/ros2_ws_head/install/serial/share/colcon-core/packages/serial)
+[0.721s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(serial)
+[0.721s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial' for CMake module files
+[0.721s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial' for CMake config files
+[0.721s] Level 1:colcon.colcon_core.shell:create_environment_hook('serial', 'cmake_prefix_path')
+[0.722s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/serial/share/serial/hook/cmake_prefix_path.ps1'
+[0.722s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/serial/share/serial/hook/cmake_prefix_path.dsv'
+[0.722s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/serial/share/serial/hook/cmake_prefix_path.sh'
+[0.722s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial/lib'
+[0.722s] Level 1:colcon.colcon_core.shell:create_environment_hook('serial', 'ld_library_path_lib')
+[0.722s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/serial/share/serial/hook/ld_library_path_lib.ps1'
+[0.723s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/serial/share/serial/hook/ld_library_path_lib.dsv'
+[0.723s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/serial/share/serial/hook/ld_library_path_lib.sh'
+[0.723s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial/bin'
+[0.723s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial/lib/pkgconfig/serial.pc'
+[0.723s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial/lib/python3.10/site-packages'
+[0.723s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/serial/bin'
+[0.724s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/serial/share/serial/package.ps1'
+[0.724s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/docker_user/ros2_ws_head/install/serial/share/serial/package.dsv'
+[0.724s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/serial/share/serial/package.sh'
+[0.724s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/serial/share/serial/package.bash'
+[0.725s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/serial/share/serial/package.zsh'
+[0.725s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/docker_user/ros2_ws_head/install/serial/share/colcon-core/packages/serial)
+[0.833s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/src/sensors_bringup': PYTHONPATH=/home/docker_user/ros2_ws_head/build/sensors_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/sensors_bringup build --build-base /home/docker_user/ros2_ws_head/build/sensors_bringup/build install --record /home/docker_user/ros2_ws_head/build/sensors_bringup/install.log --single-version-externally-managed install_data
+[0.843s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/actuators_bringup': PYTHONPATH=/home/docker_user/ros2_ws_head/build/actuators_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/actuators_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/docker_user/ros2_ws_head/build/actuators_bringup/build
+[0.846s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/head_bringup': PYTHONPATH=/home/docker_user/ros2_ws_head/build/head_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/head_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/docker_user/ros2_ws_head/build/head_bringup/build
+[0.967s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/posture_analysis_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake /home/docker_user/ros2_ws_head/src/posture_analysis_msgs -DCMAKE_INSTALL_PREFIX=/home/docker_user/ros2_ws_head/install/posture_analysis_msgs
+[0.968s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/posture_analysis_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake --build /home/docker_user/ros2_ws_head/build/posture_analysis_msgs -- -j28 -l28
+[0.991s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/sensors_bringup' for CMake module files
+[0.991s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/src/sensors_bringup' returned '0': PYTHONPATH=/home/docker_user/ros2_ws_head/build/sensors_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/sensors_bringup build --build-base /home/docker_user/ros2_ws_head/build/sensors_bringup/build install --record /home/docker_user/ros2_ws_head/build/sensors_bringup/install.log --single-version-externally-managed install_data
+[0.992s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/sensors_bringup' for CMake config files
+[0.992s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/sensors_bringup/lib'
+[0.992s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/sensors_bringup/bin'
+[0.992s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/sensors_bringup/lib/pkgconfig/sensors_bringup.pc'
+[0.992s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages'
+[0.992s] Level 1:colcon.colcon_core.shell:create_environment_hook('sensors_bringup', 'pythonpath')
+[0.992s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/hook/pythonpath.ps1'
+[0.993s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/hook/pythonpath.dsv'
+[0.993s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/hook/pythonpath.sh'
+[0.993s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/sensors_bringup/bin'
+[0.993s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(sensors_bringup)
+[0.993s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/package.ps1'
+[0.994s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/package.dsv'
+[0.994s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/package.sh'
+[0.994s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/package.bash'
+[0.994s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/package.zsh'
+[0.995s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/docker_user/ros2_ws_head/install/sensors_bringup/share/colcon-core/packages/sensors_bringup)
+[1.058s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/head_bringup' returned '0': PYTHONPATH=/home/docker_user/ros2_ws_head/build/head_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/head_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/docker_user/ros2_ws_head/build/head_bringup/build
+[1.060s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/src/head_bringup': PYTHONPATH=/home/docker_user/ros2_ws_head/build/head_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/head_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/head_bringup build --build-base /home/docker_user/ros2_ws_head/build/head_bringup/build install --record /home/docker_user/ros2_ws_head/build/head_bringup/install.log --single-version-externally-managed install_data --force
+[1.061s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/actuators_bringup' returned '0': PYTHONPATH=/home/docker_user/ros2_ws_head/build/actuators_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/actuators_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/docker_user/ros2_ws_head/build/actuators_bringup/build
+[1.062s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/src/actuators_bringup': PYTHONPATH=/home/docker_user/ros2_ws_head/build/actuators_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/actuators_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/actuators_bringup build --build-base /home/docker_user/ros2_ws_head/build/actuators_bringup/build install --record /home/docker_user/ros2_ws_head/build/actuators_bringup/install.log --single-version-externally-managed install_data --force
+[1.178s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/posture_analysis_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake --build /home/docker_user/ros2_ws_head/build/posture_analysis_msgs -- -j28 -l28
+[1.180s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/posture_analysis_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake --install /home/docker_user/ros2_ws_head/build/posture_analysis_msgs
+[1.211s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/actuators_bringup' for CMake module files
+[1.211s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/src/actuators_bringup' returned '0': PYTHONPATH=/home/docker_user/ros2_ws_head/build/actuators_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/actuators_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/actuators_bringup build --build-base /home/docker_user/ros2_ws_head/build/actuators_bringup/build install --record /home/docker_user/ros2_ws_head/build/actuators_bringup/install.log --single-version-externally-managed install_data --force
+[1.212s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/actuators_bringup' for CMake config files
+[1.213s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/actuators_bringup/lib'
+[1.213s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/actuators_bringup/bin'
+[1.213s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/actuators_bringup/lib/pkgconfig/actuators_bringup.pc'
+[1.213s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/actuators_bringup/lib/python3.10/site-packages'
+[1.213s] Level 1:colcon.colcon_core.shell:create_environment_hook('actuators_bringup', 'pythonpath')
+[1.213s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/hook/pythonpath.ps1'
+[1.214s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/hook/pythonpath.dsv'
+[1.214s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/hook/pythonpath.sh'
+[1.215s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/actuators_bringup/bin'
+[1.215s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(actuators_bringup)
+[1.215s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/package.ps1'
+[1.216s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/package.dsv'
+[1.216s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/package.sh'
+[1.216s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/package.bash'
+[1.216s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/actuators_bringup/share/actuators_bringup/package.zsh'
+[1.217s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/docker_user/ros2_ws_head/install/actuators_bringup/share/colcon-core/packages/actuators_bringup)
+[1.222s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/head_bringup' for CMake module files
+[1.222s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/src/head_bringup' returned '0': PYTHONPATH=/home/docker_user/ros2_ws_head/build/head_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/head_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/head_bringup build --build-base /home/docker_user/ros2_ws_head/build/head_bringup/build install --record /home/docker_user/ros2_ws_head/build/head_bringup/install.log --single-version-externally-managed install_data --force
+[1.222s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/head_bringup' for CMake config files
+[1.223s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/head_bringup/lib'
+[1.223s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/head_bringup/bin'
+[1.223s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/head_bringup/lib/pkgconfig/head_bringup.pc'
+[1.223s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/head_bringup/lib/python3.10/site-packages'
+[1.223s] Level 1:colcon.colcon_core.shell:create_environment_hook('head_bringup', 'pythonpath')
+[1.223s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup/hook/pythonpath.ps1'
+[1.223s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup/hook/pythonpath.dsv'
+[1.223s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup/hook/pythonpath.sh'
+[1.224s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/head_bringup/bin'
+[1.224s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(head_bringup)
+[1.224s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup/package.ps1'
+[1.224s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup/package.dsv'
+[1.225s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup/package.sh'
+[1.225s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup/package.bash'
+[1.225s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup/package.zsh'
+[1.225s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/docker_user/ros2_ws_head/install/head_bringup/share/colcon-core/packages/head_bringup)
+[1.238s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(posture_analysis_msgs)
+[1.238s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs' for CMake module files
+[1.238s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/posture_analysis_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake --install /home/docker_user/ros2_ws_head/build/posture_analysis_msgs
+[1.239s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs' for CMake config files
+[1.239s] Level 1:colcon.colcon_core.shell:create_environment_hook('posture_analysis_msgs', 'cmake_prefix_path')
+[1.239s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/hook/cmake_prefix_path.ps1'
+[1.239s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/hook/cmake_prefix_path.dsv'
+[1.240s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/hook/cmake_prefix_path.sh'
+[1.240s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib'
+[1.240s] Level 1:colcon.colcon_core.shell:create_environment_hook('posture_analysis_msgs', 'ld_library_path_lib')
+[1.240s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/hook/ld_library_path_lib.ps1'
+[1.240s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/hook/ld_library_path_lib.dsv'
+[1.240s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/hook/ld_library_path_lib.sh'
+[1.241s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/bin'
+[1.241s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib/pkgconfig/posture_analysis_msgs.pc'
+[1.241s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib/python3.10/site-packages'
+[1.241s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/bin'
+[1.241s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/package.ps1'
+[1.241s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/package.dsv'
+[1.242s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/package.sh'
+[1.242s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/package.bash'
+[1.242s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/package.zsh'
+[1.242s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/colcon-core/packages/posture_analysis_msgs)
+[1.243s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(posture_analysis_msgs)
+[1.243s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs' for CMake module files
+[1.243s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs' for CMake config files
+[1.243s] Level 1:colcon.colcon_core.shell:create_environment_hook('posture_analysis_msgs', 'cmake_prefix_path')
+[1.243s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/hook/cmake_prefix_path.ps1'
+[1.244s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/hook/cmake_prefix_path.dsv'
+[1.244s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/hook/cmake_prefix_path.sh'
+[1.244s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib'
+[1.244s] Level 1:colcon.colcon_core.shell:create_environment_hook('posture_analysis_msgs', 'ld_library_path_lib')
+[1.244s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/hook/ld_library_path_lib.ps1'
+[1.245s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/hook/ld_library_path_lib.dsv'
+[1.245s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/hook/ld_library_path_lib.sh'
+[1.245s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/bin'
+[1.245s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib/pkgconfig/posture_analysis_msgs.pc'
+[1.245s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib/python3.10/site-packages'
+[1.245s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/bin'
+[1.245s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/package.ps1'
+[1.246s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/package.dsv'
+[1.246s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/package.sh'
+[1.246s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/package.bash'
+[1.246s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/posture_analysis_msgs/package.zsh'
+[1.247s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/share/colcon-core/packages/posture_analysis_msgs)
+[1.247s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/docker_user/ros2_ws_head/src/face_tracker' with build type 'ament_python'
+[1.247s] Level 1:colcon.colcon_core.shell:create_environment_hook('face_tracker', 'ament_prefix_path')
+[1.247s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/face_tracker/share/face_tracker/hook/ament_prefix_path.ps1'
+[1.247s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/face_tracker/share/face_tracker/hook/ament_prefix_path.dsv'
+[1.248s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/face_tracker/share/face_tracker/hook/ament_prefix_path.sh'
+[1.248s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.248s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.382s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/docker_user/ros2_ws_head/src/face_tracker'
+[1.382s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.382s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.403s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake /home/docker_user/ros2_ws_head/src/ros2_driver/src/ti_mmwave_rospkg_msgs -DCMAKE_INSTALL_PREFIX=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs
+[1.404s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake --build /home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg_msgs -- -j28 -l28
+[1.566s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/face_tracker': CMAKE_PREFIX_PATH=/home/docker_user/ros2_ws_head/install/posture_analysis_msgs:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs:/home/docker_user/ros2_ws_head/install/serial LD_LIBRARY_PATH=/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib:/home/docker_user/ros2_ws_head/install/serial/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib PYTHONPATH=/home/docker_user/ros2_ws_head/build/face_tracker/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/face_tracker/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/docker_user/ros2_ws_head/build/face_tracker/build
+[1.611s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake --build /home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg_msgs -- -j28 -l28
+[1.612s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake --install /home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg_msgs
+[1.679s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(ti_mmwave_rospkg_msgs)
+[1.679s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble /usr/bin/cmake --install /home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg_msgs
+[1.679s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs' for CMake module files
+[1.680s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs' for CMake config files
+[1.680s] Level 1:colcon.colcon_core.shell:create_environment_hook('ti_mmwave_rospkg_msgs', 'cmake_prefix_path')
+[1.680s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/hook/cmake_prefix_path.ps1'
+[1.681s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/hook/cmake_prefix_path.dsv'
+[1.681s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/hook/cmake_prefix_path.sh'
+[1.681s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib'
+[1.681s] Level 1:colcon.colcon_core.shell:create_environment_hook('ti_mmwave_rospkg_msgs', 'ld_library_path_lib')
+[1.681s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/hook/ld_library_path_lib.ps1'
+[1.682s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/hook/ld_library_path_lib.dsv'
+[1.682s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/hook/ld_library_path_lib.sh'
+[1.682s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/bin'
+[1.682s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib/pkgconfig/ti_mmwave_rospkg_msgs.pc'
+[1.682s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib/python3.10/site-packages'
+[1.682s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/bin'
+[1.682s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/package.ps1'
+[1.683s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/package.dsv'
+[1.683s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/package.sh'
+[1.683s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/package.bash'
+[1.683s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/package.zsh'
+[1.684s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/colcon-core/packages/ti_mmwave_rospkg_msgs)
+[1.684s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(ti_mmwave_rospkg_msgs)
+[1.684s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs' for CMake module files
+[1.684s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs' for CMake config files
+[1.685s] Level 1:colcon.colcon_core.shell:create_environment_hook('ti_mmwave_rospkg_msgs', 'cmake_prefix_path')
+[1.685s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/hook/cmake_prefix_path.ps1'
+[1.685s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/hook/cmake_prefix_path.dsv'
+[1.685s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/hook/cmake_prefix_path.sh'
+[1.686s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib'
+[1.686s] Level 1:colcon.colcon_core.shell:create_environment_hook('ti_mmwave_rospkg_msgs', 'ld_library_path_lib')
+[1.686s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/hook/ld_library_path_lib.ps1'
+[1.686s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/hook/ld_library_path_lib.dsv'
+[1.686s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/hook/ld_library_path_lib.sh'
+[1.686s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/bin'
+[1.686s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib/pkgconfig/ti_mmwave_rospkg_msgs.pc'
+[1.687s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib/python3.10/site-packages'
+[1.687s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/bin'
+[1.687s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/package.ps1'
+[1.687s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/package.dsv'
+[1.687s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/package.sh'
+[1.688s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/package.bash'
+[1.688s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/ti_mmwave_rospkg_msgs/package.zsh'
+[1.688s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/share/colcon-core/packages/ti_mmwave_rospkg_msgs)
+[1.688s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/docker_user/ros2_ws_head/src/ros2_driver/src/ti_mmwave_rospkg' with build type 'ament_cmake'
+[1.688s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/docker_user/ros2_ws_head/src/ros2_driver/src/ti_mmwave_rospkg'
+[1.689s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.689s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.701s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg': CMAKE_PREFIX_PATH=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs:/home/docker_user/ros2_ws_head/install/serial:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg:/home/docker_user/ros2_ws_head/install/posture_analysis_msgs:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble LD_LIBRARY_PATH=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib:/home/docker_user/ros2_ws_head/install/serial/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib:/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib /usr/bin/cmake /home/docker_user/ros2_ws_head/src/ros2_driver/src/ti_mmwave_rospkg -DCMAKE_INSTALL_PREFIX=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg
+[1.762s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/face_tracker' returned '0': CMAKE_PREFIX_PATH=/home/docker_user/ros2_ws_head/install/posture_analysis_msgs:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs:/home/docker_user/ros2_ws_head/install/serial LD_LIBRARY_PATH=/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib:/home/docker_user/ros2_ws_head/install/serial/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib PYTHONPATH=/home/docker_user/ros2_ws_head/build/face_tracker/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/face_tracker/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/docker_user/ros2_ws_head/build/face_tracker/build
+[1.764s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/src/face_tracker': CMAKE_PREFIX_PATH=/home/docker_user/ros2_ws_head/install/posture_analysis_msgs:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs:/home/docker_user/ros2_ws_head/install/serial LD_LIBRARY_PATH=/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib:/home/docker_user/ros2_ws_head/install/serial/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib PYTHONPATH=/home/docker_user/ros2_ws_head/build/face_tracker/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/face_tracker/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/face_tracker build --build-base /home/docker_user/ros2_ws_head/build/face_tracker/build install --record /home/docker_user/ros2_ws_head/build/face_tracker/install.log --single-version-externally-managed install_data --force
+[1.919s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/face_tracker' for CMake module files
+[1.920s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/src/face_tracker' returned '0': CMAKE_PREFIX_PATH=/home/docker_user/ros2_ws_head/install/posture_analysis_msgs:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs:/home/docker_user/ros2_ws_head/install/serial LD_LIBRARY_PATH=/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib:/home/docker_user/ros2_ws_head/install/serial/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib PYTHONPATH=/home/docker_user/ros2_ws_head/build/face_tracker/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/face_tracker/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/face_tracker build --build-base /home/docker_user/ros2_ws_head/build/face_tracker/build install --record /home/docker_user/ros2_ws_head/build/face_tracker/install.log --single-version-externally-managed install_data --force
+[1.920s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/face_tracker' for CMake config files
+[1.920s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/face_tracker/lib'
+[1.920s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/face_tracker/bin'
+[1.920s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/face_tracker/lib/pkgconfig/face_tracker.pc'
+[1.921s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/face_tracker/lib/python3.10/site-packages'
+[1.921s] Level 1:colcon.colcon_core.shell:create_environment_hook('face_tracker', 'pythonpath')
+[1.921s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/face_tracker/share/face_tracker/hook/pythonpath.ps1'
+[1.921s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/face_tracker/share/face_tracker/hook/pythonpath.dsv'
+[1.921s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/face_tracker/share/face_tracker/hook/pythonpath.sh'
+[1.922s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/face_tracker/bin'
+[1.922s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(face_tracker)
+[1.922s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/face_tracker/share/face_tracker/package.ps1'
+[1.922s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/docker_user/ros2_ws_head/install/face_tracker/share/face_tracker/package.dsv'
+[1.923s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/face_tracker/share/face_tracker/package.sh'
+[1.923s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/face_tracker/share/face_tracker/package.bash'
+[1.923s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/face_tracker/share/face_tracker/package.zsh'
+[1.923s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/docker_user/ros2_ws_head/install/face_tracker/share/colcon-core/packages/face_tracker)
+[3.036s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg' returned '0': CMAKE_PREFIX_PATH=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs:/home/docker_user/ros2_ws_head/install/serial:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg:/home/docker_user/ros2_ws_head/install/posture_analysis_msgs:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble LD_LIBRARY_PATH=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib:/home/docker_user/ros2_ws_head/install/serial/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib:/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib /usr/bin/cmake /home/docker_user/ros2_ws_head/src/ros2_driver/src/ti_mmwave_rospkg -DCMAKE_INSTALL_PREFIX=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg
+[3.037s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg': CMAKE_PREFIX_PATH=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs:/home/docker_user/ros2_ws_head/install/serial:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg:/home/docker_user/ros2_ws_head/install/posture_analysis_msgs:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble LD_LIBRARY_PATH=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib:/home/docker_user/ros2_ws_head/install/serial/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib:/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib /usr/bin/cmake --build /home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg -- -j28 -l28
+[3.160s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg' returned '0': CMAKE_PREFIX_PATH=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs:/home/docker_user/ros2_ws_head/install/serial:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg:/home/docker_user/ros2_ws_head/install/posture_analysis_msgs:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble LD_LIBRARY_PATH=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib:/home/docker_user/ros2_ws_head/install/serial/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib:/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib /usr/bin/cmake --build /home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg -- -j28 -l28
+[3.162s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg': CMAKE_PREFIX_PATH=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs:/home/docker_user/ros2_ws_head/install/serial:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg:/home/docker_user/ros2_ws_head/install/posture_analysis_msgs:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble LD_LIBRARY_PATH=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib:/home/docker_user/ros2_ws_head/install/serial/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib:/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib /usr/bin/cmake --install /home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg
+[3.179s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(ti_mmwave_rospkg)
+[3.179s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg' for CMake module files
+[3.179s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg' returned '0': CMAKE_PREFIX_PATH=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs:/home/docker_user/ros2_ws_head/install/serial:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg:/home/docker_user/ros2_ws_head/install/posture_analysis_msgs:/home/docker_user/ros2_ws_head/install/face_tracker:/home/docker_user/ros2_ws_head/install/head_bringup:/home/docker_user/ros2_ws_head/install/actuators_bringup:/opt/ros/humble LD_LIBRARY_PATH=/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg_msgs/lib:/home/docker_user/ros2_ws_head/install/serial/lib:/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib:/home/docker_user/ros2_ws_head/install/posture_analysis_msgs/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib /usr/bin/cmake --install /home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg
+[3.179s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg' for CMake config files
+[3.180s] Level 1:colcon.colcon_core.shell:create_environment_hook('ti_mmwave_rospkg', 'cmake_prefix_path')
+[3.180s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/hook/cmake_prefix_path.ps1'
+[3.180s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/hook/cmake_prefix_path.dsv'
+[3.180s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/hook/cmake_prefix_path.sh'
+[3.181s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib'
+[3.181s] Level 1:colcon.colcon_core.shell:create_environment_hook('ti_mmwave_rospkg', 'ld_library_path_lib')
+[3.181s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/hook/ld_library_path_lib.ps1'
+[3.181s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/hook/ld_library_path_lib.dsv'
+[3.181s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/hook/ld_library_path_lib.sh'
+[3.182s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/bin'
+[3.182s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib/pkgconfig/ti_mmwave_rospkg.pc'
+[3.182s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib/python3.10/site-packages'
+[3.182s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/bin'
+[3.182s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/package.ps1'
+[3.183s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/package.dsv'
+[3.183s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/package.sh'
+[3.183s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/package.bash'
+[3.183s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/package.zsh'
+[3.183s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/colcon-core/packages/ti_mmwave_rospkg)
+[3.184s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(ti_mmwave_rospkg)
+[3.184s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg' for CMake module files
+[3.184s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg' for CMake config files
+[3.184s] Level 1:colcon.colcon_core.shell:create_environment_hook('ti_mmwave_rospkg', 'cmake_prefix_path')
+[3.184s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/hook/cmake_prefix_path.ps1'
+[3.185s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/hook/cmake_prefix_path.dsv'
+[3.185s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/hook/cmake_prefix_path.sh'
+[3.185s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib'
+[3.185s] Level 1:colcon.colcon_core.shell:create_environment_hook('ti_mmwave_rospkg', 'ld_library_path_lib')
+[3.192s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/hook/ld_library_path_lib.ps1'
+[3.192s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/hook/ld_library_path_lib.dsv'
+[3.192s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/hook/ld_library_path_lib.sh'
+[3.193s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/bin'
+[3.193s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib/pkgconfig/ti_mmwave_rospkg.pc'
+[3.193s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/lib/python3.10/site-packages'
+[3.193s] Level 1:colcon.colcon_core.environment:checking '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/bin'
+[3.193s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/package.ps1'
+[3.194s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/package.dsv'
+[3.194s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/package.sh'
+[3.194s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/package.bash'
+[3.194s] INFO:colcon.colcon_core.shell:Creating package script '/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/ti_mmwave_rospkg/package.zsh'
+[3.195s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/docker_user/ros2_ws_head/install/ti_mmwave_rospkg/share/colcon-core/packages/ti_mmwave_rospkg)
+[3.195s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[3.195s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[3.195s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[3.195s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[3.201s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.notify_send': Could not find 'notify-send'
+[3.201s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[3.201s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[3.201s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[3.203s] DEBUG:colcon.colcon_notification.desktop_notification.notify2:Failed to initialize notify2: org.freedesktop.DBus.Error.Spawn.ExecFailed: /usr/bin/dbus-launch terminated abnormally without any error message
+[3.203s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[3.204s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/docker_user/ros2_ws_head/install/local_setup.ps1'
+[3.205s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/docker_user/ros2_ws_head/install/_local_setup_util_ps1.py'
+[3.206s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/docker_user/ros2_ws_head/install/setup.ps1'
+[3.207s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/docker_user/ros2_ws_head/install/local_setup.sh'
+[3.207s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/docker_user/ros2_ws_head/install/_local_setup_util_sh.py'
+[3.207s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/docker_user/ros2_ws_head/install/setup.sh'
+[3.208s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/docker_user/ros2_ws_head/install/local_setup.bash'
+[3.209s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/docker_user/ros2_ws_head/install/setup.bash'
+[3.209s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/docker_user/ros2_ws_head/install/local_setup.zsh'
+[3.210s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/docker_user/ros2_ws_head/install/setup.zsh'

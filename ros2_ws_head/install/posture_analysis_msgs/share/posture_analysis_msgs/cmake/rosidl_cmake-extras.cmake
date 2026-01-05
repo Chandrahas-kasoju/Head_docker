@@ -1,0 +1,1 @@
+/home/docker_user/ros2_ws_head/build/posture_analysis_msgs/rosidl_cmake/rosidl_cmake-extras.cmake

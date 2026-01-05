@@ -1,0 +1,58 @@
+[0.607s] Invoking command in '/home/docker_user/ros2_ws_head/src/sensors_bringup': PYTHONPATH=/home/docker_user/ros2_ws_head/build/sensors_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/sensors_bringup build --build-base /home/docker_user/ros2_ws_head/build/sensors_bringup/build install --record /home/docker_user/ros2_ws_head/build/sensors_bringup/install.log --single-version-externally-managed install_data
+[0.725s] running egg_info
+[0.726s] creating ../../build/sensors_bringup/sensors_bringup.egg-info
+[0.726s] writing ../../build/sensors_bringup/sensors_bringup.egg-info/PKG-INFO
+[0.726s] writing dependency_links to ../../build/sensors_bringup/sensors_bringup.egg-info/dependency_links.txt
+[0.726s] writing entry points to ../../build/sensors_bringup/sensors_bringup.egg-info/entry_points.txt
+[0.726s] writing requirements to ../../build/sensors_bringup/sensors_bringup.egg-info/requires.txt
+[0.726s] writing top-level names to ../../build/sensors_bringup/sensors_bringup.egg-info/top_level.txt
+[0.726s] writing manifest file '../../build/sensors_bringup/sensors_bringup.egg-info/SOURCES.txt'
+[0.727s] reading manifest file '../../build/sensors_bringup/sensors_bringup.egg-info/SOURCES.txt'
+[0.727s] adding license file 'LICENSE'
+[0.727s] writing manifest file '../../build/sensors_bringup/sensors_bringup.egg-info/SOURCES.txt'
+[0.727s] running build
+[0.727s] running build_py
+[0.728s] creating /home/docker_user/ros2_ws_head/build/sensors_bringup/build
+[0.728s] creating /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib
+[0.728s] creating /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib/sensors_bringup
+[0.728s] copying sensors_bringup/camera_bringup.py -> /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib/sensors_bringup
+[0.728s] copying sensors_bringup/static_transform.py -> /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib/sensors_bringup
+[0.728s] copying sensors_bringup/undistort.py -> /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib/sensors_bringup
+[0.728s] copying sensors_bringup/person_detect.py -> /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib/sensors_bringup
+[0.728s] copying sensors_bringup/person_points.py -> /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib/sensors_bringup
+[0.728s] copying sensors_bringup/__init__.py -> /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib/sensors_bringup
+[0.728s] running install
+[0.728s] running install_lib
+[0.729s] creating /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup
+[0.729s] copying /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib/sensors_bringup/camera_bringup.py -> /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup
+[0.729s] copying /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib/sensors_bringup/static_transform.py -> /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup
+[0.729s] copying /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib/sensors_bringup/undistort.py -> /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup
+[0.729s] copying /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib/sensors_bringup/person_detect.py -> /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup
+[0.729s] copying /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib/sensors_bringup/person_points.py -> /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup
+[0.729s] copying /home/docker_user/ros2_ws_head/build/sensors_bringup/build/lib/sensors_bringup/__init__.py -> /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup
+[0.729s] byte-compiling /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup/camera_bringup.py to camera_bringup.cpython-310.pyc
+[0.730s] byte-compiling /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup/static_transform.py to static_transform.cpython-310.pyc
+[0.731s] byte-compiling /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup/undistort.py to undistort.cpython-310.pyc
+[0.731s] byte-compiling /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup/person_detect.py to person_detect.cpython-310.pyc
+[0.732s] byte-compiling /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup/person_points.py to person_points.cpython-310.pyc
+[0.732s] byte-compiling /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup/__init__.py to __init__.cpython-310.pyc
+[0.732s] running install_data
+[0.732s] creating /home/docker_user/ros2_ws_head/install/sensors_bringup/share/ament_index
+[0.732s] creating /home/docker_user/ros2_ws_head/install/sensors_bringup/share/ament_index/resource_index
+[0.732s] creating /home/docker_user/ros2_ws_head/install/sensors_bringup/share/ament_index/resource_index/packages
+[0.732s] copying resource/sensors_bringup -> /home/docker_user/ros2_ws_head/install/sensors_bringup/share/ament_index/resource_index/packages
+[0.732s] copying package.xml -> /home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup
+[0.732s] creating /home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/config
+[0.733s] copying config/sensors_bringup_params.yaml -> /home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/config
+[0.733s] creating /home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/launch
+[0.733s] copying launch/sensors_bringup_launch.py -> /home/docker_user/ros2_ws_head/install/sensors_bringup/share/sensors_bringup/launch
+[0.733s] running install_egg_info
+[0.734s] Copying ../../build/sensors_bringup/sensors_bringup.egg-info to /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages/sensors_bringup-0.0.0-py3.10.egg-info
+[0.734s] running install_scripts
+[0.748s] Installing camera_bringup script to /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/sensors_bringup
+[0.748s] Installing person_detect script to /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/sensors_bringup
+[0.748s] Installing person_points script to /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/sensors_bringup
+[0.748s] Installing static_transform script to /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/sensors_bringup
+[0.749s] Installing undistort script to /home/docker_user/ros2_ws_head/install/sensors_bringup/lib/sensors_bringup
+[0.749s] writing list of installed files to '/home/docker_user/ros2_ws_head/build/sensors_bringup/install.log'
+[0.765s] Invoked command in '/home/docker_user/ros2_ws_head/src/sensors_bringup' returned '0': PYTHONPATH=/home/docker_user/ros2_ws_head/build/sensors_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/sensors_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/sensors_bringup build --build-base /home/docker_user/ros2_ws_head/build/sensors_bringup/build install --record /home/docker_user/ros2_ws_head/build/sensors_bringup/install.log --single-version-externally-managed install_data

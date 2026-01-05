@@ -1,0 +1,26 @@
+[0.683s] Invoking command in '/home/docker_user/ros2_ws_head/build/head_bringup': PYTHONPATH=/home/docker_user/ros2_ws_head/build/head_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/head_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/docker_user/ros2_ws_head/build/head_bringup/build --no-deps symlink_data
+[0.850s] running develop
+[0.912s] running egg_info
+[0.912s] creating head_bringup.egg-info
+[0.912s] writing head_bringup.egg-info/PKG-INFO
+[0.912s] writing dependency_links to head_bringup.egg-info/dependency_links.txt
+[0.913s] writing entry points to head_bringup.egg-info/entry_points.txt
+[0.913s] writing requirements to head_bringup.egg-info/requires.txt
+[0.913s] writing top-level names to head_bringup.egg-info/top_level.txt
+[0.913s] writing manifest file 'head_bringup.egg-info/SOURCES.txt'
+[0.913s] reading manifest file 'head_bringup.egg-info/SOURCES.txt'
+[0.914s] writing manifest file 'head_bringup.egg-info/SOURCES.txt'
+[0.915s] running build_ext
+[0.915s] Creating /home/docker_user/ros2_ws_head/install/head_bringup/lib/python3.10/site-packages/head-bringup.egg-link (link to .)
+[0.916s] Installing face script to /home/docker_user/ros2_ws_head/install/head_bringup/lib/head_bringup
+[0.916s] 
+[0.917s] Installed /home/docker_user/ros2_ws_head/build/head_bringup
+[0.917s] running symlink_data
+[0.917s] creating /home/docker_user/ros2_ws_head/install/head_bringup/share/ament_index
+[0.917s] creating /home/docker_user/ros2_ws_head/install/head_bringup/share/ament_index/resource_index
+[0.917s] creating /home/docker_user/ros2_ws_head/install/head_bringup/share/ament_index/resource_index/packages
+[0.917s] symbolically linking /home/docker_user/ros2_ws_head/build/head_bringup/resource/head_bringup -> /home/docker_user/ros2_ws_head/install/head_bringup/share/ament_index/resource_index/packages
+[0.917s] symbolically linking /home/docker_user/ros2_ws_head/build/head_bringup/package.xml -> /home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup
+[0.917s] creating /home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup/launch
+[0.917s] symbolically linking /home/docker_user/ros2_ws_head/build/head_bringup/launch/head_bringup_launch.py -> /home/docker_user/ros2_ws_head/install/head_bringup/share/head_bringup/launch
+[0.943s] Invoked command in '/home/docker_user/ros2_ws_head/build/head_bringup' returned '0': PYTHONPATH=/home/docker_user/ros2_ws_head/build/head_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/docker_user/ros2_ws_head/install/head_bringup/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/docker_user/ros2_ws_head/build/head_bringup/build --no-deps symlink_data
