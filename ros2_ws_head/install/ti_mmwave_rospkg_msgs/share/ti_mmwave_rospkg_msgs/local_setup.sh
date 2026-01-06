@@ -1,1 +1,0 @@
-/home/docker_user/ros2_ws_head/build/ti_mmwave_rospkg_msgs/ament_cmake_environment_hooks/local_setup.sh

@@ -1,6 +1,0 @@
-{
-  "package_name": "posture_analysis_msgs",
-  "non_idl_tuples": [
-    "/home/docker_user/ros2_ws_head/src/posture_analysis_msgs:msg/Posture.msg"
-  ]
-}

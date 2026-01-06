@@ -1,1 +1,0 @@
-/home/docker_user/ros2_ws_head/build/posture_analysis_msgs/rosidl_generator_py/posture_analysis_msgs/msg/_posture.py

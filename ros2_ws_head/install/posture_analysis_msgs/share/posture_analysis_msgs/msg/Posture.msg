@@ -1,1 +1,0 @@
-/home/docker_user/ros2_ws_head/src/posture_analysis_msgs/msg/Posture.msg

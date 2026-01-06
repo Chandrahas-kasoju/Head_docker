@@ -1,1 +1,0 @@
-/home/docker_user/ros2_ws_head/build/serial/ament_cmake_export_libraries/ament_cmake_export_libraries-extras.cmake

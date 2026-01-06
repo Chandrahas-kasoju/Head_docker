@@ -1,7 +1,0 @@
-[console_scripts]
-camera_bringup = sensors_bringup.camera_bringup:main
-person_detect = sensors_bringup.person_detect:main
-person_points = sensors_bringup.person_points:main
-static_transform = sensors_bringup.static_transform:main
-undistort = sensors_bringup.undistort:main
-

@@ -1,1 +1,0 @@
-/home/docker_user/ros2_ws_head/build/posture_analysis_msgs/ament_cmake_environment_hooks/local_setup.sh

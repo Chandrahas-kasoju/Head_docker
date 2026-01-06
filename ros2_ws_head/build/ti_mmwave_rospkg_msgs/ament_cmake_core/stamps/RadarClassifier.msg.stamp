@@ -1,2 +1,0 @@
-uint16 track_id
-float32 value

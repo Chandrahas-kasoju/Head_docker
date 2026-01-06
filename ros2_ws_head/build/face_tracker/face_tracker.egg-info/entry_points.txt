@@ -1,3 +1,0 @@
-[console_scripts]
-face_tracker = face_tracker.face_tracker:main
-

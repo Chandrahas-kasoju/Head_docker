@@ -1,1 +1,0 @@
-/home/docker_user/ros2_ws_head/build/posture_analysis_msgs/rosidl_typesupport_introspection_c/posture_analysis_msgs/msg/detail/posture__rosidl_typesupport_introspection_c.h

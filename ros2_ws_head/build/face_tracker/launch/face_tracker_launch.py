@@ -1,1 +1,0 @@
-/home/docker_user/ros2_ws_head/src/face_tracker/launch/face_tracker_launch.py
