@@ -52,7 +52,7 @@ RUN if [ -n "$DIALOUT_GID" ]; then \
     #if [ -n "$VIDEO_GID" ]; then \
     #    if ! getent group $VIDEO_GID > /dev/null; then groupadd -g $VIDEO_GID video; fi; \
     #fi && \
-    usermod -aG sudo,dialout docker_user 
+    usermod -aG sudo,dialout,video docker_user 
 
 # Give the user password-less sudo privileges
 RUN echo "docker_user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/docker-user-sudo
