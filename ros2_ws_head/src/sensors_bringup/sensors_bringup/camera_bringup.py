@@ -20,7 +20,7 @@ class Camera(Node):
             Image , "/hospibot/image_raw", 10)
         self.pub = self.create_publisher(CameraInfo, '/hospibot/camera_info', 10)
         self.bridge = CvBridge()
-        self.cap = cv2.VideoCapture('/dev/video4')  # Open the thermalcamera
+        self.cap = cv2.VideoCapture('/dev/video0')  # Open the thermalcamera
         
         #
 
