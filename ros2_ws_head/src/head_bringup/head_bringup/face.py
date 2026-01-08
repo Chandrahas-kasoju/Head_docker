@@ -13,13 +13,13 @@ FACE_COLOR = (0, 200, 255)
 
 # Eye Shape & Position
 EYE_SIZE = 180
-EYE_SPACING = 250
+EYE_SPACING = 400
 EYE_BORDER_RADIUS = 25
 
 # Mouth Shape & Position
 MOUTH_WIDTH = 280
 MOUTH_HEIGHT = 140  # Increased height for the curve
-MOUTH_VERTICAL_OFFSET = 140 # Adjusted so the flat top of the smile aligns with previous mouth top
+MOUTH_VERTICAL_OFFSET = 300 # Adjusted so the flat top of the smile aligns with previous mouth top
 # MOUTH_BORDER_RADIUS = 10 # Not used for ellipse
 
 # Animation Timings
@@ -44,8 +44,8 @@ def main():
     # --- Positioning Calculations ---
     screen_center_x = SCREEN_WIDTH // 2
     screen_center_y = SCREEN_HEIGHT // 2
-    left_eye_center = (screen_center_x - (EYE_SPACING // 2), screen_center_y)
-    right_eye_center = (screen_center_x + (EYE_SPACING // 2), screen_center_y)
+    left_eye_center = (screen_center_x - (EYE_SPACING // 2), screen_center_y-100)
+    right_eye_center = (screen_center_x + (EYE_SPACING // 2), screen_center_y-100)
     mouth_rect = pygame.Rect(0, 0, MOUTH_WIDTH, MOUTH_HEIGHT)
     mouth_rect.center = (screen_center_x, screen_center_y + MOUTH_VERTICAL_OFFSET)
 
