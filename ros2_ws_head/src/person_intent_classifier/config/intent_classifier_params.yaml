@@ -8,14 +8,14 @@
     # TOPIC CONFIGURATION
 
     # ROS2 topic names for input data
-    bbox_topic: '/person_bounding_box'          # Bounding box input topic
+    bbox_topic: '/hospibot/pose_bbox'          # Bounding box input topic
     radar_topic: '/person_detect/filtered_points'  # Radar point cloud topic
     
 
     # CAMERA PARAMETERS
     # Image dimensions and processing settings
-    image_width: 640                             # Camera image width in pixels
-    image_height: 480                            # Camera image height in pixels
+    image_width: 256                             # Camera image width in pixels
+    image_height: 192                            # Camera image height in pixels
     
 
     # INTENT CLASSIFICATION PARAMETERS
