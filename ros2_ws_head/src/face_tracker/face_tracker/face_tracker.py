@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Int32
+from std_msgs.msg import Int32, String
 from vision_msgs.msg import Point2D
 
 class FaceTrackerNode(Node):
@@ -10,7 +10,7 @@ class FaceTrackerNode(Node):
         
         # --- Parameters ---
         self.declare_parameter('pitch_topic', '/servo_command')
-        self.declare_parameter('roll_topic', '/stepper_command')
+        self.declare_parameter('roll_topic', '/stepper_panther')
         self.declare_parameter('eye_center_topic', '/face_tracker/eye_center')
         self.declare_parameter('dead_zone_percent', 10) 
         # Resolution should match what Tracker is using (usually 640x480 for standard webcams)
@@ -34,7 +34,22 @@ class FaceTrackerNode(Node):
         
         self.get_logger().info('Face tracker CONTROL node has been started. Waiting for eye center data...')
 
+        # --- Intent Subscription ---
+        self.current_intent = "UNKNOWN"
+        self.intent_subscription = self.create_subscription(
+            String,
+            '/person_intent',
+            self.intent_callback,
+            10)
+
+    def intent_callback(self, msg):
+        self.current_intent = msg.data
+
     def eye_center_callback(self, msg):
+        # Only track if the person wants to interact
+        if self.current_intent != "WANT_TO_INTERACT":
+            return
+
         width = self.get_parameter('image_width').get_parameter_value().integer_value
         height = self.get_parameter('image_height').get_parameter_value().integer_value
         
