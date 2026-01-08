@@ -38,7 +38,7 @@ class PersonDetect(Node):
         
         self.bb_sub = self.create_subscription(
             BoundingBox2D, 
-            '/person_bounding_box',
+            '/hospibot/pose_bbox',
             self.bbox_callback,
             10)
         
