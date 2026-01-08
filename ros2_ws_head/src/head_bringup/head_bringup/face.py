@@ -18,9 +18,9 @@ EYE_BORDER_RADIUS = 25
 
 # Mouth Shape & Position
 MOUTH_WIDTH = 280
-MOUTH_HEIGHT = 40
-MOUTH_VERTICAL_OFFSET = 160
-MOUTH_BORDER_RADIUS = 10
+MOUTH_HEIGHT = 140  # Increased height for the curve
+MOUTH_VERTICAL_OFFSET = 140 # Adjusted so the flat top of the smile aligns with previous mouth top
+# MOUTH_BORDER_RADIUS = 10 # Not used for ellipse
 
 # Animation Timings
 BLINK_INTERVAL_MIN = 3.0
@@ -32,12 +32,14 @@ def main():
     pygame.init()
 
     # --- THE MOST IMPORTANT CHANGE ---
-    # We are creating a standard, windowed display with no special flags.
-    # This is the most compatible mode and should work exactly like your alien game.
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    
-    pygame.display.set_caption("Robot Face (Windowed Mode)")
+    # Create the display in fullscreen mode
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    pygame.mouse.set_visible(False)
+    pygame.display.set_caption("Robot Face")
     clock = pygame.time.Clock()
+
+    # Get actual screen dimensions (shadowing global constants)
+    SCREEN_WIDTH, SCREEN_HEIGHT = screen.get_size()
 
     # --- Positioning Calculations ---
     screen_center_x = SCREEN_WIDTH // 2
@@ -91,7 +93,11 @@ def main():
             pygame.draw.rect(screen, FACE_COLOR, left_eye_rect, border_radius=EYE_BORDER_RADIUS)
             pygame.draw.rect(screen, FACE_COLOR, right_eye_rect, border_radius=EYE_BORDER_RADIUS)
         
-        pygame.draw.rect(screen, FACE_COLOR, mouth_rect, border_radius=MOUTH_BORDER_RADIUS)
+        # Draw smile (semi-ellipse)
+        pygame.draw.ellipse(screen, FACE_COLOR, mouth_rect)
+        # Mask top half to make it a smile
+        mask_rect = pygame.Rect(mouth_rect.left, mouth_rect.top, mouth_rect.width, mouth_rect.height // 2)
+        pygame.draw.rect(screen, BACKGROUND_COLOR, mask_rect)
         
         pygame.display.flip()
         clock.tick(60)
