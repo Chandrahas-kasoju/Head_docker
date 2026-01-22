@@ -12,11 +12,11 @@ class FaceTrackerNode(Node):
         self.declare_parameter('pitch_topic', '/servo_command')
         self.declare_parameter('roll_topic', '/stepper_panther')
         self.declare_parameter('eye_center_topic', '/face_tracker/eye_center')
-        self.declare_parameter('dead_zone_percent', 10) 
+        self.declare_parameter('dead_zone_percent', 30) 
         # Resolution should match what Tracker is using (usually 640x480 for standard webcams)
         # Ideally this should be dynamic or passed as a parameter too.
-        self.declare_parameter('image_width', 640)
-        self.declare_parameter('image_height', 480)
+        self.declare_parameter('image_width', 256)
+        self.declare_parameter('image_height', 192)
 
         # --- Publishers and Subscribers ---
         pitch_topic = self.get_parameter('pitch_topic').get_parameter_value().string_value
@@ -64,7 +64,7 @@ class FaceTrackerNode(Node):
         roll_cmd.data = 0
         
         dead_zone_percent = self.get_parameter('dead_zone_percent').get_parameter_value().integer_value
-        dead_zone_x = (width * dead_zone_percent) // 200
+        dead_zone_x = (width * dead_zone_percent) // 200 # Divided by 200 because percent is split on both sides
         dead_zone_y = (height * dead_zone_percent) // 200
 
         target_x = msg.x
@@ -72,7 +72,7 @@ class FaceTrackerNode(Node):
         
         # --- Pitch and Roll Calculation ---
         # Roll (left/right)
-        if target_x < center_x - dead_zone_x:
+        if target_x < center_x - dead_zone_x: 
             roll_cmd.data = 1 # Move left 
         elif target_x > center_x + dead_zone_x:
             roll_cmd.data = -1 # Move right 
