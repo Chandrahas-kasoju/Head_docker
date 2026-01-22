@@ -47,8 +47,8 @@ class FaceTrackerNode(Node):
 
     def eye_center_callback(self, msg):
         # Only track if the person wants to interact
-        #if self.current_intent != "WANT_TO_INTERACT":
-        #    return
+        if self.current_intent != "WANT_TO_INTERACT":
+            return
 
         width = self.get_parameter('image_width').get_parameter_value().integer_value
         height = self.get_parameter('image_height').get_parameter_value().integer_value
