@@ -48,7 +48,7 @@ class FaceTrackerNode(Node):
 
     def intent_callback(self, msg):
         self.current_intent = msg.data
-        if self.current_intent != "CLOSE_PROXIMITY"  or self.current_intent != "WANT_TO_INTERACT":
+        if self.current_intent != "CLOSE_PROXIMITY"  and self.current_intent != "WANT_TO_INTERACT":
             self.roll_cmd.data = 2  # Default: No movement
             self.pitch_cmd.data = 2  # Default: No movement
             self.roll_publisher.publish(self.roll_cmd)
