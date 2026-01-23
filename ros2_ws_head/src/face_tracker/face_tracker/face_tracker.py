@@ -48,56 +48,54 @@ class FaceTrackerNode(Node):
 
     def intent_callback(self, msg):
         self.current_intent = msg.data
-
-    def eye_center_callback(self, msg):
-
-        
-
-        # Only track if the person wants to interact
-
         if self.current_intent != "CLOSE_PROXIMITY"  or self.current_intent != "WANT_TO_INTERACT":
             self.roll_cmd.data = 2  # Default: No movement
             self.pitch_cmd.data = 2  # Default: No movement
             self.roll_publisher.publish(self.roll_cmd)
             self.pitch_publisher.publish(self.pitch_cmd)
-            return
 
-        width = self.get_parameter('image_width').get_parameter_value().integer_value
-        height = self.get_parameter('image_height').get_parameter_value().integer_value
-        
-        center_x = width // 2
-        center_y = height // 2
-        self.roll_cmd.data = 0
-        self.pitch_cmd.data = 0
+    def eye_center_callback(self, msg):
 
-        
-        
-        # Default: No movement
-        
-        
-        dead_zone_percent = self.get_parameter('dead_zone_percent').get_parameter_value().integer_value
-        dead_zone_x = (width * dead_zone_percent) // 200 # Divided by 200 because percent is split on both sides
-        dead_zone_y = (height * dead_zone_percent) // 200
+        # Only track if the person wants to interact
 
-        target_x = msg.x
-        target_y = msg.y
-        
-        # --- Pitch and Roll Calculation ---
-        # Roll (left/right)
-        if target_x < center_x - dead_zone_x: 
-            self.roll_cmd.data = 1 # Move left 
-        elif target_x > center_x + dead_zone_x:
-            self.roll_cmd.data = -1 # Move right 
-        
-        # Pitch (up/down)
-        if target_y < center_y - dead_zone_y:
-            self.pitch_cmd.data = 1 
-        elif target_y > center_y + dead_zone_y:
-            self.pitch_cmd.data = -1 
+        if self.current_intent == "CLOSE_PROXIMITY"  or self.current_intent == "WANT_TO_INTERACT" :
+            width = self.get_parameter('image_width').get_parameter_value().integer_value
+            height = self.get_parameter('image_height').get_parameter_value().integer_value
 
-        # --- Publish Commands ---
-        self.roll_publisher.publish(self.roll_cmd)
-        self.pitch_publisher.publish(self.pitch_cmd)
+            center_x = width // 2
+            center_y = height // 2
+            self.roll_cmd.data = 0
+            self.pitch_cmd.data = 0
+
+
+
+            # Default: No movement
+
+
+            dead_zone_percent = self.get_parameter('dead_zone_percent').get_parameter_value().integer_value
+            dead_zone_x = (width * dead_zone_percent) // 200 # Divided by 200 because percent is split on both sides
+            dead_zone_y = (height * dead_zone_percent) // 200
+
+            target_x = msg.x
+            target_y = msg.y
+
+            # --- Pitch and Roll Calculation ---
+            # Roll (left/right)
+            if target_x < center_x - dead_zone_x: 
+                self.roll_cmd.data = 1 # Move left 
+            elif target_x > center_x + dead_zone_x:
+                self.roll_cmd.data = -1 # Move right 
+
+            # Pitch (up/down)
+            if target_y < center_y - dead_zone_y:
+                self.pitch_cmd.data = 1 
+            elif target_y > center_y + dead_zone_y:
+                self.pitch_cmd.data = -1 
+
+            # --- Publish Commands ---
+            self.roll_publisher.publish(self.roll_cmd)
+            self.pitch_publisher.publish(self.pitch_cmd)
+          
 
 def main(args=None):
     rclpy.init(args=args)
