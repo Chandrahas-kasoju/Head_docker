@@ -26,6 +26,15 @@ class FaceTrackerNode(Node):
         self.roll_cmd = Int32()
         self.pitch_cmd.data = 2
         self.roll_cmd.data = 2
+
+        self.pitch_publisher = self.create_publisher(Int32, pitch_topic, 10)
+        self.roll_publisher = self.create_publisher(Int32, roll_topic, 10)
+
+        self.intent_subscription = self.create_subscription(
+            String,
+            '/person_intent',
+            self.intent_callback,
+            10)
         
         self.subscription = self.create_subscription(
             Point2D,
@@ -33,21 +42,18 @@ class FaceTrackerNode(Node):
             self.eye_center_callback,
             10)
             
-        self.pitch_publisher = self.create_publisher(Int32, pitch_topic, 10)
-        self.roll_publisher = self.create_publisher(Int32, roll_topic, 10)
+        
         
         self.get_logger().info('Face tracker CONTROL node has been started. Waiting for eye center data...')
 
         # --- Intent Subscription ---
         self.current_intent = "NO_PERSON_DETECTED"
-        self.intent_subscription = self.create_subscription(
-            String,
-            '/person_intent',
-            self.intent_callback,
-            10)
+        
 
     def intent_callback(self, msg):
         self.current_intent = msg.data
+        self.get_logger().info('IN intent')
+
         if self.current_intent != "CLOSE_PROXIMITY"  and self.current_intent != "WANT_TO_INTERACT":
             self.roll_cmd.data = 2  # Default: No movement
             self.pitch_cmd.data = 2  # Default: No movement
