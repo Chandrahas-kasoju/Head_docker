@@ -109,7 +109,7 @@ class PersonIntentNode(Node):
         self.intent_publisher = self.create_publisher(String, '/person_intent', 10)
 
         # Timer for periodic status checks
-        self.create_timer(1.0, self.status_check_callback)  # Check every 1 second
+        self.create_timer(0.2, self.status_check_callback)  # Check every 1 second
 
         self.get_logger().info("Intent Node Started [FUSION: Camera + Radar]")
         self.get_logger().info(f"Configuration loaded from YAML file")
