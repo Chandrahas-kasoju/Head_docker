@@ -88,4 +88,4 @@ RUN echo "export ROS_DOMAIN_ID=0" >> /home/docker_user/.bashrc
 # Set the entrypoint
 ENTRYPOINT ["/home/docker_user/entrypoint.sh"]
 # Set the default command
-CMD ["bash"]
+# CMD ["bash"]
