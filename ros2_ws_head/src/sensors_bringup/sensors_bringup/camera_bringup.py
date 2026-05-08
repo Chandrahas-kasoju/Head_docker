@@ -25,7 +25,7 @@ class Camera(Node):
         self.pub = self.create_publisher(CameraInfo, '/hospibot/camera_info', 10)
         self.bridge = CvBridge()
         # Try to open the thermal camera and request raw (packed) frames when possible
-        self.cap = cv2.VideoCapture('/dev/video2')  # Open the thermalcamera
+        self.cap = cv2.VideoCapture('/dev/video0')  # Open the thermalcamera
         try:
             # Prefer raw frames (no automatic RGB conversion) so we can extract thermal data
             self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 0)
