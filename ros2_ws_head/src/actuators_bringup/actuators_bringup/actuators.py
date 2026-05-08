@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Int32 
-from sensor_msgs.msg import Joy
+from std_msgs.msg import Int32, Header
+from sensor_msgs.msg import Joy, JointState
 from st3215 import ST3215
 import time
+import math
 
 class ServoController(Node):
     def __init__(self):
@@ -17,6 +18,15 @@ class ServoController(Node):
         )
         self.servo = ST3215('/dev/ttyACM0')
         self.sts_id = 1
+        
+        # RViz /joint_states Publisher
+        self.joint_pub = self.create_publisher(JointState, '/joint_states', 10)
+        self.timer = self.create_timer(0.1, self.timer_callback) # 10Hz
+        
+        self.current_pan_rads = 0.0 # Placeholder for Stepper Pan
+        self.STEPS_PER_REV = 4096.0
+        self.RADS_PER_REV = 2.0 * math.pi
+        self.center_degree = 55.0
 
     
 
@@ -53,6 +63,27 @@ class ServoController(Node):
             return self.servo.MoveTo(sts_id, current_position, 0)
         else:
             return None
+
+    def timer_callback(self):
+        msg = JointState()
+        msg.header = Header()
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.name = ['tele_pan_joint', 'tele_tilt_joint']
+        
+        tilt_rads = 0.0
+        try:
+            # Read true physical position from ST3215 Magnetic Encoder
+            current_position = self.servo.ReadPosition(self.sts_id)
+            if current_position is not None:
+                # Convert ST3215 steps to degrees
+                current_deg = current_position * (360.0 / self.STEPS_PER_REV)
+                # Convert degrees to RViz radians based on our center resting point of 55
+                tilt_rads = math.radians(current_deg - self.center_degree)
+        except Exception as e:
+            pass
+            
+        msg.position = [self.current_pan_rads, tilt_rads]
+        self.joint_pub.publish(msg)
 
   
 

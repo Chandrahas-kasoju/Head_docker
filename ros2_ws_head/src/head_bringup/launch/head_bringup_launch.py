@@ -3,6 +3,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import Command
 from launch_ros.actions import Node
 
 def generate_launch_description():
@@ -21,7 +22,18 @@ def generate_launch_description():
        '6843AOP_FineMotion.py'  # Assuming a standard launch file name and location
     )
 
+    pkg_share = get_package_share_directory('head_bringup')
+    xacro_file = os.path.join(pkg_share, 'urdf', 'tele.urdf.xacro')
+    robot_description = Command(['xacro ', xacro_file])
+
     return LaunchDescription([
+        Node(
+            package='robot_state_publisher',
+            executable='robot_state_publisher',
+            name='robot_state_publisher',
+            output='screen',
+            parameters=[{'robot_description': robot_description}]
+        ),
         Node(
             package='sensors_bringup',
             executable='camera_bringup',
