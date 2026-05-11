@@ -44,22 +44,22 @@
     
     <visual>
       <origin xyz="0 0 0" rpy="0 0 1.57"/>
-      <geometry><mesh filename="package://easy_way/meshes/lower_bottom.stl" scale="0.001 0.001 0.001"/></geometry>
+      <geometry><mesh filename="package://head_bringup/meshes/lower_bottom.stl" scale="0.001 0.001 0.001"/></geometry>
       <material name="tele_grey"><color rgba="0.7 0.7 0.7 1"/></material>
     </visual>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 1.57"/>
-      <geometry><mesh filename="package://easy_way/meshes/upper_bottom.stl" scale="0.001 0.001 0.001"/></geometry>
+      <geometry><mesh filename="package://head_bringup/meshes/upper_bottom.stl" scale="0.001 0.001 0.001"/></geometry>
       <material name="tele_grey"/>
     </visual>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 1.57"/>
-      <geometry><mesh filename="package://easy_way/meshes/mid_section.stl" scale="0.001 0.001 0.001"/></geometry>
+      <geometry><mesh filename="package://head_bringup/meshes/mid_section.stl" scale="0.001 0.001 0.001"/></geometry>
       <material name="tele_grey"/>
     </visual>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 1.57"/>
-      <geometry><mesh filename="package://easy_way/meshes/chest.stl" scale="0.001 0.001 0.001"/></geometry>
+      <geometry><mesh filename="package://head_bringup/meshes/chest.stl" scale="0.001 0.001 0.001"/></geometry>
       <material name="tele_grey"/>
     </visual>
   </link>
@@ -75,7 +75,7 @@
   <link name="tele_neck_link">
     <visual>
       <origin xyz="-0.02 0 0" rpy="0 0 1.57"/>
-      <geometry><mesh filename="package://easy_way/meshes/head_body_joint.stl" scale="0.001 0.001 0.001"/></geometry>
+      <geometry><mesh filename="package://head_bringup/meshes/head_body_joint.stl" scale="0.001 0.001 0.001"/></geometry>
       <material name="tele_blue"><color rgba="0 0 0.8 1"/></material>
     </visual>
     <collision>
@@ -96,7 +96,7 @@
   <link name="tele_head_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 1.57"/>
-      <geometry><mesh filename="package://easy_way/meshes/head.stl" scale="0.001 0.001 0.001"/></geometry>
+      <geometry><mesh filename="package://head_bringup/meshes/head.stl" scale="0.001 0.001 0.001"/></geometry>
       <material name="tele_grey"/> 
     </visual>
     <collision>
