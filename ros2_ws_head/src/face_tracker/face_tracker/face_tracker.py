@@ -88,9 +88,9 @@ class FaceTrackerNode(Node):
             # --- Pitch and Roll Calculation ---
             # Roll (left/right)
             if target_x < center_x - dead_zone_x: 
-                self.roll_cmd.data = 1 # Move left 
+                self.roll_cmd.data = -1 # Move left 
             elif target_x > center_x + dead_zone_x:
-                self.roll_cmd.data = -1 # Move right 
+                self.roll_cmd.data = 1 # Move right 
 
             # Pitch (up/down)
             if target_y < center_y - dead_zone_y:
