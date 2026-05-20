@@ -10,7 +10,7 @@ class FaceTrackerNode(Node):
         
         # --- Parameters ---
         self.declare_parameter('pitch_topic', '/servo_command')
-        self.declare_parameter('roll_topic', '/stepper_panther')
+        self.declare_parameter('roll_topic', '/servo_command_pan')
         self.declare_parameter('eye_center_topic', '/face_tracker/eye_center')
         self.declare_parameter('dead_zone_percent', 30) 
         # Resolution should match what Tracker is using (usually 640x480 for standard webcams)
