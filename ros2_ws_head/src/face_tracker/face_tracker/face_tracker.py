@@ -87,9 +87,9 @@ class FaceTrackerNode(Node):
 
         # Pitch (up/down)
         if target_y < center_y - dead_zone_y:
-            self.pitch_angle -= self.angle_step # Move up
+            self.pitch_angle += self.angle_step # Move up
         elif target_y > center_y + dead_zone_y:
-            self.pitch_angle += self.angle_step # Move down 
+            self.pitch_angle -= self.angle_step # Move down 
 
         # Clamp angles to prevent rotating beyond safe physical limits
         # Tilt is limited to 40-80 degrees based on mechanical constraints
