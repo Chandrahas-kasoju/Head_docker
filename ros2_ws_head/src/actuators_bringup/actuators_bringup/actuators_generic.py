@@ -75,10 +75,15 @@ class GenericServoController(Node):
             10
         )
         
+        # Publishers for PID tuning with rqt_plot
+        self.current_angle_pub = self.create_publisher(Float64, '/servo_current_angle', 10)
+        self.target_angle_pub = self.create_publisher(Float64, '/servo_target_angle', 10)
+        
         # Control loop timer (e.g., 20 Hz)
         self.timer_period = 0.05
         self.timer = self.create_timer(self.timer_period, self.control_loop)
         self.last_time = time.time()
+        
         
     def parameters_callback(self, params):
         for param in params:
@@ -116,6 +121,10 @@ class GenericServoController(Node):
                 
             # Convert step position to angle (0-4095 steps = 0-360 degrees)
             current_angle_deg = (current_pos_steps / 4095.0) * 360.0
+            
+            # Publish for tuning/plotting
+            self.current_angle_pub.publish(Float64(data=current_angle_deg))
+            self.target_angle_pub.publish(Float64(data=self.target_angle_deg))
             
             # Compute PID control signal (desired velocity)
             speed_cmd = self.pid.compute(self.target_angle_deg, current_angle_deg, dt)
