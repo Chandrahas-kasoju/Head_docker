@@ -41,7 +41,7 @@ class GenericServoController(Node):
         self.declare_parameter('kd', 0.5)
         self.declare_parameter('servo_port', '/dev/ttyACM0')
         self.declare_parameter('servo_id', 1)
-        self.declare_parameter('use_software_pid', False) # Set to True to use custom PID
+        self.declare_parameter('use_software_pid', True) # Set to True to use custom PID
         
         self.kp = self.get_parameter('kp').value
         self.ki = self.get_parameter('ki').value
