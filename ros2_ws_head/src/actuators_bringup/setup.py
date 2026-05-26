@@ -24,7 +24,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'actuators = actuators_bringup.actuators:main'
+            'actuators = actuators_bringup.actuators:main',
+            'actuators_generic = actuators_bringup.actuators_generic:main'
         ],
     },
 )
