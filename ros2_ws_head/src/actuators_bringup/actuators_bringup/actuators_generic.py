@@ -66,7 +66,7 @@ class GenericServoController(Node):
         # Generic ROS approach: subscribe to a Float64 for the target angle
         self.subscription = self.create_subscription(
             Float64,
-            '/servo/target_angle',
+            '/servo_command',
             self.target_callback,
             10
         )
@@ -102,7 +102,7 @@ class GenericServoController(Node):
             
             # Use Rotate() to set the speed. The sign dictates direction.
             # Stop if we are close enough to avoid jitter
-            if abs(self.target_angle_deg - current_angle_deg) < 1.0:
+            if abs(self.target_angle_deg - current_angle_deg) < 0.2:
                 self.servo.StopServo(self.sts_id)
             else:
                 self.servo.Rotate(self.sts_id, int(speed_cmd))
