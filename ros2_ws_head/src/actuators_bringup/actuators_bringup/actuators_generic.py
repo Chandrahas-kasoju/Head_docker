@@ -61,7 +61,7 @@ class GenericServoController(Node):
         
         # Initialize PID controller for calculating speed based on position error
         # Max speed for ST3215 is roughly 3400 steps/s
-        self.pid = PIDController(self.kp, self.ki, self.kd, output_limits=(-1000, 1000))
+        self.pid = PIDController(self.kp, self.ki, self.kd, output_limits=(-5000, 5000))
         
         # Generic ROS approach: subscribe to a Float64 for the target angle
         self.subscription = self.create_subscription(
@@ -117,7 +117,7 @@ class GenericServoController(Node):
             target_steps = max(0, min(4095, target_steps))
             
             # Send position to the servo's internal controller
-            self.servo.MoveTo(self.sts_id, target_steps, 1000, 50) 
+            self.servo.MoveTo(self.sts_id, target_steps, 500, 50) 
 
 def main(args=None):
     rclpy.init(args=args)
