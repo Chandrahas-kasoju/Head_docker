@@ -2,6 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64
+from rcl_interfaces.msg import SetParametersResult
 from st3215 import ST3215
 import time
 
@@ -36,8 +37,8 @@ class GenericServoController(Node):
         super().__init__('generic_servo_controller')
         
         # Declare parameters for flexibility
-        self.declare_parameter('kp', 15.0)
-        self.declare_parameter('ki', 0.0)
+        self.declare_parameter('kp', 5.0)
+        self.declare_parameter('ki', 2.0)
         self.declare_parameter('kd', 0.5)
         self.declare_parameter('servo_port', '/dev/ttyACM0')
         self.declare_parameter('servo_id', 1)
@@ -61,7 +62,10 @@ class GenericServoController(Node):
         
         # Initialize PID controller for calculating speed based on position error
         # Max speed for ST3215 is roughly 3400 steps/s
-        self.pid = PIDController(self.kp, self.ki, self.kd, output_limits=(-5000, 5000))
+        self.pid = PIDController(self.kp, self.ki, self.kd, output_limits=(-500, 500))
+        
+        # Register parameter callback for dynamic tuning
+        self.add_on_set_parameters_callback(self.parameters_callback)
         
         # Generic ROS approach: subscribe to a Float64 for the target angle
         self.subscription = self.create_subscription(
@@ -76,6 +80,22 @@ class GenericServoController(Node):
         self.timer = self.create_timer(self.timer_period, self.control_loop)
         self.last_time = time.time()
         
+    def parameters_callback(self, params):
+        for param in params:
+            if param.name == 'kp':
+                self.kp = param.value
+                self.pid.kp = self.kp
+                self.get_logger().info(f"Updated kp to {self.kp}")
+            elif param.name == 'ki':
+                self.ki = param.value
+                self.pid.ki = self.ki
+                self.get_logger().info(f"Updated ki to {self.ki}")
+            elif param.name == 'kd':
+                self.kd = param.value
+                self.pid.kd = self.kd
+                self.get_logger().info(f"Updated kd to {self.kd}")
+        return SetParametersResult(successful=True)
+
     def target_callback(self, msg):
         """Callback to update the target angle from ROS topic"""
         self.target_angle_deg = msg.data
