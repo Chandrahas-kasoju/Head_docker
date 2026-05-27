@@ -8,16 +8,24 @@ import time
 
 class PIDController:
     """A standard generic PID Controller implementation"""
-    def __init__(self, kp, ki, kd, output_limits=(None, None)):
+    def __init__(self, kp, ki, kd, output_limits=(None, None), deadband=0.0):
         self.kp = kp
         self.ki = ki
         self.kd = kd
         self.prev_error = 0.0
         self.integral = 0.0
         self.min_out, self.max_out = output_limits
+        self.deadband = deadband
 
     def compute(self, setpoint, measured_value, dt):
-        error = setpoint - measured_value
+        raw_error = setpoint - measured_value
+        
+        # Apply deadband to error
+        if abs(raw_error) < self.deadband:
+            error = 0.0
+        else:
+            error = raw_error
+            
         self.integral += error * dt
         derivative = (error - self.prev_error) / dt if dt > 0 else 0.0
         
@@ -61,8 +69,9 @@ class GenericServoController(Node):
         self.target_angle_deg = 63.0  # Default starting target
         
         # Initialize PID controller for calculating speed based on position error
-        # Max speed for ST3215 is roughly 3400 steps/s
-        self.pid = PIDController(self.kp, self.ki, self.kd, output_limits=(-300, 300))
+        # Max speed for ST3215 is roughly 3400 steps/s. Increased output limits so it can fight gravity.
+        # Added a 0.5 degree deadband to provide tolerance and stop jittering once it reaches the target.
+        self.pid = PIDController(self.kp, self.ki, self.kd, output_limits=(-500, 500), deadband=0.5)
         
         # Register parameter callback for dynamic tuning
         self.add_on_set_parameters_callback(self.parameters_callback)
@@ -130,11 +139,11 @@ class GenericServoController(Node):
             speed_cmd = self.pid.compute(self.target_angle_deg, current_angle_deg, dt)
             
             # Use Rotate() to set the speed. The sign dictates direction.
-            # Stop if we are close enough to avoid jitter
-            if abs(self.target_angle_deg - current_angle_deg) < 2.0:
-                self.servo.StopServo(self.sts_id)
-            else:
-                self.servo.Rotate(self.sts_id, int(speed_cmd))
+            # CRITICAL FIX: We must NOT use StopServo() here when error is small. 
+            # If we stop the servo, it loses holding torque and gravity immediately pulls it down, 
+            # causing endless bouncing. The PID integral term will naturally find the exact 
+            # speed command needed to hold the weight still.
+            self.servo.Rotate(self.sts_id, int(speed_cmd))
                 
         else:
             # === OPTION B: HARDWARE POSITION CONTROLLER (STANDARD) ===
