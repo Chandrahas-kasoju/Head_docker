@@ -58,7 +58,7 @@ class GenericServoController(Node):
             self.get_logger().error(f"Servo {self.sts_id} not connected!")
             
         # Target angle in degrees
-        self.target_angle_deg = 55.0  # Default starting target
+        self.target_angle_deg = 63.0  # Default starting target
         
         # Initialize PID controller for calculating speed based on position error
         # Max speed for ST3215 is roughly 3400 steps/s
@@ -131,7 +131,7 @@ class GenericServoController(Node):
             
             # Use Rotate() to set the speed. The sign dictates direction.
             # Stop if we are close enough to avoid jitter
-            if abs(self.target_angle_deg - current_angle_deg) < 0.2:
+            if abs(self.target_angle_deg - current_angle_deg) < 0.5:
                 self.servo.StopServo(self.sts_id)
             else:
                 self.servo.Rotate(self.sts_id, int(speed_cmd))

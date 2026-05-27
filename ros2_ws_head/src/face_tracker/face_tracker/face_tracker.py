@@ -25,11 +25,12 @@ class FaceTrackerNode(Node):
         eye_center_topic = self.get_parameter('eye_center_topic').get_parameter_value().string_value
         
         # Maintain absolute target angles
-        self.home_pitch = 55.0
+        self.home_pitch = 63.0
         self.home_roll = 300.0
         self.pitch_angle = self.home_pitch  # Tilt home pose
         self.roll_angle = self.home_roll  # Pan home pose
-        self.angle_step = 1.0 # Degrees to move per frame when outside deadzone
+        self.Kp_pan = 0.02   # Tuning parameter (proportional gain)
+        self.Kp_tilt = 0.02
 
         self.pitch_publisher = self.create_publisher(Float64, pitch_topic, 10)
         self.roll_publisher = self.create_publisher(Float64, roll_topic, 10)
@@ -79,17 +80,16 @@ class FaceTrackerNode(Node):
         target_y = msg.y
 
         # --- Pitch and Roll Calculation ---
+        error_x = center_x - target_x
+        error_y = center_y - target_y
+
         # Roll (left/right) -> Pan
-        if target_x < center_x - dead_zone_x: 
-            self.roll_angle += self.angle_step # Move left 
-        elif target_x > center_x + dead_zone_x:
-            self.roll_angle -= self.angle_step # Move right 
+        if target_x < center_x - dead_zone_x or target_x > center_x + dead_zone_x:
+            self.roll_angle += (error_x * self.Kp_pan)
 
         # Pitch (up/down)
-        if target_y < center_y - dead_zone_y:
-            self.pitch_angle += self.angle_step # Move up
-        elif target_y > center_y + dead_zone_y:
-            self.pitch_angle -= self.angle_step # Move down 
+        if target_y < center_y - dead_zone_y or target_y > center_y + dead_zone_y:
+            self.pitch_angle += (error_y * self.Kp_tilt)
 
         # Clamp angles to prevent rotating beyond safe physical limits
         # Tilt is limited to 40-80 degrees based on mechanical constraints
