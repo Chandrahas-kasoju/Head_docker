@@ -71,7 +71,7 @@ class GenericServoController(Node):
         # Initialize PID controller for calculating speed based on position error
         # Max speed for ST3215 is roughly 3400 steps/s. Increased output limits so it can fight gravity.
         # Added a 0.5 degree deadband to provide tolerance and stop jittering once it reaches the target.
-        self.pid = PIDController(self.kp, self.ki, self.kd, output_limits=(-500, 500), deadband=0.5)
+        self.pid = PIDController(self.kp, self.ki, self.kd, output_limits=(-300, 300), deadband=0.5)
         
         # Register parameter callback for dynamic tuning
         self.add_on_set_parameters_callback(self.parameters_callback)
