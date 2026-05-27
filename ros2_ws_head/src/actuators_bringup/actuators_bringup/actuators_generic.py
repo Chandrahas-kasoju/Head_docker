@@ -37,9 +37,9 @@ class GenericServoController(Node):
         super().__init__('generic_servo_controller')
         
         # Declare parameters for flexibility
-        self.declare_parameter('kp', 5.0)
-        self.declare_parameter('ki', 2.0)
-        self.declare_parameter('kd', 0.5)
+        self.declare_parameter('kp', 120.0)
+        self.declare_parameter('ki', 15.0)
+        self.declare_parameter('kd', 16.0)
         self.declare_parameter('servo_port', '/dev/ttyACM0')
         self.declare_parameter('servo_id', 1)
         self.declare_parameter('use_software_pid', True) # Set to True to use custom PID
@@ -62,7 +62,7 @@ class GenericServoController(Node):
         
         # Initialize PID controller for calculating speed based on position error
         # Max speed for ST3215 is roughly 3400 steps/s
-        self.pid = PIDController(self.kp, self.ki, self.kd, output_limits=(-500, 500))
+        self.pid = PIDController(self.kp, self.ki, self.kd, output_limits=(-200, 200))
         
         # Register parameter callback for dynamic tuning
         self.add_on_set_parameters_callback(self.parameters_callback)
@@ -131,7 +131,7 @@ class GenericServoController(Node):
             
             # Use Rotate() to set the speed. The sign dictates direction.
             # Stop if we are close enough to avoid jitter
-            if abs(self.target_angle_deg - current_angle_deg) < 0.5:
+            if abs(self.target_angle_deg - current_angle_deg) < 2.0:
                 self.servo.StopServo(self.sts_id)
             else:
                 self.servo.Rotate(self.sts_id, int(speed_cmd))
