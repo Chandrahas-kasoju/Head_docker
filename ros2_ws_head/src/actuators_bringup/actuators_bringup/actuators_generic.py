@@ -62,7 +62,7 @@ class GenericServoController(Node):
         
         # Initialize PID controller for calculating speed based on position error
         # Max speed for ST3215 is roughly 3400 steps/s
-        self.pid = PIDController(self.kp, self.ki, self.kd, output_limits=(-200, 200))
+        self.pid = PIDController(self.kp, self.ki, self.kd, output_limits=(-300, 300))
         
         # Register parameter callback for dynamic tuning
         self.add_on_set_parameters_callback(self.parameters_callback)
