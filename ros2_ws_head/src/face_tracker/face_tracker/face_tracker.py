@@ -3,6 +3,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64
 from vision_msgs.msg import Point2D
+from rcl_interfaces.msg import SetParametersResult
 
 class FaceTrackerNode(Node):
     def __init__(self):
@@ -20,6 +21,8 @@ class FaceTrackerNode(Node):
         self.declare_parameter('image_height', 192)
         self.declare_parameter('current_pitch_topic', '/servo_current_angle')
         self.declare_parameter('current_roll_topic', '/servo_current_angle_pan')
+        self.declare_parameter('Kp_pan', 0.22)
+        self.declare_parameter('Kp_tilt', 0.22)
 
         # --- Publishers and Subscribers ---
         pitch_topic = self.get_parameter('pitch_topic').get_parameter_value().string_value
@@ -37,8 +40,9 @@ class FaceTrackerNode(Node):
         # Track current actual angles from motors
         self.current_pitch = self.home_pitch
         self.current_roll = self.home_roll
-        self.Kp_pan = 0.22 #angles per pixel
-        self.Kp_tilt = 0.22
+        self.Kp_pan = self.get_parameter('Kp_pan').get_parameter_value().double_value
+        self.Kp_tilt = self.get_parameter('Kp_tilt').get_parameter_value().double_value
+        self.add_on_set_parameters_callback(self.parameters_callback)
 
         self.pitch_publisher = self.create_publisher(Float64, pitch_topic, 10)
         self.roll_publisher = self.create_publisher(Float64, roll_topic, 10)
@@ -56,6 +60,16 @@ class FaceTrackerNode(Node):
         self.timer = self.create_timer(0.5, self.timer_callback)
         
         self.get_logger().info('Face tracker CONTROL node has been started. Waiting for eye center data...')
+
+    def parameters_callback(self, params):
+        for param in params:
+            if param.name == 'Kp_pan':
+                self.Kp_pan = param.value
+                self.get_logger().info(f"Updated Kp_pan to {self.Kp_pan}")
+            elif param.name == 'Kp_tilt':
+                self.Kp_tilt = param.value
+                self.get_logger().info(f"Updated Kp_tilt to {self.Kp_tilt}")
+        return SetParametersResult(successful=True)
 
     def timer_callback(self):
         now = self.get_clock().now()
