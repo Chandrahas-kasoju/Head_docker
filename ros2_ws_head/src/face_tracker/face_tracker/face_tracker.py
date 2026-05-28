@@ -21,8 +21,8 @@ class FaceTrackerNode(Node):
         self.declare_parameter('image_height', 192)
         self.declare_parameter('current_pitch_topic', '/servo_current_angle')
         self.declare_parameter('current_roll_topic', '/servo_current_angle_pan')
-        self.declare_parameter('Kp_pan', 0.22)
-        self.declare_parameter('Kp_tilt', 0.22)
+        self.declare_parameter('Kp_pan', 0.07)
+        self.declare_parameter('Kp_tilt', 0.07)
 
         # --- Publishers and Subscribers ---
         pitch_topic = self.get_parameter('pitch_topic').get_parameter_value().string_value
@@ -116,7 +116,7 @@ class FaceTrackerNode(Node):
 
         # Roll (left/right) -> Pan
         if target_x < center_x - dead_zone_x or target_x > center_x + dead_zone_x:
-            self.roll_angle = self.current_roll + (error_x * self.Kp_pan)
+            self.roll_angle = self.current_roll - (error_x * self.Kp_pan)
         else:
             self.roll_angle = self.current_roll
 
