@@ -29,8 +29,8 @@ class FaceTrackerNode(Node):
         self.home_roll = 300.0
         self.pitch_angle = self.home_pitch  # Tilt home pose
         self.roll_angle = self.home_roll  # Pan home pose
-        self.Kp_pan = 0.02   # Tuning parameter (proportional gain)
-        self.Kp_tilt = 0.02
+        self.Kp_pan = 1.0   # Tuning parameter (proportional gain)
+        self.Kp_tilt = 1.0
 
         self.pitch_publisher = self.create_publisher(Float64, pitch_topic, 10)
         self.roll_publisher = self.create_publisher(Float64, roll_topic, 10)
