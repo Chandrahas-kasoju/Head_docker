@@ -3,6 +3,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64
 from vision_msgs.msg import Point2D
+from rcl_interfaces.msg import SetParametersResult
 
 class FaceTrackerNode(Node):
     def __init__(self):
@@ -45,10 +46,20 @@ class FaceTrackerNode(Node):
             self.eye_center_callback,
             10)
             
+        self.smoothing_factor = self.get_parameter('smoothing_factor').get_parameter_value().double_value
+        self.add_on_set_parameters_callback(self.parameters_callback)
+            
         self.last_eye_center_time = self.get_clock().now()
         self.timer = self.create_timer(0.5, self.timer_callback)
         
         self.get_logger().info('Face tracker CONTROL node has been started. Waiting for eye center data...')
+
+    def parameters_callback(self, params):
+        for param in params:
+            if param.name == 'smoothing_factor':
+                self.smoothing_factor = param.value
+                self.get_logger().info(f"Updated smoothing_factor to {self.smoothing_factor}")
+        return SetParametersResult(successful=True)
 
     def timer_callback(self):
         now = self.get_clock().now()
@@ -73,7 +84,7 @@ class FaceTrackerNode(Node):
         self.last_eye_center_time = self.get_clock().now()
         width = self.get_parameter('image_width').get_parameter_value().integer_value
         height = self.get_parameter('image_height').get_parameter_value().integer_value
-        smoothing_factor = self.get_parameter('smoothing_factor').get_parameter_value().double_value
+        smoothing_factor = self.smoothing_factor
 
         center_x = width // 2
         center_y = height // 2

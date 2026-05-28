@@ -52,6 +52,7 @@ class GenericServoController(Node):
         self.declare_parameter('servo_id', 1)
         self.declare_parameter('use_software_pid', True) # Set to True to use custom PID
         self.declare_parameter('max_accel', 1000.0) # Max change in speed (steps/s) per second
+        self.declare_parameter('max_decel', 3000.0) # Allow faster braking to prevent overshoot
         
         self.kp = self.get_parameter('kp').value
         self.ki = self.get_parameter('ki').value
@@ -60,6 +61,7 @@ class GenericServoController(Node):
         self.sts_id = self.get_parameter('servo_id').value
         self.use_software_pid = self.get_parameter('use_software_pid').value
         self.max_accel = self.get_parameter('max_accel').value
+        self.max_decel = self.get_parameter('max_decel').value
         
         self.current_speed_cmd = 0.0
         
@@ -115,6 +117,9 @@ class GenericServoController(Node):
             elif param.name == 'max_accel':
                 self.max_accel = param.value
                 self.get_logger().info(f"Updated max_accel to {self.max_accel}")
+            elif param.name == 'max_decel':
+                self.max_decel = param.value
+                self.get_logger().info(f"Updated max_decel to {self.max_decel}")
         return SetParametersResult(successful=True)
 
     def target_callback(self, msg):
@@ -145,13 +150,20 @@ class GenericServoController(Node):
             # Compute PID control signal (desired velocity)
             raw_speed_cmd = self.pid.compute(self.target_angle_deg, current_angle_deg, dt)
             
+            # Determine if we are accelerating or decelerating
+            # If the raw command is pulling the speed closer to 0 (or opposite direction), we are braking
+            is_decelerating = False
+            if (self.current_speed_cmd > 0 and raw_speed_cmd < self.current_speed_cmd) or \
+               (self.current_speed_cmd < 0 and raw_speed_cmd > self.current_speed_cmd):
+                is_decelerating = True
+                
             # Apply acceleration limit (slew rate limiting)
-            max_delta_speed = self.max_accel * dt
+            allowed_delta = (self.max_decel * dt) if is_decelerating else (self.max_accel * dt)
             
-            if raw_speed_cmd > self.current_speed_cmd + max_delta_speed:
-                self.current_speed_cmd += max_delta_speed
-            elif raw_speed_cmd < self.current_speed_cmd - max_delta_speed:
-                self.current_speed_cmd -= max_delta_speed
+            if raw_speed_cmd > self.current_speed_cmd + allowed_delta:
+                self.current_speed_cmd += allowed_delta
+            elif raw_speed_cmd < self.current_speed_cmd - allowed_delta:
+                self.current_speed_cmd -= allowed_delta
             else:
                 self.current_speed_cmd = raw_speed_cmd
             
