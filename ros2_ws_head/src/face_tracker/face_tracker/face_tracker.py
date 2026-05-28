@@ -18,6 +18,7 @@ class FaceTrackerNode(Node):
         # Ideally this should be dynamic or passed as a parameter too.
         self.declare_parameter('image_width', 256)
         self.declare_parameter('image_height', 192)
+        self.declare_parameter('smoothing_factor', 0.5) # EMA smoothing factor
 
         # --- Publishers and Subscribers ---
         pitch_topic = self.get_parameter('pitch_topic').get_parameter_value().string_value
@@ -31,6 +32,9 @@ class FaceTrackerNode(Node):
         self.roll_angle = self.home_roll  # Pan home pose
         self.Kp_pan = 0.02   # Tuning parameter (proportional gain)
         self.Kp_tilt = 0.02
+        
+        self.smoothed_x = None
+        self.smoothed_y = None
 
         self.pitch_publisher = self.create_publisher(Float64, pitch_topic, 10)
         self.roll_publisher = self.create_publisher(Float64, roll_topic, 10)
@@ -69,6 +73,7 @@ class FaceTrackerNode(Node):
         self.last_eye_center_time = self.get_clock().now()
         width = self.get_parameter('image_width').get_parameter_value().integer_value
         height = self.get_parameter('image_height').get_parameter_value().integer_value
+        smoothing_factor = self.get_parameter('smoothing_factor').get_parameter_value().double_value
 
         center_x = width // 2
         center_y = height // 2
@@ -76,8 +81,16 @@ class FaceTrackerNode(Node):
         dead_zone_x = (width * dead_zone_percent) // 200 # Divided by 200 because percent is split on both sides
         dead_zone_y = (height * dead_zone_percent) // 200
 
-        target_x = msg.x
-        target_y = msg.y
+        # Apply EMA filter to the input coordinates to reduce jitter
+        if self.smoothed_x is None or self.smoothed_y is None:
+            self.smoothed_x = float(msg.x)
+            self.smoothed_y = float(msg.y)
+        else:
+            self.smoothed_x = (smoothing_factor * float(msg.x)) + ((1.0 - smoothing_factor) * self.smoothed_x)
+            self.smoothed_y = (smoothing_factor * float(msg.y)) + ((1.0 - smoothing_factor) * self.smoothed_y)
+
+        target_x = self.smoothed_x
+        target_y = self.smoothed_y
 
         # --- Pitch and Roll Calculation ---
         error_x = center_x - target_x

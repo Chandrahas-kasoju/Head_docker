@@ -51,6 +51,7 @@ class GenericServoController(Node):
         self.declare_parameter('servo_port', '/dev/ttyACM0')
         self.declare_parameter('servo_id', 1)
         self.declare_parameter('use_software_pid', True) # Set to True to use custom PID
+        self.declare_parameter('max_accel', 1000.0) # Max change in speed (steps/s) per second
         
         self.kp = self.get_parameter('kp').value
         self.ki = self.get_parameter('ki').value
@@ -58,6 +59,9 @@ class GenericServoController(Node):
         port = self.get_parameter('servo_port').value
         self.sts_id = self.get_parameter('servo_id').value
         self.use_software_pid = self.get_parameter('use_software_pid').value
+        self.max_accel = self.get_parameter('max_accel').value
+        
+        self.current_speed_cmd = 0.0
         
         self.get_logger().info(f"Connecting to servo on {port}")
         self.servo = ST3215(port)
@@ -108,6 +112,9 @@ class GenericServoController(Node):
                 self.kd = param.value
                 self.pid.kd = self.kd
                 self.get_logger().info(f"Updated kd to {self.kd}")
+            elif param.name == 'max_accel':
+                self.max_accel = param.value
+                self.get_logger().info(f"Updated max_accel to {self.max_accel}")
         return SetParametersResult(successful=True)
 
     def target_callback(self, msg):
@@ -136,14 +143,24 @@ class GenericServoController(Node):
             self.target_angle_pub.publish(Float64(data=self.target_angle_deg))
             
             # Compute PID control signal (desired velocity)
-            speed_cmd = self.pid.compute(self.target_angle_deg, current_angle_deg, dt)
+            raw_speed_cmd = self.pid.compute(self.target_angle_deg, current_angle_deg, dt)
+            
+            # Apply acceleration limit (slew rate limiting)
+            max_delta_speed = self.max_accel * dt
+            
+            if raw_speed_cmd > self.current_speed_cmd + max_delta_speed:
+                self.current_speed_cmd += max_delta_speed
+            elif raw_speed_cmd < self.current_speed_cmd - max_delta_speed:
+                self.current_speed_cmd -= max_delta_speed
+            else:
+                self.current_speed_cmd = raw_speed_cmd
             
             # Use Rotate() to set the speed. The sign dictates direction.
             # CRITICAL FIX: We must NOT use StopServo() here when error is small. 
             # If we stop the servo, it loses holding torque and gravity immediately pulls it down, 
             # causing endless bouncing. The PID integral term will naturally find the exact 
             # speed command needed to hold the weight still.
-            self.servo.Rotate(self.sts_id, int(speed_cmd))
+            self.servo.Rotate(self.sts_id, int(self.current_speed_cmd))
                 
         else:
             # === OPTION B: HARDWARE POSITION CONTROLLER (STANDARD) ===
