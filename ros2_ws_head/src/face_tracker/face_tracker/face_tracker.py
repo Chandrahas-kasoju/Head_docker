@@ -18,22 +18,33 @@ class FaceTrackerNode(Node):
         # Ideally this should be dynamic or passed as a parameter too.
         self.declare_parameter('image_width', 256)
         self.declare_parameter('image_height', 192)
+        self.declare_parameter('current_pitch_topic', '/servo_current_angle')
+        self.declare_parameter('current_roll_topic', '/servo_current_angle_pan')
 
         # --- Publishers and Subscribers ---
         pitch_topic = self.get_parameter('pitch_topic').get_parameter_value().string_value
         roll_topic = self.get_parameter('roll_topic').get_parameter_value().string_value
         eye_center_topic = self.get_parameter('eye_center_topic').get_parameter_value().string_value
+        current_pitch_topic = self.get_parameter('current_pitch_topic').get_parameter_value().string_value
+        current_roll_topic = self.get_parameter('current_roll_topic').get_parameter_value().string_value
         
         # Maintain absolute target angles
         self.home_pitch = 63.0
         self.home_roll = 300.0
         self.pitch_angle = self.home_pitch  # Tilt home pose
         self.roll_angle = self.home_roll  # Pan home pose
-        self.Kp_pan = 1.0   # Tuning parameter (proportional gain)
-        self.Kp_tilt = 1.0
+        
+        # Track current actual angles from motors
+        self.current_pitch = self.home_pitch
+        self.current_roll = self.home_roll
+        self.Kp_pan = 0.22 #angles per pixel
+        self.Kp_tilt = 0.22
 
         self.pitch_publisher = self.create_publisher(Float64, pitch_topic, 10)
         self.roll_publisher = self.create_publisher(Float64, roll_topic, 10)
+        
+        self.pitch_sub = self.create_subscription(Float64, current_pitch_topic, self.current_pitch_callback, 10)
+        self.roll_sub = self.create_subscription(Float64, current_roll_topic, self.current_roll_callback, 10)
         
         self.subscription = self.create_subscription(
             Point2D,
@@ -65,6 +76,12 @@ class FaceTrackerNode(Node):
                 pitch_msg.data = self.pitch_angle
                 self.pitch_publisher.publish(pitch_msg)
 
+    def current_pitch_callback(self, msg):
+        self.current_pitch = msg.data
+
+    def current_roll_callback(self, msg):
+        self.current_roll = msg.data
+
     def eye_center_callback(self, msg):
         self.last_eye_center_time = self.get_clock().now()
         width = self.get_parameter('image_width').get_parameter_value().integer_value
@@ -85,11 +102,15 @@ class FaceTrackerNode(Node):
 
         # Roll (left/right) -> Pan
         if target_x < center_x - dead_zone_x or target_x > center_x + dead_zone_x:
-            self.roll_angle += (error_x * self.Kp_pan)
+            self.roll_angle = self.current_roll + (error_x * self.Kp_pan)
+        else:
+            self.roll_angle = self.current_roll
 
         # Pitch (up/down)
         if target_y < center_y - dead_zone_y or target_y > center_y + dead_zone_y:
-            self.pitch_angle += (error_y * self.Kp_tilt)
+            self.pitch_angle = self.current_pitch + (error_y * self.Kp_tilt)
+        else:
+            self.pitch_angle = self.current_pitch
 
         # Clamp angles to prevent rotating beyond safe physical limits
         # Tilt is limited to 40-80 degrees based on mechanical constraints
