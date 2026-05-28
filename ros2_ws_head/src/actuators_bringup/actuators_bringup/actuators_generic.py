@@ -45,9 +45,9 @@ class GenericServoController(Node):
         super().__init__('generic_servo_controller')
         
         # Declare parameters for flexibility
-        self.declare_parameter('kp', 120.0)
-        self.declare_parameter('ki', 15.0)
-        self.declare_parameter('kd', 16.0)
+        self.declare_parameter('kp', 110.0)
+        self.declare_parameter('ki', 0.0)
+        self.declare_parameter('kd', 5.0)
         self.declare_parameter('servo_port', '/dev/ttyACM0')
         self.declare_parameter('servo_id', 1)
         self.declare_parameter('use_software_pid', True) # Set to True to use custom PID
