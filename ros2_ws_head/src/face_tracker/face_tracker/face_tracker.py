@@ -18,7 +18,7 @@ class FaceTrackerNode(Node):
         # Ideally this should be dynamic or passed as a parameter too.
         self.declare_parameter('image_width', 256)
         self.declare_parameter('image_height', 192)
-        self.declare_parameter('smoothing_factor', 0.5) # EMA smoothing factor
+        self.declare_parameter('smoothing_factor', 0.85) # Reduced lag: 0.85 is more responsive than 0.5
 
         # --- Publishers and Subscribers ---
         pitch_topic = self.get_parameter('pitch_topic').get_parameter_value().string_value
