@@ -80,16 +80,17 @@ class FaceTrackerNode(Node):
         target_y = msg.y
 
         # --- Pitch and Roll Calculation ---
-        error_x = center_x - target_x
-        error_y = center_y - target_y
-
         # Roll (left/right) -> Pan
-        if target_x < center_x - dead_zone_x or target_x > center_x + dead_zone_x:
-            self.roll_angle += (error_x * self.Kp_pan)
+        if target_x < center_x - dead_zone_x:
+            self.roll_angle += 2.0
+        elif target_x > center_x + dead_zone_x:
+            self.roll_angle -= 2.0
 
         # Pitch (up/down)
-        if target_y < center_y - dead_zone_y or target_y > center_y + dead_zone_y:
-            self.pitch_angle += (error_y * self.Kp_tilt)
+        if target_y < center_y - dead_zone_y:
+            self.pitch_angle += 2.0
+        elif target_y > center_y + dead_zone_y:
+            self.pitch_angle -= 2.0
 
         # Clamp angles to prevent rotating beyond safe physical limits
         # Tilt is limited to 40-80 degrees based on mechanical constraints
