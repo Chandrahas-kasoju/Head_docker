@@ -53,8 +53,8 @@ class GenericServoController(Node):
         self.declare_parameter('use_software_pid', True) # Set to True to use custom PID
         self.declare_parameter('max_accel', 1000.0) # Max change in speed (steps/s) per second
         self.declare_parameter('max_decel', 1000.0) # Allow faster braking to prevent overshoot
-        self.declare_parameter('min_angle', 43.0) # Minimum allowed position in degrees
-        self.declare_parameter('max_angle', 100.0) # Maximum allowed position in degrees
+        self.declare_parameter('min_angle', 45.0) # Minimum allowed position in degrees
+        self.declare_parameter('max_angle', 80.0) # Maximum allowed position in degrees
         
         self.kp = self.get_parameter('kp').value
         self.ki = self.get_parameter('ki').value
