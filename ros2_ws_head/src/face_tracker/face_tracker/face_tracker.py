@@ -126,10 +126,7 @@ class FaceTrackerNode(Node):
         else:
             self.pitch_angle = self.current_pitch
 
-        # Clamp angles to prevent rotating beyond safe physical limits
-        # Tilt is limited to 40-80 degrees based on mechanical constraints
-        self.roll_angle = max(0.0, min(360.0, self.roll_angle))
-        self.pitch_angle = max(40.0, min(80.0, self.pitch_angle))
+        # The actuator node is now responsible for clamping angles to safe physical limits
 
         # --- Publish Commands ---
         roll_msg = Float64()
