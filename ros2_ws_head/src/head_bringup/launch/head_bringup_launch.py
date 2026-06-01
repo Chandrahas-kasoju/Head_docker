@@ -14,7 +14,6 @@ def generate_launch_description():
     """
 
     # Get the path to the launch file of the ti_mmwave_rospkg package
-    # Get the path to the launch file of the ti_mmwave_rospkg package
     ti_mmwave_rospkg_launch_file = os.path.join(
        get_package_share_directory('ti_mmwave_rospkg'),
        'launch',
@@ -37,24 +36,24 @@ def generate_launch_description():
             executable='actuators_generic',
             name='actuators_node'
         ),
-        # Node(
-        #     package='sensors_bringup',
-        #     executable='static_transform',
-        #     name='static_transform_node'
-        # ),
-        # Node(
-        #     package='sensors_bringup',
-        #     executable='person_detect',
-        #     name='person_detect_node'
-        # ),
+        Node(
+            package='sensors_bringup',
+            executable='static_transform',
+            name='static_transform_node'
+        ),
+        Node(
+            package='sensors_bringup',
+            executable='person_detect',
+            name='person_detect_node'
+        ),
         Node(
             package='head_bringup',
             executable='face',
             name='face_node'
         ),
         # Include the launch file for the radar node
-        # IncludeLaunchDescription(
-        #     PythonLaunchDescriptionSource(ti_mmwave_rospkg_launch_file),
-        #     launch_arguments={'rviz': 'false'}.items()
-        # ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(ti_mmwave_rospkg_launch_file),
+            launch_arguments={'rviz': 'false'}.items()
+        ),
     ])
