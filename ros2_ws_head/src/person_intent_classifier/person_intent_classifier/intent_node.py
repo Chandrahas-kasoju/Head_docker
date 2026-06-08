@@ -1,371 +1,468 @@
+#!/usr/bin/env python3
+
 import rclpy
 from rclpy.node import Node
-from vision_msgs.msg import BoundingBox2D
+from rclpy.time import Time
+
+from vision_msgs.msg import BoundingBox2D, Point2D
 from sensor_msgs.msg import PointCloud2
-from std_msgs.msg import String
+from std_msgs.msg import String, Float32 
 from sensor_msgs_py import point_cloud2 as pc2
+from nav_msgs.msg import Odometry
+
 from collections import deque
 import numpy as np
 import yaml
-import os
+import math
 from pathlib import Path
+
 
 class StateStabilizer:
     def __init__(self, persistence_thresh=10):
+        self.history = deque(maxlen=persistence_thresh)
         self.current_state = "UNKNOWN"
-        self.pending_state = None
-        self.counter = 0
-        self.thresh = persistence_thresh
 
     def update(self, new_state):
-        if new_state == self.current_state:
-            self.pending_state = None
-            self.counter = 0
-            return self.current_state
-
-        if new_state == self.pending_state:
-            self.counter += 1
-        else:
-            self.pending_state = new_state
-            self.counter = 1
-
-        if self.counter >= self.thresh:
-            self.current_state = new_state
-            self.counter = 0
-            self.pending_state = None
-
+        self.history.append(new_state)
+        
+        if len(self.history) == self.history.maxlen:
+            most_common = max(set(self.history), key=self.history.count)
+            self.current_state = most_common
+            
         return self.current_state
+
 
 class PersonIntentNode(Node):
     def __init__(self):
         super().__init__('person_intent_classifier')
 
-        # Load configuration from YAML file
         self._load_configuration()
 
-        # --- CONFIGURATION ---
-        # Declare ROS2 parameters with defaults
+        # ----------------------------
+        # Parameters
+        # ----------------------------
         self.declare_parameter('bbox_topic', self.config['bbox_topic'])
         self.declare_parameter('radar_topic', self.config['radar_topic'])
+        self.declare_parameter('odom_topic', self.config.get('odom_topic', '/odom'))
+        self.declare_parameter('use_odom', self.config.get('use_odom', False))
 
-        # Camera Params
         self.declare_parameter('image_width', self.config['image_width'])
         self.declare_parameter('image_height', self.config['image_height'])
 
-        # Intent Classification Parameters
+        self.declare_parameter('interact_threshold_ratio', self.config['interact_threshold_ratio'])
         self.declare_parameter('close_threshold_ratio', self.config['close_threshold_ratio'])
-        self.declare_parameter('interaction_radius', self.config['interaction_radius'])
+        
+        self.declare_parameter('interact_distance_thresh', self.config['interact_distance_thresh'])
+        self.declare_parameter('close_distance_thresh', self.config['close_distance_thresh'])
+        
         self.declare_parameter('radar_timeout', self.config['radar_timeout'])
 
-        # State Stabilization Parameters
         self.declare_parameter('persistence_threshold', self.config['persistence_threshold'])
-
-        # Data Smoothing Parameters
         self.declare_parameter('smoothing_window', self.config['smoothing_window'])
         self.declare_parameter('radar_smoothing_window', self.config['radar_smoothing_window'])
 
-        # Radar Processing Parameters
         self.declare_parameter('low_speed_threshold', self.config['low_speed_threshold'])
-        self.declare_parameter('moving_away_threshold', self.config['moving_away_threshold'])
+        self.declare_parameter('moving_away_size_threshold', self.config.get('moving_away_size_threshold', 0.8))
         self.declare_parameter('min_time_delta', self.config['min_time_delta'])
 
-        # Camera Motion Analysis Parameters
-        self.declare_parameter('approaching_threshold', self.config['approaching_threshold'])
-        self.declare_parameter('moving_away_size_threshold', self.config['moving_away_size_threshold'])
-        self.declare_parameter('center_tolerance_ratio', self.config['center_tolerance_ratio'])
+        self.declare_parameter('bbox_timeout', self.config.get('bbox_timeout', 2.0))
 
-        # Get parameter values
+        self.declare_parameter('radar_range_axis', self.config.get('radar_range_axis', 'z'))
+        self.declare_parameter('radar_max_range', self.config.get('radar_max_range', 10.0))
+        self.declare_parameter('radar_forward_offset', self.config.get('radar_forward_offset', 0.05))
+        self.declare_parameter('hysteresis_distance_buffer', self.config.get('hysteresis_distance_buffer', 0.2))
+
         self._setup_parameters()
 
-        # --- STATE VARIABLES ---
-        # Camera History
+        # ----------------------------
+        # State
+        # ----------------------------
+        self.history_size_x = deque(maxlen=self.SMOOTHING_WINDOW)
         self.history_size_y = deque(maxlen=self.SMOOTHING_WINDOW)
-        self.history_center_x = deque(maxlen=self.SMOOTHING_WINDOW)
+
+        self.prev_cam_avg_w = None
         self.prev_cam_avg_h = None
-        self.prev_cam_avg_cx = None
 
-        # Radar State
+        self.latest_eye_center = None
+
+        self.robot_v_x = 0.0
+        self.robot_omega_z = 0.0
+
         self.radar_active = False
-        self.last_radar_time = 0
+        self.last_radar_time = 0.0
 
-        # Radar Smoothing
         self.radar_centroid_history = deque(maxlen=self.radar_smoothing_window)
+        self.dist_history = deque(maxlen=self.radar_smoothing_window)
+
         self.prev_radar_centroid = None
         self.prev_radar_timestamp = None
+        self.prev_radar_dist = None
+        
+        self.latest_r_dot = 0.0
+        self.latest_dist = 0.0
+        self.latest_dca = 0.0  
 
-        # Fusion Data
-        self.latest_intent = "UNKNOWN"
-        self.latest_metrics = ""
-
-        # Person detection tracking
         self.last_bbox_time = 0.0
-        self.bbox_timeout = 2.0  # Seconds without bbox before showing "No person detected"
+        self.bbox_timeout = float(self.get_parameter('bbox_timeout').value)
 
-        # Subscribers
+        self.stabilizer = StateStabilizer(
+            persistence_thresh=int(self.get_parameter('persistence_threshold').value)
+        )
+
+        self.current_stable_intent = "UNKNOWN"
+
+        # ----------------------------
+        # ROS interfaces
+        # ----------------------------
         self.create_subscription(BoundingBox2D, self.get_parameter('bbox_topic').value, self.camera_callback, 10)
         self.create_subscription(PointCloud2, self.get_parameter('radar_topic').value, self.radar_callback, 10)
+        self.create_subscription(Point2D, '/face_tracker/eye_center', self.eye_center_callback, 10)
+        if self.USE_ODOM:
+            self.create_subscription(Odometry, self.get_parameter('odom_topic').value, self.odom_callback, 10)
+            self.get_logger().info("Odometry usage is ENABLED.")
+        else:
+            self.get_logger().info("Odometry usage is DISABLED. Assuming robot is stationary.")
 
-        # Publisher
         self.intent_publisher = self.create_publisher(String, '/person_intent', 10)
+        self.velocity_publisher = self.create_publisher(Float32, '/person_intent/radar_velocity', 10)
+        self.distance_publisher = self.create_publisher(Float32, '/person_intent/radar_distance', 10)
 
-        # Timer for periodic status checks
-        self.create_timer(0.2, self.status_check_callback)  # Check every 1 second
+        self.create_timer(0.2, self.status_check_callback)
+        self.get_logger().info("Intent Node Started with Hysteresis Anti-Flicker Logic")
 
-        self.get_logger().info("Intent Node Started [FUSION: Camera + Radar]")
-        self.get_logger().info(f"Configuration loaded from YAML file")
-
+    # ----------------------------
+    # Config
+    # ----------------------------
     def _load_configuration(self):
-        """Load configuration from YAML file or use defaults"""
-        # Default configuration
         default_config = {
             'bbox_topic': '/person_bounding_box',
             'radar_topic': '/person_detect/filtered_points',
-            'image_width': 640,
-            'image_height': 480,
-            'close_threshold_ratio': 0.70,
-            'interaction_radius': 0.8,
+            'odom_topic': '/odom',
+            'use_odom': False,
+            'image_width': 256,
+            'image_height': 192,
+            'interact_threshold_ratio': 0.30, 
+            'close_threshold_ratio': 0.20,    
+            'interact_distance_thresh': 1.8, 
+            'close_distance_thresh': 3.2,    
             'radar_timeout': 0.5,
             'persistence_threshold': 10,
-            'smoothing_window': 10,
+            'smoothing_window': 5,
             'radar_smoothing_window': 5,
-            'low_speed_threshold': 0.02,
-            'moving_away_threshold': 0.1,
-            'min_time_delta': 0.05,
-            'approaching_threshold': 0.8,
+            'low_speed_threshold': 0.08,
             'moving_away_size_threshold': 0.8,
-            'center_tolerance_ratio': 0.25,
+            'min_time_delta': 0.10,
+            'bbox_timeout': 2.0,
+            'radar_range_axis': 'z',
+            'radar_max_range': 10.0,
+            'radar_forward_offset': 0.05,
+            'hysteresis_distance_buffer': 0.2,
         }
 
-        # Try to load from installed YAML file first (for launch files)
         try:
             import ament_index_python
             share_dir = ament_index_python.get_package_share_directory('person_intent_classifier')
             yaml_path = Path(share_dir) / 'config' / 'intent_classifier_params.yaml'
-        except:
-            # Fallback to source directory (for development)
+        except Exception:
             yaml_path = Path(__file__).parent.parent / 'config' / 'intent_classifier_params.yaml'
 
         if yaml_path.exists():
             try:
                 with open(yaml_path, 'r') as file:
                     yaml_data = yaml.safe_load(file)
-                    # Navigate to the parameters section
                     if '/person_intent_classifier' in yaml_data and 'ros__parameters' in yaml_data['/person_intent_classifier']:
                         params = yaml_data['/person_intent_classifier']['ros__parameters']
-                        self.config = {**default_config, **params}  # Merge with defaults
-                        self.get_logger().info(f"Loaded configuration from {yaml_path}")
+                        self.config = {**default_config, **params}
                     else:
                         self.config = default_config
-                        self.get_logger().warn(f"YAML file found but invalid format, using defaults")
-            except Exception as e:
+            except Exception:
                 self.config = default_config
-                self.get_logger().warn(f"Failed to load YAML file: {e}, using defaults")
         else:
             self.config = default_config
-            self.get_logger().info(f"No YAML file found at {yaml_path}, using defaults")
 
     def _setup_parameters(self):
-        """Setup all parameters from ROS2 parameter server"""
-        # Camera parameters
-        self.IMAGE_WIDTH = self.get_parameter('image_width').value
-        self.IMAGE_HEIGHT = self.get_parameter('image_height').value
-        self.IMAGE_CENTER_X = self.IMAGE_WIDTH / 2.0
+        self.IMAGE_WIDTH = float(self.get_parameter('image_width').value)
+        self.IMAGE_HEIGHT = float(self.get_parameter('image_height').value)
+        self.IMAGE_AREA = self.IMAGE_WIDTH * self.IMAGE_HEIGHT
 
-        # Classification thresholds
-        self.CLOSE_THRESH_RATIO = self.get_parameter('close_threshold_ratio').value
-        self.INTERACTION_RADIUS = self.get_parameter('interaction_radius').value
-        self.RADAR_TIMEOUT = self.get_parameter('radar_timeout').value
+        self.INTERACT_THRESH_RATIO = float(self.get_parameter('interact_threshold_ratio').value)
+        self.CLOSE_THRESH_RATIO = float(self.get_parameter('close_threshold_ratio').value)
+        self.INTERACT_DIST = float(self.get_parameter('interact_distance_thresh').value)
+        self.CLOSE_DIST = float(self.get_parameter('close_distance_thresh').value)
+        self.RADAR_TIMEOUT = float(self.get_parameter('radar_timeout').value)
 
-        # Smoothing parameters
         self.SMOOTHING_WINDOW = int(self.get_parameter('smoothing_window').value)
         self.radar_smoothing_window = int(self.get_parameter('radar_smoothing_window').value)
 
-        # Radar processing parameters
-        self.LOW_SPEED_THRESHOLD = self.get_parameter('low_speed_threshold').value
-        self.MOVING_AWAY_THRESHOLD = self.get_parameter('moving_away_threshold').value
-        self.MIN_TIME_DELTA = self.get_parameter('min_time_delta').value
+        self.LOW_SPEED_THRESHOLD = float(self.get_parameter('low_speed_threshold').value)
+        self.MOVING_AWAY_SIZE_THRESHOLD = float(self.get_parameter('moving_away_size_threshold').value)
+        self.MIN_TIME_DELTA = float(self.get_parameter('min_time_delta').value)
 
-        # Camera motion analysis
-        self.APPROACHING_THRESHOLD = self.get_parameter('approaching_threshold').value
-        self.MOVING_AWAY_SIZE_THRESHOLD = self.get_parameter('moving_away_size_threshold').value
-        self.CENTER_TOLERANCE_RATIO = self.get_parameter('center_tolerance_ratio').value
+        self.RADAR_RANGE_AXIS = str(self.get_parameter('radar_range_axis').value).lower()
+        self.RADAR_MAX_RANGE = float(self.get_parameter('radar_max_range').value)
+        self.RADAR_FORWARD_OFFSET = float(self.get_parameter('radar_forward_offset').value)
+        self.HYSTERESIS_BUFFER = float(self.get_parameter('hysteresis_distance_buffer').value)
+        self.USE_ODOM = bool(self.get_parameter('use_odom').value)
 
-        # Initialize stabilizer
-        self.stabilizer = StateStabilizer(persistence_thresh=int(self.get_parameter('persistence_threshold').value))
+    # ----------------------------
+    # Helpers
+    # ----------------------------
+    def _pc2_to_xyz(self, msg: PointCloud2) -> np.ndarray:
+        try:
+            arr = pc2.read_points_numpy(msg, field_names=("x", "y", "z"))
+            xyz = np.column_stack((arr['x'], arr['y'], arr['z'])).astype(np.float32, copy=False)
+            return xyz
+        except Exception:
+            pts = []
+            for p in pc2.read_points(msg, field_names=("x", "y", "z"), skip_nans=True):
+                if isinstance(p, (tuple, list)):
+                    pts.append([p[0], p[1], p[2]])
+                else:
+                    pts.append([p['x'], p['y'], p['z']])
+            return np.asarray(pts, dtype=np.float32)
 
-    # =========================================
-    # RADAR LOGIC
-    # =========================================
-    def radar_callback(self, msg):
-        # 1. Read points
-        gen = pc2.read_points(msg, field_names=("x", "y", "z"), skip_nans=True)
-        points_list = list(gen)
+    def _range_from_centroid(self, centroid: np.ndarray) -> float:
+        if self.RADAR_RANGE_AXIS == 'x': return float(abs(centroid[0]))
+        if self.RADAR_RANGE_AXIS == 'y': return float(abs(centroid[1]))
+        if self.RADAR_RANGE_AXIS == 'norm': return float(np.linalg.norm(centroid))
+        return float(abs(centroid[2]))
 
-        if len(points_list) == 0:
-            return
+    def odom_callback(self, msg: Odometry):
+        self.robot_v_x = msg.twist.twist.linear.x
+        self.robot_omega_z = msg.twist.twist.angular.z
 
-        # 2. Get Raw Centroid
-        points = np.array([list(p) for p in points_list], dtype=np.float32)
-        raw_centroid = np.mean(points, axis=0)
+    def eye_center_callback(self, msg):
+        self.latest_eye_center = msg
 
-        # 3. SMOOTH THE CENTROID
-        self.radar_centroid_history.append(raw_centroid)
-        centroid = np.mean(self.radar_centroid_history, axis=0) # [x, y, z]
+    # ----------------------------
+    # Radar
+    # ----------------------------
+    def radar_callback(self, msg: PointCloud2):
+        xyz = self._pc2_to_xyz(msg)
+        if xyz.size == 0: return
 
-        current_time = self.get_clock().now().nanoseconds / 1e9
-        self.radar_active = True
-        self.last_radar_time = current_time
+        ranges = np.linalg.norm(xyz, axis=1)
+        valid_mask = (ranges > 0.05) & (ranges < self.RADAR_MAX_RANGE)
+        xyz = xyz[valid_mask]
+        
+        if xyz.size == 0: return
 
-        # 4. Calculate Velocity
-        if self.prev_radar_centroid is None:
+        centroid_raw = np.mean(xyz, axis=0)
+        self.radar_centroid_history.append(centroid_raw)
+        centroid = np.mean(self.radar_centroid_history, axis=0)
+
+        dist_raw = self._range_from_centroid(centroid)
+        self.dist_history.append(dist_raw)
+        dist = float(np.mean(self.dist_history))
+
+        t = Time.from_msg(msg.header.stamp).nanoseconds / 1e9
+
+        if self.prev_radar_timestamp is None:
+            self.prev_radar_timestamp = t
             self.prev_radar_centroid = centroid
-            self.prev_radar_timestamp = current_time
+            self.prev_radar_dist = dist
+            self.last_radar_time = self.get_clock().now().nanoseconds / 1e9
+            self.radar_active = True
             return
 
-        dt = current_time - self.prev_radar_timestamp
-        if dt < self.MIN_TIME_DELTA:
-            return  # Don't calc if time delta is too small
+        dt = t - self.prev_radar_timestamp
+        
+        if dt < 0.0:
+            self.prev_radar_timestamp = t
+            self.prev_radar_centroid = centroid
+            self.prev_radar_dist = dist
+            self.radar_centroid_history.clear()
+            self.dist_history.clear()
+            return
 
-        velocity = (centroid - self.prev_radar_centroid) / dt
-        speed = np.linalg.norm(velocity)
+        if dt < self.MIN_TIME_DELTA: return
 
-        # 5. PHYSICS LOGIC
-        P = centroid
-        V = velocity
-        v_sq = np.dot(V, V)
-        dist = np.linalg.norm(P)
+        r_dot_raw = (dist - self.prev_radar_dist) / dt
+        if abs(r_dot_raw) > 6.0:
+            self.prev_radar_timestamp = t
+            return
 
-        intent = "UNKNOWN"
-        metrics = ""
+        dx = centroid[0] - self.prev_radar_centroid[0]
+        dz = centroid[2] - self.prev_radar_centroid[2]
+        delta_mag = math.hypot(dx, dz)
 
-        # Determine if moving away (Dot product of Position and Velocity)
-        moving_away_score = np.dot(P, V)
-
-        if v_sq < self.LOW_SPEED_THRESHOLD: # Low speed threshold
-            if dist < 1.0:
-                 intent = "CLOSE_PROXIMITY"
-            else:
-                 intent = "STATIONARY"
-            metrics = f"Dist: {dist:.1f}m"
-
-        elif moving_away_score > self.MOVING_AWAY_THRESHOLD:
-            # Moving Away detection
-            intent = "MOVING_AWAY"
-            metrics = f"Vel: {speed:.1f}m/s (Away)"
-
+        if delta_mag < 0.01: 
+            dca = dist
         else:
-            # Approaching logic
-            t_c = -np.dot(P, V) / v_sq
-            P_closest = P + (V * t_c)
-            dca = np.linalg.norm(P_closest)
-
-            # Using interaction radius for detection
-            if dca < self.INTERACTION_RADIUS:
-                intent = "WANT_TO_INTERACT"
-                metrics = f"DCA: {dca:.2f}m (Hit)"
+            dot_prod = centroid[0] * dx + centroid[2] * dz
+            if dot_prod > 0:
+                dca = dist
             else:
-                intent = "PASSING_BY"
-                metrics = f"DCA: {dca:.2f}m (Miss)"
+                dca = abs(centroid[0] * dz - centroid[2] * dx) / delta_mag
 
-        self.latest_intent = intent
-        self.latest_metrics = f"[RADAR] {metrics}"
+        theta = math.atan2(centroid[0], centroid[2])
+        v_comp_forward = self.robot_v_x * math.cos(theta)
+        v_radar_lateral = self.robot_omega_z * self.RADAR_FORWARD_OFFSET
+        v_comp_lateral = v_radar_lateral * math.sin(theta)
+        
+        robot_radial_vel = v_comp_forward - v_comp_lateral
+        r_dot = r_dot_raw + robot_radial_vel
 
+        vel_msg = Float32()
+        vel_msg.data = float(r_dot)
+        self.velocity_publisher.publish(vel_msg)
+
+        dist_msg = Float32()
+        dist_msg.data = float(dist)
+        self.distance_publisher.publish(dist_msg)
+
+        self.latest_dist = dist
+        self.latest_r_dot = r_dot
+        self.latest_dca = dca
+
+        self.prev_radar_timestamp = t
         self.prev_radar_centroid = centroid
-        self.prev_radar_timestamp = current_time
+        self.prev_radar_dist = dist
+        self.last_radar_time = self.get_clock().now().nanoseconds / 1e9
+        self.radar_active = True
 
-    # =========================================
-    # CAMERA LOGIC (Decision Master)
-    # =========================================
-    def camera_callback(self, msg):
-        # Update last bbox time
+    # ----------------------------
+    # Camera / Fusion Entry Point
+    # ----------------------------
+    def camera_callback(self, msg: BoundingBox2D):
         self.last_bbox_time = self.get_clock().now().nanoseconds / 1e9
-
         now = self.get_clock().now().nanoseconds / 1e9
         is_radar_fresh = (now - self.last_radar_time) < self.RADAR_TIMEOUT
 
-        # --- 1. Process Camera Data ---
-        self.history_size_y.append(msg.size_y)
-        self.history_center_x.append(msg.center.position.x)
+        bbox_w = msg.size_x
+        bbox_h = msg.size_y
 
-        if len(self.history_size_y) < self.SMOOTHING_WINDOW:
-            return
+        if bbox_w > self.IMAGE_WIDTH or bbox_h > self.IMAGE_HEIGHT:
+            bbox_w = min(bbox_w, self.IMAGE_WIDTH)
+            bbox_h = min(bbox_h, self.IMAGE_HEIGHT)
 
-        curr_h = np.mean(self.history_size_y)
-        curr_cx = np.mean(self.history_center_x)
+        self.history_size_x.append(bbox_w)
+        self.history_size_y.append(bbox_h)
+
+        if len(self.history_size_y) < self.SMOOTHING_WINDOW: return
+
+        curr_w = float(np.mean(self.history_size_x))
+        curr_h = float(np.mean(self.history_size_y))
 
         if self.prev_cam_avg_h is None:
+            self.prev_cam_avg_w = curr_w
             self.prev_cam_avg_h = curr_h
-            self.prev_cam_avg_cx = curr_cx
             return
 
-        # --- 2. Decide Source ---
         final_intent = "UNKNOWN"
         debug_str = ""
+        delta_h = curr_h - self.prev_cam_avg_h
 
-        # Priority: Close Proximity
-        height_ratio = curr_h / self.IMAGE_HEIGHT
-        if height_ratio > self.CLOSE_THRESH_RATIO:
-            final_intent = "CLOSE_PROXIMITY"
-            debug_str = f"Visual Priority ({height_ratio*100:.0f}%)"
+        # ---------------------------------------------------------
+        # PRIMARY LOGIC: SENSOR FUSION (Radar Physics + Visual Height)
+        # ---------------------------------------------------------
+        if is_radar_fresh and self.radar_active:
+            r_dist = self.latest_dist
+            r_vel = self.latest_r_dot
+            dca = self.latest_dca
+            
+            # --- MOTION HYSTERESIS: Anti-Flicker for Moving Away ---
+            is_leaving = False
+            if self.current_stable_intent == "MOVING_AWAY":
+                is_leaving = delta_h < -0.2 
+            else:
+                is_leaving = delta_h < -self.MOVING_AWAY_SIZE_THRESHOLD
 
-        elif is_radar_fresh and self.radar_active:
-            # Trust Radar
-            final_intent = self.latest_intent
-            debug_str = self.latest_metrics
+            # --- SPATIAL HYSTERESIS: Anti-Boundary Flicker for Distances ---
+            # We add a 0.2m "sticky" buffer to thresholds so standing exactly on the line doesn't flicker
+            buffer = self.HYSTERESIS_BUFFER 
+            
+            active_interact_thresh = self.INTERACT_DIST
+            if self.current_stable_intent == "WANT_TO_INTERACT":
+                active_interact_thresh += buffer  # Pushes threshold out to 2.0m to prevent dropping state
+                
+            active_close_thresh = self.CLOSE_DIST
+            if self.current_stable_intent in ["WANT_TO_INTERACT", "CLOSE_PROXIMITY"]:
+                active_close_thresh += buffer     # Pushes threshold out to 3.4m to prevent dropping state
+            # -------------------------------------------------------------
 
-        else:
-            # Fallback Camera
-            delta_h = curr_h - self.prev_cam_avg_h
+            # 1. Immediate Interaction
+            if r_dist < active_interact_thresh:
+                final_intent = "WANT_TO_INTERACT"
+                debug_str = f"[FUSED] Dist: {r_dist:.2f}m < {active_interact_thresh:.1f}m"
 
-            if delta_h > self.APPROACHING_THRESHOLD:
-                if abs(curr_cx - self.IMAGE_CENTER_X) < (self.IMAGE_WIDTH * self.CENTER_TOLERANCE_RATIO):
-                    final_intent = "WANT_TO_INTERACT"
-                else:
-                    final_intent = "PASSING_BY"
-            elif delta_h < -self.MOVING_AWAY_SIZE_THRESHOLD:
+            # 2. Universal Leaving (Overrides Close/Outer zones)
+            elif is_leaving and r_dist > active_interact_thresh:
                 final_intent = "MOVING_AWAY"
+                debug_str = f"[FUSED] Box Shrinking. Dist: {r_dist:.2f}m, delta_h: {delta_h:.1f}px"
+
+            # 3. Close Proximity
+            elif r_dist < active_close_thresh:
+                final_intent = "CLOSE_PROXIMITY"
+                debug_str = f"[FUSED] Dist: {r_dist:.2f}m (Between {active_interact_thresh:.1f}m and {active_close_thresh:.1f}m)"
+
+            # 4. Outer Zone (> 3.2m)
+            else:
+                if abs(r_vel) < self.LOW_SPEED_THRESHOLD:
+                    final_intent = "STATIONARY"
+                    debug_str = f"[FUSED] Stationary afar. Dist: {r_dist:.2f}m"
+                else:
+                    if dca > 1.8:
+                        final_intent = "PASSING_BY"
+                        debug_str = f"[FUSED] Passing By. Dist: {r_dist:.2f}m, DCA: {dca:.2f}m > 1.8m"
+                    else:
+                        final_intent = "APPROACHING"
+                        debug_str = f"[FUSED] Approaching. Dist: {r_dist:.2f}m, DCA: {dca:.2f}m <= 1.8m"
+
+        # ---------------------------------------------------------
+        # FALLBACK LOGIC: CAMERA ONLY
+        # ---------------------------------------------------------
+        else:
+            curr_area = curr_w * curr_h
+            area_ratio = curr_area / max(1.0, self.IMAGE_AREA)
+
+            # Mirror the Hysteresis Logic for the fallback
+            is_leaving_fallback = False
+            if self.current_stable_intent == "MOVING_AWAY":
+                is_leaving_fallback = delta_h < -0.2
+            else:
+                is_leaving_fallback = delta_h < -self.MOVING_AWAY_SIZE_THRESHOLD
+
+            if is_leaving_fallback: 
+                final_intent = "MOVING_AWAY"
+                debug_str = "[CAM FALLBACK] Bounding box shrinking"
+            elif area_ratio > self.INTERACT_THRESH_RATIO:
+                final_intent = "WANT_TO_INTERACT"
+                debug_str = f"[CAM FALLBACK] Area: {area_ratio*100:.0f}%"
+            elif area_ratio > self.CLOSE_THRESH_RATIO:
+                final_intent = "CLOSE_PROXIMITY"
+                debug_str = f"[CAM FALLBACK] Area: {area_ratio*100:.0f}%"
             else:
                 final_intent = "STATIONARY"
+                debug_str = "[CAM FALLBACK] Static/Far"
 
-            debug_str = "[CAM-ONLY]"
-
-        # --- 3. Stabilize & Output ---
         stable_intent = self.stabilizer.update(final_intent)
+        self.current_stable_intent = stable_intent
 
+        self.prev_cam_avg_w = curr_w
         self.prev_cam_avg_h = curr_h
-        self.prev_cam_avg_cx = curr_cx
 
-        # Use ROS logging for better visibility in launch mode
         self.get_logger().info(f"Intent: {stable_intent} | {debug_str}")
-        
-        # Publish intent to ROS2 topic
-        intent_msg = String()
-        intent_msg.data = stable_intent
-        self.intent_publisher.publish(intent_msg)
 
-    # =========================================
-    # STATUS CHECK (No Person Detection)
-    # =========================================
+        out = String()
+        out.data = stable_intent
+        self.intent_publisher.publish(out)
+
     def status_check_callback(self):
-        """Periodic check for person detection status"""
         now = self.get_clock().now().nanoseconds / 1e9
-
-        # Check if we haven't received a bounding box recently
         if (now - self.last_bbox_time) > self.bbox_timeout:
+            self.current_stable_intent = "NO_PERSON_DETECTED"
             self.get_logger().info("Intent: NO_PERSON_DETECTED | No bounding box received")
-            
-            # Publish NO_PERSON_DETECTED intent to ROS2 topic
-            intent_msg = String()
-            intent_msg.data = "NO_PERSON_DETECTED"
-            self.intent_publisher.publish(intent_msg)
+            out = String()
+            out.data = "NO_PERSON_DETECTED"
+            self.intent_publisher.publish(out)
 
 def main(args=None):
     rclpy.init(args=args)
     node = PersonIntentNode()
     try:
         rclpy.spin(node)
-    except KeyboardInterrupt:
-        print("\nShutting down...")
+    except KeyboardInterrupt: pass
     finally:
         node.destroy_node()
         rclpy.shutdown()
