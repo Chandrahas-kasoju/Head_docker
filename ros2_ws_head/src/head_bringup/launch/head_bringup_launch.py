@@ -14,7 +14,6 @@ def generate_launch_description():
     """
 
     # Get the path to the launch file of the ti_mmwave_rospkg package
-    # Get the path to the launch file of the ti_mmwave_rospkg package
     ti_mmwave_rospkg_launch_file = os.path.join(
        get_package_share_directory('ti_mmwave_rospkg'),
        'launch',
@@ -33,8 +32,8 @@ def generate_launch_description():
             name='face_tracker_node'
         ),
         Node(
-            package='actuators_bringup', #SINCE I DONT HAVE MOTORS!!!!!
-            executable='actuators',
+            package='actuators_bringup',
+            executable='actuators_generic',
             name='actuators_node'
         ),
         Node(
