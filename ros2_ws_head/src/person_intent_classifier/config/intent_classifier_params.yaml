@@ -9,7 +9,7 @@
     # TOPIC CONFIGURATION
     # ==========================================
     # ROS2 topic names for input data
-    bbox_topic: '/person_bounding_box' #'/hospibot/pose_bbox'            # Bounding box input topic from camera
+    bbox_topic: '/hospibot/pose_bbox' #'/hospibot/pose_bbox'            # Bounding box input topic from camera
     radar_topic: '/person_detect/filtered_points'# Radar point cloud input topic
     odom_topic: '/odom'                          # Odometry topic (used to subtract robot movement)
     use_odom: false
