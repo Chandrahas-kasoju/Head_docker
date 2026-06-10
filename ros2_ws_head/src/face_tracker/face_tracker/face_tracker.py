@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, String  # Added String import
 from vision_msgs.msg import Point2D
 from rcl_interfaces.msg import SetParametersResult
 
@@ -15,8 +15,7 @@ class FaceTrackerNode(Node):
         self.declare_parameter('eye_center_topic', '/face_tracker/eye_center')
         self.declare_parameter('dead_zone_percent', 30) 
         self.declare_parameter('timeout_sec', 2.0) # Seconds before returning to home
-        # Resolution should match what Tracker is using (usually 640x480 for standard webcams)
-        # Ideally this should be dynamic or passed as a parameter too.
+        # Resolution should match what Tracker is using
         self.declare_parameter('image_width', 256)
         self.declare_parameter('image_height', 192)
         self.declare_parameter('current_pitch_topic', '/servo_current_angle')
@@ -44,22 +43,33 @@ class FaceTrackerNode(Node):
         self.Kp_tilt = self.get_parameter('Kp_tilt').get_parameter_value().double_value
         self.add_on_set_parameters_callback(self.parameters_callback)
 
+        # Application State
+        self.current_intent = 'NORMAL'  # New variable to track intent
+
         self.pitch_publisher = self.create_publisher(Float64, pitch_topic, 10)
         self.roll_publisher = self.create_publisher(Float64, roll_topic, 10)
         
         self.pitch_sub = self.create_subscription(Float64, current_pitch_topic, self.current_pitch_callback, 10)
         self.roll_sub = self.create_subscription(Float64, current_roll_topic, self.current_roll_callback, 10)
         
+        # Eye Tracking Subscriber
         self.subscription = self.create_subscription(
             Point2D,
             eye_center_topic,
             self.eye_center_callback,
             10)
             
+        # Intent Subscriber (NEW)
+        self.intent_sub = self.create_subscription(
+            String,
+            '/person_intent',
+            self.intent_callback,
+            10)
+            
         self.last_eye_center_time = self.get_clock().now()
         self.timer = self.create_timer(0.5, self.timer_callback)
         
-        self.get_logger().info('Face tracker CONTROL node has been started. Waiting for eye center data...')
+        self.get_logger().info('Face tracker CONTROL node has been started. Waiting for intent and eye center data...')
 
     def parameters_callback(self, params):
         for param in params:
@@ -71,13 +81,26 @@ class FaceTrackerNode(Node):
                 self.get_logger().info(f"Updated Kp_tilt to {self.Kp_tilt}")
         return SetParametersResult(successful=True)
 
+    def intent_callback(self, msg):
+        """Triggered when a message is received on /person_intent"""
+        intent = msg.data.strip().upper()
+        
+        if intent == 'WANT_TO_INTERACT':
+            if self.current_intent != 'WANT_TO_INTERACT':
+                self.current_intent = 'WANT_TO_INTERACT'
+                self.get_logger().info(f"Intent updated to: {self.current_intent} -> Tracking enabled.")
+        else:
+            if self.current_intent != 'NORMAL':
+                self.current_intent = 'NORMAL'
+                self.get_logger().info(f"Intent updated to: {self.current_intent} -> Tracking disabled. Returning home.")
+
     def timer_callback(self):
         now = self.get_clock().now()
         elapsed = (now - self.last_eye_center_time).nanoseconds / 1e9
         timeout_sec = self.get_parameter('timeout_sec').get_parameter_value().double_value
 
-        if elapsed > timeout_sec:
-            # If no face is seen for the timeout duration and we are not at home, go home
+        # Go home if timeout is reached OR if the robot does not want to interact
+        if elapsed > timeout_sec or self.current_intent != 'WANT_TO_INTERACT':
             if self.roll_angle != self.home_roll or self.pitch_angle != self.home_pitch:
                 self.roll_angle = self.home_roll
                 self.pitch_angle = self.home_pitch
@@ -97,7 +120,13 @@ class FaceTrackerNode(Node):
         self.current_roll = msg.data
 
     def eye_center_callback(self, msg):
+        # Always update the timestamp so it doesn't immediately time out when tracking resumes
         self.last_eye_center_time = self.get_clock().now()
+
+        # --- NEW LOGIC: Only move motors if intent is WANT_TO_INTERACT ---
+        if self.current_intent != 'WANT_TO_INTERACT':
+            return  # Exit the function immediately. Do not process tracking.
+
         width = self.get_parameter('image_width').get_parameter_value().integer_value
         height = self.get_parameter('image_height').get_parameter_value().integer_value
 

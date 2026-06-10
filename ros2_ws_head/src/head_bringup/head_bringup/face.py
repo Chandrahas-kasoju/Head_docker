@@ -12,30 +12,26 @@ SCREEN_WIDTH = 1080
 SCREEN_HEIGHT = 1080
 BACKGROUND_COLOR = (20, 20, 20)
 FACE_COLOR = (0, 200, 255)
-IS_TESTING_ON_LAPTOP = False
+IS_TESTING_ON_LAPTOP = True
 
 # --- Geometry Parameters ---
 EYE_SPACING = 400
 
-# Normal State (Rounded Squares)
+# Normal State (Rounded Squares + Pill/Capsule Mouth)
 EYE_WIDTH_NORMAL, EYE_HEIGHT_NORMAL, EYE_BORDER_RADIUS_NORMAL = 180, 180, 25
+MOUTH_WIDTH_NORMAL, MOUTH_HEIGHT_NORMAL, MOUTH_Y_OFFSET_NORMAL = 280, 70, 250
 
-# Smiling State (Tall Ovals/Capsules)
-EYE_WIDTH_SMILING, EYE_HEIGHT_SMILING, EYE_BORDER_RADIUS_SMILING = 220, 220, 30
+# Smiling State (Rounded Squares + Flat Top/Half-Ellipse Mouth)
+EYE_WIDTH_SMILING, EYE_HEIGHT_SMILING, EYE_BORDER_RADIUS_SMILING = 230, 230, 35
+MOUTH_WIDTH_SMILING, MOUTH_HEIGHT_SMILING, MOUTH_Y_OFFSET_SMILING = 350, 140, 200
 
-MOUTH_WIDTH_NORMAL, MOUTH_HEIGHT_NORMAL, MOUTH_Y_OFFSET_NORMAL = 280, 140, 200
-MOUTH_WIDTH_SMILING, MOUTH_HEIGHT_SMILING, MOUTH_Y_OFFSET_SMILING = 450, 140, 230
-
-# --- Animation Timings & Safeties ---
+# --- Animation Timings ---
 BLINK_INTERVAL_MIN = 3.0
 BLINK_INTERVAL_MAX = 7.0
 BLINK_ANIMATION_SPEED = 0.075
 
 # How long the morph takes (in milliseconds)
 TRANSITION_DURATION_MS = 700.0  
-
-# If no message is received for this long (ms), revert to NORMAL face
-INTENT_TIMEOUT_MS = 1000  
 
 def interpolate(start_val, end_val, phase):
     return start_val + (end_val - start_val) * phase
@@ -62,7 +58,6 @@ class RobotFaceNode(Node):
         self.current_phase = 0.0  # 0.0 = Normal, 1.0 = Smiling
         
         # Time tracking
-        self.last_msg_time = 0
         self.last_frame_time = 0
         
         # Blinking State
@@ -91,14 +86,10 @@ class RobotFaceNode(Node):
         
         self.next_blink_time = pygame.time.get_ticks() + random.uniform(BLINK_INTERVAL_MIN, BLINK_INTERVAL_MAX) * 1000
         self.last_frame_time = pygame.time.get_ticks()
-        self.last_msg_time = pygame.time.get_ticks()
 
     def intent_callback(self, msg):
         """Triggered when a message is received on /person_intent"""
         intent = msg.data.strip().upper()
-        
-        # Update the timestamp of the last received message
-        self.last_msg_time = pygame.time.get_ticks()
         
         # Only smile if the intent is exactly WANT_TO_INTERACT
         if intent == 'WANT_TO_INTERACT':
@@ -127,12 +118,6 @@ class RobotFaceNode(Node):
             current_time = pygame.time.get_ticks()
             dt = current_time - self.last_frame_time
             self.last_frame_time = current_time
-
-            # --- Safety Timeout Logic ---
-            if (current_time - self.last_msg_time) > INTENT_TIMEOUT_MS:
-                if self.target_emotion != 'NORMAL':
-                    self.target_emotion = 'NORMAL'
-                    self.get_logger().info("Timeout: Lost intent signal. Reverting to NORMAL.")
 
             # --- Update Animation Phase (Smooth Time-Based Morphing) ---
             phase_step = dt / TRANSITION_DURATION_MS 
@@ -194,19 +179,30 @@ class RobotFaceNode(Node):
                 t = i / steps
                 x = -1.0 + 2.0 * t  # Interpolates from -1.0 to 1.0
                 
-                # NORMAL SHAPE: Flat top, half-ellipse bottom (exactly matches old logic)
-                y_up_norm = 0.0
-                y_down_norm = (MOUTH_HEIGHT_NORMAL / 2.0) * math.sqrt(max(0.0, 1.0 - x*x))
+                # ----------------------------------------------------
+                # NORMAL SHAPE: Pill/Capsule Shape
+                # ----------------------------------------------------
+                R = MOUTH_HEIGHT_NORMAL / 2.0
+                # Calculate where the straight flat edge turns into a circle
+                x_cut = 1.0 - (MOUTH_HEIGHT_NORMAL / MOUTH_WIDTH_NORMAL)
                 
-                # SMILING SHAPE: Sharp crescent moon
-                smile_end_y = -MOUTH_HEIGHT_SMILING * 0.3
-                smile_bottom_y = MOUTH_HEIGHT_SMILING * 0.5
-                smile_thickness = 45  # Center thickness of the smile
+                if abs(x) <= x_cut:
+                    y_up_norm = -R
+                    y_down_norm = R
+                else:
+                    # Calculate the curved circular caps of the pill shape
+                    dx = (abs(x) - x_cut) * (MOUTH_WIDTH_NORMAL / 2.0)
+                    y_mag = math.sqrt(max(0.0, R*R - dx*dx))
+                    y_up_norm = -y_mag
+                    y_down_norm = y_mag
                 
-                y_down_smile = smile_end_y + (smile_bottom_y - smile_end_y) * (1.0 - x*x)
-                y_up_smile = smile_end_y + (smile_bottom_y - smile_end_y - smile_thickness) * (1.0 - x*x)
+                # ----------------------------------------------------
+                # SMILING SHAPE: Flat top, half-ellipse bottom
+                # ----------------------------------------------------
+                y_up_smile = 0.0
+                y_down_smile = (MOUTH_HEIGHT_SMILING / 2.0) * math.sqrt(max(0.0, 1.0 - x*x))
                 
-                # Interpolate based on the current phase
+                # --- Interpolate based on the current animation phase ---
                 curr_y_up = interpolate(y_up_norm, y_up_smile, eased_phase)
                 curr_y_down = interpolate(y_down_norm, y_down_smile, eased_phase)
                 
