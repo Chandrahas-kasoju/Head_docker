@@ -11,10 +11,7 @@ sudo chmod -R 777 /dev/dri || true
 export RMW_IMPLEMENTATION=rmw_zenoh_cpp
 export ROS_DOMAIN_ID=0
 
-# Start the Zenoh router in the background so that nodes can discover each other
-echo "Starting Zenoh router in the background..."
-ros2 run rmw_zenoh_cpp rmw_zenohd &
-sleep 2 # Give the router a second to start up
+
 # Add the user's local bin directory to the PATH.
 # This ensures any executables installed via "pip install --user" can be found.
 export PATH="/home/docker_user/.local/bin:${PATH}"
@@ -30,6 +27,11 @@ else
   # This warning is important! The launch will fail if the workspace isn't built.
   echo "Warning: Your workspace is not sourced. Please build it first with 'colcon build'."
 fi
+
+# Start the Zenoh router in the background so that nodes can discover each other
+echo "Starting Zenoh router in the background..."
+ros2 run rmw_zenoh_cpp rmw_zenohd &
+sleep 2 # Give the router a second to start up
 
 # --- Main Logic ---
 # Check if any command was passed to the entrypoint (e.g., "bash", "ls", etc.)
