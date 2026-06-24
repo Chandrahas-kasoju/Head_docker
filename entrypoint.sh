@@ -8,7 +8,7 @@ set -e
 sudo chmod -R 777 /dev/dri || true
 # --------------------------
 
-export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+export RMW_IMPLEMENTATION=rmw_zenoh_cpp
 export ROS_DOMAIN_ID=0
 # Add the user's local bin directory to the PATH.
 # This ensures any executables installed via "pip install --user" can be found.
