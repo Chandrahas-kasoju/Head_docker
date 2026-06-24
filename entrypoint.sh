@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+# --- GPU PERMISSION FIX ---
+# Grant all users read/write access to the GPU hardware.
+# We add '|| true' so the container doesn't instantly crash if you ever run it 
+# on a machine without /dev/dri attached.
+sudo chmod -R 777 /dev/dri || true
+# --------------------------
+
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 export ROS_DOMAIN_ID=0
 # Add the user's local bin directory to the PATH.

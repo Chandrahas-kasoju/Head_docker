@@ -27,6 +27,7 @@ RUN apt update && apt install -y \
     libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
     libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev \
     libfreetype6-dev \
+    libgl1-mesa-glx libgl1-mesa-dri mesa-utils \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y \
@@ -52,7 +53,8 @@ RUN if [ -n "$DIALOUT_GID" ]; then \
     #if [ -n "$VIDEO_GID" ]; then \
     #    if ! getent group $VIDEO_GID > /dev/null; then groupadd -g $VIDEO_GID video; fi; \
     #fi && \
-    usermod -aG sudo,dialout,video docker_user 
+    groupadd -f render && \
+    usermod -aG sudo,dialout,video,render docker_user 
 
 # Give the user password-less sudo privileges
 RUN echo "docker_user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/docker-user-sudo
