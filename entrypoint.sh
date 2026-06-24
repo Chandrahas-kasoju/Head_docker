@@ -28,8 +28,13 @@ else
   echo "Warning: Your workspace is not sourced. Please build it first with 'colcon build'."
 fi
 
-# Start the Zenoh router in the background so that nodes can discover each other
+# 1. Automatically find the robot's real Wi-Fi IP address
+ROBOT_IP=$(hostname -I | awk '{print $1}')
+echo "Detected physical IP: $ROBOT_IP"
+
+# 2. Start the Zenoh router in the background and force it to advertise the real IP
 echo "Starting Zenoh router in the background..."
+export ZENOH_ROUTER_CONFIG_OVERRIDE="advertise/endpoints=[\"tcp/${ROBOT_IP}:7447\"]"
 ros2 run rmw_zenoh_cpp rmw_zenohd &
 sleep 2 # Give the router a second to start up
 
