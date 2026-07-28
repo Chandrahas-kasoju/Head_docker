@@ -85,6 +85,7 @@ RUN python3 -m pip install --user \
 RUN mkdir -p /home/docker_user/ros2_ws_head/src
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/docker_user/.bashrc
 RUN echo "export RMW_IMPLEMENTATION=rmw_zenoh_cpp" >> /home/docker_user/.bashrc
+RUN echo "export ZENOH_CONFIG_OVERRIDE='mode=\"client\";connect/endpoints=[\"tcp/192.168.8.147:7447\"]'" >> /home/docker_user/.bashrc
 RUN echo "source /home/docker_user/ros2_ws_head/install/setup.bash" >> /home/docker_user/.bashrc
 RUN echo "export ROS_DOMAIN_ID=0" >> /home/docker_user/.bashrc
 # Set the entrypoint
