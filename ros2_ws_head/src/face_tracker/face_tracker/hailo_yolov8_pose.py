@@ -8,7 +8,7 @@ class HailoYolov8Pose:
         # We will attempt to import hailort. If it fails, we provide a mock for now
         # so the node doesn't crash if HailoRT is not installed on the dev machine.
         try:
-            from hailort import VDevice, InferVd, ConfigureParams, FormatType
+            from hailo_platform import VDevice, InferVd, ConfigureParams, FormatType
             self.hailort_available = True
             
             self.params = VDevice.create_params()
