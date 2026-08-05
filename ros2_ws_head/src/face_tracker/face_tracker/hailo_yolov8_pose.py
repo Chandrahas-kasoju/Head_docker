@@ -52,7 +52,8 @@ class HailoYolov8Pose:
 
         # Infer
         self.bindings.input().set_buffer(input_data)
-        self.configured_infer_model.run([self.bindings], 1000)
+        with self.configured_infer_model:
+            self.configured_infer_model.run([self.bindings], 1000)
         
         # Extract output tensors
         # YOLOv8 pose outputs multiple tensors (for boxes and keypoints)
