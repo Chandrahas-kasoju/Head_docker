@@ -23,6 +23,9 @@ class HailoYolov8Pose:
             print("WARNING: hailort is not installed. Running in mock mode.")
             self.hailort_available = False
 
+    def __call__(self, image, conf=0.5, **kwargs):
+        return self.predict(image, conf)
+
     def predict(self, image, conf=0.5):
         if not self.hailort_available:
             return self._mock_predict(image)
