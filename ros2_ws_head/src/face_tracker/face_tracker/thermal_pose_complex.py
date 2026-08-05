@@ -100,8 +100,9 @@ class ThermalPoseComplex(Node):
         msg.size_y = float(y_max - y_min)
         self.bb_pub.publish(msg)
 
-        kpts = det['res_obj'].keypoints.xy[0].cpu().numpy()
-        unrot_kpts = self.unrotate_points(kpts, det['rot_code'], w, h)
+        kpts_list = det['res_obj']['keypoints']
+        kpts_np = np.array([[k[0], k[1]] for k in kpts_list])
+        unrot_kpts = self.unrotate_points(kpts_np, det['rot_code'], w, h)
         
         # YOLO indices: 1 = L-Eye, 2 = R-Eye
         if len(unrot_kpts) > 2:
@@ -312,9 +313,8 @@ class ThermalPoseComplex(Node):
                 test_img = cv2.rotate(base_img, rot_code) if rot_code is not None else base_img.copy()
                 results = self.model(test_img, conf=0.5, verbose=False)
                 
-                for i in range(len(results[0].boxes)):
-                    box = results[0].boxes[i]
-                    xyxy = box.xyxy[0].cpu().numpy()
+                for det in results:
+                    xyxy = det["bbox"]
                     
                     corners = np.array([
                         [xyxy[0], xyxy[1]], [xyxy[2], xyxy[1]], 
@@ -327,9 +327,9 @@ class ThermalPoseComplex(Node):
                     all_detections.append({
                         'rot_code': rot_code,
                         'unrot_code': unrot_code,
-                        'conf': float(box.conf[0].cpu().numpy()),
+                        'conf': det['score'],
                         'xyxy_orig': xyxy_orig,
-                        'res_obj': results[0][i],
+                        'res_obj': det,
                         'test_img': test_img
                     })
             
@@ -353,19 +353,17 @@ class ThermalPoseComplex(Node):
                     for idx in indices.flatten():
                         det = all_detections[idx]
                         
-                        # Draw YOLO skeleton
-                        black_canvas = np.zeros_like(det['test_img'])
-                        drawn_canvas = det['res_obj'].plot(img=black_canvas)
-                        if det['unrot_code'] is not None:
-                            drawn_canvas = cv2.rotate(drawn_canvas, det['unrot_code'])
-                        mask = np.any(drawn_canvas != [0, 0, 0], axis=-1)
-                        final_output[mask] = drawn_canvas[mask]
-                        
                         # Apply COMPLEX Logic
-                        kpts = det['res_obj'].keypoints.xy[0].cpu().numpy()
-                        kpts_conf = det['res_obj'].keypoints.conf[0].cpu().numpy() if det['res_obj'].keypoints.conf is not None else np.ones(17)
+                        kpts_list = det['res_obj']['keypoints']
+                        kpts_np = np.array([[k[0], k[1]] for k in kpts_list])
+                        kpts_conf = np.array([k[2] for k in kpts_list])
                         
-                        unrot_kpts = self.unrotate_points(kpts, det['rot_code'], orig_w, orig_h)
+                        unrot_kpts = self.unrotate_points(kpts_np, det['rot_code'], orig_w, orig_h)
+                        
+                        # Draw YOLO skeleton points (simple drawing)
+                        for i, pt in enumerate(unrot_kpts):
+                            if kpts_conf[i] > 0.5:
+                                cv2.circle(final_output, (int(pt[0]), int(pt[1])), 4, (0, 255, 255), -1)
                         
                         # Create YOLOLandmark list
                         sl = []
