@@ -51,6 +51,13 @@ class HailoYolov8Pose:
         return self._post_process(outputs, image.shape, conf)
 
     def _post_process(self, outputs, orig_shape, conf_thresh):
+        # Print the raw tensor shapes so we know exactly how to parse this specific HEF file
+        print("\n" + "="*50)
+        print("HAILO RAW OUTPUT TENSORS:")
+        for name, tensor in outputs.items():
+            print(f" - {name}: shape={tensor.shape}, dtype={tensor.dtype}")
+        print("="*50 + "\n")
+        
         # Placeholder for actual YOLOv8 pose post-processing from Hailo raw tensors
         # Since Hailo HEF outputs depend on the exact model zoo compilation (often containing NMS),
         # we return a mocked result structure compatible with Ultralytics for integration testing.
