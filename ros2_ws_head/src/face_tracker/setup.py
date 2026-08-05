@@ -25,6 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             'face_tracker = face_tracker.face_tracker:main',
+            'thermal_pose_complex = face_tracker.thermal_pose_complex:main',
         ],
     },
 )
