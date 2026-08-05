@@ -20,7 +20,9 @@ class HailoYolov8Pose:
             self.bindings = self.configured_infer_model.create_bindings()
             
         except ImportError as e:
+            import sys
             print(f"WARNING: hailort could not be imported. Reason: {e}")
+            print(f"sys.path: {sys.path}")
             print("Running in mock mode.")
             self.hailort_available = False
 
