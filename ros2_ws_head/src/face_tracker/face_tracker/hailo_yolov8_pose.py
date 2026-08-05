@@ -8,6 +8,7 @@ class HailoYolov8Pose:
         # We will attempt to import hailort. If it fails, we provide a mock for now
         # so the node doesn't crash if HailoRT is not installed on the dev machine.
         try:
+            import hailo_platform
             from hailo_platform import VDevice
             self.hailort_available = True
             
@@ -16,8 +17,19 @@ class HailoYolov8Pose:
             self.infer_model = self.vdevice.create_infer_model(hef_path)
             self.infer_model.set_batch_size(1)
             
+            # Configure all output streams to be FLOAT32 so we can easily allocate numpy arrays for them
+            for output_name in self.infer_model.output_names:
+                self.infer_model.output(output_name).set_format_type(hailo_platform.FormatType.FLOAT32)
+            
             self.configured_infer_model = self.infer_model.configure()
             self.bindings = self.configured_infer_model.create_bindings()
+            
+            # Pre-allocate output buffers since get_buffer_as_view fails if not configured
+            self.output_buffers = {}
+            for output_name in self.infer_model.output_names:
+                tensor_shape = self.infer_model.output(output_name).shape
+                self.output_buffers[output_name] = np.empty(tensor_shape, dtype=np.float32)
+                self.bindings.output(output_name).set_buffer(self.output_buffers[output_name])
             
         except ImportError as e:
             import sys
@@ -46,10 +58,8 @@ class HailoYolov8Pose:
         # YOLOv8 pose outputs multiple tensors (for boxes and keypoints)
         # For simplicity, we assume the DFC exported a combined output tensor or 
         # we parse the raw tensors.
-        # Note: True post-processing requires parsing the exact output layers from the HEF.
-        # This is a simplified wrapper that users can adapt based on their specific HEF's NMS configuration.
         
-        outputs = {name: self.bindings.output(name).get_buffer() for name in self.bindings.output_names()}
+        outputs = self.output_buffers
         
         return self._post_process(outputs, image.shape, conf)
 
