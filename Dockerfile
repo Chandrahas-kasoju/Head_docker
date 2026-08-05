@@ -59,6 +59,10 @@ RUN if [ -n "$DIALOUT_GID" ]; then \
 # Give the user password-less sudo privileges
 RUN echo "docker_user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/docker-user-sudo
 
+# --- HAILO AI HAT+ C++ RUNTIME SETUP ---
+COPY hailort_4.24.0_arm64.deb /tmp/
+RUN apt-get update && apt-get install -y /tmp/hailort_4.24.0_arm64.deb && rm /tmp/hailort_4.24.0_arm64.deb
+
 # Copy the entrypoint script and set its permissions AS ROOT
 COPY entrypoint.sh /home/docker_user/entrypoint.sh
 RUN chown docker_user:docker_user /home/docker_user/entrypoint.sh && \
