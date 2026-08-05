@@ -69,6 +69,15 @@ class GenericServoController(Node):
         
         self.current_speed_cmd = 0.0
         
+        # Hardcoded RViz properties for the digital twin visualization
+        self.tilt_id = 1
+        self.pan_id = 2
+        self.STEPS_PER_REV = 4096.0
+        self.tilt_center_degree = 55.0
+        self.pan_center_degree = 180.0
+        
+        self.joint_pub = self.create_publisher(JointState, '/joint_states', 10)
+        
         self.get_logger().info(f"Connecting to servo on {port}")
         self.servo = ST3215(port)
         
@@ -143,6 +152,35 @@ class GenericServoController(Node):
         current_time = time.time()
         dt = current_time - self.last_time
         self.last_time = current_time
+        
+        # --- RVIZ DIGITAL TWIN TELEMETRY ---
+        msg = JointState()
+        msg.header = Header()
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.name = ['tele_pan_joint', 'tele_tilt_joint']
+        
+        tilt_rads = 0.0
+        pan_rads = 0.0
+        
+        try:
+            # READ TILT
+            tilt_pos = self.servo.ReadPosition(self.tilt_id)
+            if tilt_pos is not None:
+                tilt_deg = tilt_pos * (360.0 / self.STEPS_PER_REV)
+                tilt_rads = math.radians(tilt_deg - self.tilt_center_degree)
+                
+            # READ PAN
+            pan_pos = self.servo.ReadPosition(self.pan_id)
+            if pan_pos is not None:
+                pan_deg = pan_pos * (360.0 / self.STEPS_PER_REV)
+                pan_rads = math.radians(pan_deg - self.pan_center_degree)
+                
+        except Exception as e:
+            self.get_logger().warn(f"Encoder read error: {e}")
+            
+        msg.position = [pan_rads, tilt_rads]
+        self.joint_pub.publish(msg)
+        # -----------------------------------
         
         if self.use_software_pid:
             # === OPTION A: SOFTWARE VELOCITY PID ===
