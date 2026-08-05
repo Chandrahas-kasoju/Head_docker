@@ -75,11 +75,17 @@ WORKDIR /home/docker_user
 
 RUN python3 -m pip install --user \
     'numpy<2.0' \
-    opencv-python \ 
+    opencv-python \
     'git+https://github.com/Chandrahas-kasoju/python-st3215.git' \
     requests \
     pygame \
     scipy
+
+# --- HAILO AI HAT+ SETUP ---
+# Install the provided HailoRT python wheel for Ubuntu 22.04 aarch64
+COPY hailort-4.24.0-cp310-cp310-linux_aarch64.whl /home/docker_user/
+RUN python3 -m pip install --user /home/docker_user/hailort-4.24.0-cp310-cp310-linux_aarch64.whl
+# ---------------------------
 
 # Create workspace directory as the user
 RUN mkdir -p /home/docker_user/ros2_ws_head/src
