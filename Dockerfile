@@ -60,15 +60,10 @@ RUN if [ -n "$DIALOUT_GID" ]; then \
 RUN echo "docker_user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/docker-user-sudo
 
 # --- HAILO AI HAT+ C++ RUNTIME SETUP ---
-COPY hailort_4.20.0_arm64.deb /tmp/
-RUN mv /usr/bin/systemctl /usr/bin/systemctl.bak && \
-    echo '#!/bin/sh' > /usr/bin/systemctl && \
-    echo 'exit 0' >> /usr/bin/systemctl && \
-    chmod +x /usr/bin/systemctl && \
-    apt-get update && \
-    apt-get install -y /tmp/hailort_4.20.0_arm64.deb && \
-    rm /tmp/hailort_4.20.0_arm64.deb && \
-    mv /usr/bin/systemctl.bak /usr/bin/systemctl
+COPY hailort_4.24.0_arm64.deb /tmp/
+RUN apt-get update && \
+    apt-get install -y /tmp/hailort_4.24.0_arm64.deb || true && \
+    rm /tmp/hailort_4.24.0_arm64.deb
 
 # Copy the entrypoint script and set its permissions AS ROOT
 COPY entrypoint.sh /home/docker_user/entrypoint.sh
@@ -94,8 +89,8 @@ RUN python3 -m pip install --user \
 
 # --- HAILO AI HAT+ SETUP ---
 # Install the provided HailoRT python wheel for Ubuntu 22.04 aarch64
-COPY hailort-4.20.0-cp310-cp310-linux_aarch64.whl /home/docker_user/
-RUN python3 -m pip install --user /home/docker_user/hailort-4.20.0-cp310-cp310-linux_aarch64.whl
+COPY hailort-4.24.0-cp310-cp310-linux_aarch64.whl /home/docker_user/
+RUN python3 -m pip install --user /home/docker_user/hailort-4.24.0-cp310-cp310-linux_aarch64.whl
 # ---------------------------
 
 # Create workspace directory as the user
