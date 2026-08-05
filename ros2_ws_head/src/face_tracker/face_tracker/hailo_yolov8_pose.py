@@ -66,17 +66,112 @@ class HailoYolov8Pose:
         return self._post_process(outputs, image.shape, conf)
 
     def _post_process(self, outputs, orig_shape, conf_thresh):
-        # Print the raw tensor shapes so we know exactly how to parse this specific HEF file
-        print("\n" + "="*50)
-        print("HAILO RAW OUTPUT TENSORS:")
+        # We need to find the DFL, Cls, and Kpt tensors for each stride.
+        # Group them by spatial shape (e.g. 80x80, 40x40, 20x20)
+        groups = {}
         for name, tensor in outputs.items():
-            print(f" - {name}: shape={tensor.shape}, dtype={tensor.dtype}")
-        print("="*50 + "\n")
+            h, w, c = tensor.shape
+            if h not in groups:
+                groups[h] = {}
+            if c == 64:
+                groups[h]['dfl'] = tensor
+            elif c == 1:
+                groups[h]['cls'] = tensor
+            elif c == 51:
+                groups[h]['kpt'] = tensor
+                
+        all_boxes = []
+        all_scores = []
+        all_kpts = []
         
-        # Placeholder for actual YOLOv8 pose post-processing from Hailo raw tensors
-        # Since Hailo HEF outputs depend on the exact model zoo compilation (often containing NMS),
-        # we return a mocked result structure compatible with Ultralytics for integration testing.
-        return self._mock_predict(np.zeros(orig_shape, dtype=np.uint8))
+        for h in sorted(groups.keys(), reverse=True): # 80, 40, 20
+            stride = 640 / h
+            dfl = groups[h]['dfl'].reshape(-1, 64)
+            cls = groups[h]['cls'].reshape(-1)
+            kpt = groups[h]['kpt'].reshape(-1, 17, 3)
+            
+            # 1. Sigmoid class scores
+            cls_scores = 1 / (1 + np.exp(-cls))
+            
+            # Filter by conf early to save computation
+            mask = cls_scores > conf_thresh
+            if not np.any(mask):
+                continue
+                
+            dfl = dfl[mask]
+            cls_scores = cls_scores[mask]
+            kpt = kpt[mask]
+            
+            # Generate grid for these specific masked pixels
+            grid_y, grid_x = np.mgrid[0:h, 0:h]
+            grid = np.stack((grid_x, grid_y), axis=-1).reshape(-1, 2)
+            grid = grid[mask]
+            
+            # 2. Decode DFL boxes
+            dfl = dfl.reshape(-1, 4, 16)
+            e_x = np.exp(dfl - np.max(dfl, axis=-1, keepdims=True))
+            prob = e_x / e_x.sum(axis=-1, keepdims=True)
+            weight = np.arange(16, dtype=np.float32)
+            dist = np.sum(prob * weight, axis=-1)
+            
+            # dist is (left, top, right, bottom)
+            x1 = grid[:, 0] - dist[:, 0]
+            y1 = grid[:, 1] - dist[:, 1]
+            x2 = grid[:, 0] + dist[:, 2]
+            y2 = grid[:, 1] + dist[:, 3]
+            
+            # OpenCV NMS requires [x, y, w, h] format
+            w = x2 - x1
+            h_box = y2 - y1
+            boxes = np.stack([x1, y1, w, h_box], axis=-1) * stride
+            
+            # 3. Decode Keypoints
+            kpt[:, :, 0] = (kpt[:, :, 0] * 2.0 + grid[:, 0:1] - 0.5) * stride
+            kpt[:, :, 1] = (kpt[:, :, 1] * 2.0 + grid[:, 1:2] - 0.5) * stride
+            kpt[:, :, 2] = 1 / (1 + np.exp(-kpt[:, :, 2])) # sigmoid vis
+            
+            all_boxes.append(boxes)
+            all_scores.append(cls_scores)
+            all_kpts.append(kpt)
+            
+        if not all_boxes:
+            return []
+            
+        boxes = np.concatenate(all_boxes, axis=0)
+        scores = np.concatenate(all_scores, axis=0)
+        kpts = np.concatenate(all_kpts, axis=0)
+        
+        # NMS
+        indices = cv2.dnn.NMSBoxes(boxes.tolist(), scores.tolist(), conf_thresh, 0.45)
+        
+        results = []
+        if len(indices) > 0:
+            for i in indices.flatten():
+                box = boxes[i]
+                scale_x = orig_shape[1] / 640.0
+                scale_y = orig_shape[0] / 640.0
+                
+                x1 = int(box[0] * scale_x)
+                y1 = int(box[1] * scale_y)
+                w = int(box[2] * scale_x)
+                h_box = int(box[3] * scale_y)
+                
+                scaled_box = [x1, y1, x1 + w, y1 + h_box]
+                
+                scaled_kpts = []
+                for kpt_idx in range(17):
+                    x = kpts[i, kpt_idx, 0] * scale_x
+                    y = kpts[i, kpt_idx, 1] * scale_y
+                    vis = kpts[i, kpt_idx, 2]
+                    scaled_kpts.append((int(x), int(y), float(vis)))
+                    
+                results.append({
+                    "bbox": scaled_box,
+                    "score": float(scores[i]),
+                    "keypoints": scaled_kpts
+                })
+                
+        return results
 
     def _mock_predict(self, image):
         class MockTensor:
