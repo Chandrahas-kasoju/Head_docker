@@ -13,6 +13,7 @@ class HailoYolov8Pose:
             self.hailort_available = True
             
             self.params = VDevice.create_params()
+            self.params.scheduling_algorithm = hailo_platform.HailoSchedulingAlgorithm.NONE
             self.vdevice = VDevice(self.params)
             self.infer_model = self.vdevice.create_infer_model(hef_path)
             self.infer_model.set_batch_size(1)
@@ -22,6 +23,7 @@ class HailoYolov8Pose:
                 self.infer_model.output(output_name).set_format_type(hailo_platform.FormatType.FLOAT32)
             
             self.configured_infer_model = self.infer_model.configure()
+            self.configured_infer_model.activate()
             self.bindings = self.configured_infer_model.create_bindings()
             
             # Pre-allocate output buffers since get_buffer_as_view fails if not configured
@@ -52,8 +54,7 @@ class HailoYolov8Pose:
 
         # Infer
         self.bindings.input().set_buffer(input_data)
-        with self.configured_infer_model:
-            self.configured_infer_model.run([self.bindings], 1000)
+        self.configured_infer_model.run([self.bindings], 1000)
         
         # Extract output tensors
         # YOLOv8 pose outputs multiple tensors (for boxes and keypoints)
