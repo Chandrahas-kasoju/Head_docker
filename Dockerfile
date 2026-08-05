@@ -61,12 +61,14 @@ RUN echo "docker_user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/docker-user-sudo
 
 # --- HAILO AI HAT+ C++ RUNTIME SETUP ---
 COPY hailort_4.20.0_arm64.deb /tmp/
-RUN echo '#!/bin/sh' > /usr/local/bin/systemctl && \
-    echo 'exit 0' >> /usr/local/bin/systemctl && \
-    chmod +x /usr/local/bin/systemctl && \
+RUN mv /usr/bin/systemctl /usr/bin/systemctl.bak && \
+    echo '#!/bin/sh' > /usr/bin/systemctl && \
+    echo 'exit 0' >> /usr/bin/systemctl && \
+    chmod +x /usr/bin/systemctl && \
     apt-get update && \
     apt-get install -y /tmp/hailort_4.20.0_arm64.deb && \
-    rm /tmp/hailort_4.20.0_arm64.deb /usr/local/bin/systemctl
+    rm /tmp/hailort_4.20.0_arm64.deb && \
+    mv /usr/bin/systemctl.bak /usr/bin/systemctl
 
 # Copy the entrypoint script and set its permissions AS ROOT
 COPY entrypoint.sh /home/docker_user/entrypoint.sh
