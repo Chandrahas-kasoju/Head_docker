@@ -19,8 +19,9 @@ class HailoYolov8Pose:
             self.configured_infer_model = self.infer_model.configure()
             self.bindings = self.configured_infer_model.create_bindings()
             
-        except ImportError:
-            print("WARNING: hailort is not installed. Running in mock mode.")
+        except ImportError as e:
+            print(f"WARNING: hailort could not be imported. Reason: {e}")
+            print("Running in mock mode.")
             self.hailort_available = False
 
     def __call__(self, image, conf=0.5, **kwargs):
