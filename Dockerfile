@@ -61,7 +61,7 @@ RUN echo "docker_user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/docker-user-sudo
 
 # --- HAILO AI HAT+ C++ RUNTIME SETUP ---
 COPY hailort_4.20.0_arm64.deb /tmp/
-RUN apt-get update && apt-get install -y /tmp/hailort_4.20.0_arm64.deb && rm /tmp/hailort_4.20.0_arm64.deb
+RUN dpkg-deb -x /tmp/hailort_4.20.0_arm64.deb / && rm /tmp/hailort_4.20.0_arm64.deb && ldconfig
 
 # Copy the entrypoint script and set its permissions AS ROOT
 COPY entrypoint.sh /home/docker_user/entrypoint.sh
