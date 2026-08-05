@@ -311,7 +311,7 @@ class ThermalPoseComplex(Node):
             
             for rot_code, unrot_code in orientations:
                 test_img = cv2.rotate(base_img, rot_code) if rot_code is not None else base_img.copy()
-                results = self.model(test_img, conf=0.5, verbose=False)
+                results = self.model(test_img, conf=0.6, verbose=False)
                 
                 for det in results:
                     xyxy = det["bbox"]
@@ -343,7 +343,7 @@ class ThermalPoseComplex(Node):
                     bboxes.append([x1, y1, x2 - x1, y2 - y1])
                     scores.append(det['conf'])
                     
-                indices = cv2.dnn.NMSBoxes(bboxes, scores, 0.2, 0.4)
+                indices = cv2.dnn.NMSBoxes(bboxes, scores, 0.6, 0.4)
                 
                 if len(indices) > 0:
                     first_det = all_detections[indices.flatten()[0]]
@@ -360,7 +360,23 @@ class ThermalPoseComplex(Node):
                         
                         unrot_kpts = self.unrotate_points(kpts_np, det['rot_code'], orig_w, orig_h)
                         
-                        # Draw YOLO skeleton points (simple drawing)
+                        # COCO Skeleton pairs
+                        skeleton = [
+                            (15, 13), (13, 11), (16, 14), (14, 12), (11, 12), 
+                            (5, 11), (6, 12), (5, 6), (5, 7), (6, 8), (7, 9), 
+                            (8, 10), (1, 2), (0, 1), (0, 2), (1, 3), (2, 4), 
+                            (3, 5), (4, 6)
+                        ]
+                        
+                        # Draw YOLO skeleton connections
+                        for pair in skeleton:
+                            pt1_idx, pt2_idx = pair
+                            if kpts_conf[pt1_idx] > 0.5 and kpts_conf[pt2_idx] > 0.5:
+                                pt1 = (int(unrot_kpts[pt1_idx][0]), int(unrot_kpts[pt1_idx][1]))
+                                pt2 = (int(unrot_kpts[pt2_idx][0]), int(unrot_kpts[pt2_idx][1]))
+                                cv2.line(final_output, pt1, pt2, (0, 255, 0), 2)
+                        
+                        # Draw YOLO skeleton points
                         for i, pt in enumerate(unrot_kpts):
                             if kpts_conf[i] > 0.5:
                                 cv2.circle(final_output, (int(pt[0]), int(pt[1])), 4, (0, 255, 255), -1)
