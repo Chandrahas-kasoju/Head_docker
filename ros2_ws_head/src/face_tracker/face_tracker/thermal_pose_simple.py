@@ -168,9 +168,6 @@ class ThermalPoseSimple(Node):
                         bx1, by1, bx2, by2 = det['bbox']
                         cv2.rectangle(final_output, (int(bx1), int(by1)), (int(bx2), int(by2)), (255, 0, 0), 2)
 
-            cv2.imshow("Simple Pose Tracker", final_output)
-            cv2.waitKey(1)
-            
             annotated_msg = self.bridge.cv2_to_imgmsg(final_output, encoding="bgr8")
             annotated_msg.header = msg.header
             self.publisher_.publish(annotated_msg)
@@ -187,7 +184,6 @@ def main(args=None):
         pass
     finally:
         node.destroy_node()
-        cv2.destroyAllWindows()
         rclpy.shutdown()
 
 if __name__ == '__main__':
