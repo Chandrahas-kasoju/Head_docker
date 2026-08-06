@@ -51,6 +51,16 @@ def generate_launch_description():
             executable='face',
             name='face_node'
         ),
+        Node(
+            package='face_tracker',
+            executable='thermal_pose_simple',
+            name='thermal_pose_node'
+        ),
+        Node(
+            package='person_intent_classifier',
+            executable='intent_node',
+            name='intent_node'
+        ),
         # Include the launch file for the radar node
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(ti_mmwave_rospkg_launch_file),
