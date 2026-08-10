@@ -47,9 +47,32 @@ class HailoYolov8Pose:
         if not self.hailort_available:
             return self._mock_predict(image)
 
-        # Pre-process
-        img_resized = cv2.resize(image, (640, 640))
-        img_rgb = cv2.cvtColor(img_resized, cv2.COLOR_BGR2RGB)
+        # Pre-process (Letterboxing to preserve aspect ratio)
+        shape = image.shape[:2]  # current shape [height, width]
+        new_shape = (640, 640)
+        
+        # Scale ratio (new / old)
+        r = min(new_shape[0] / shape[0], new_shape[1] / shape[1])
+        
+        # Compute padding
+        new_unpad = int(round(shape[1] * r)), int(round(shape[0] * r))
+        dw, dh = new_shape[1] - new_unpad[0], new_shape[0] - new_unpad[1]  # wh padding
+        
+        dw /= 2  # divide padding into 2 sides
+        dh /= 2
+        
+        if shape[::-1] != new_unpad:  # resize
+            img_resized = cv2.resize(image, new_unpad, interpolation=cv2.INTER_LINEAR)
+        else:
+            img_resized = image
+            
+        top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))
+        left, right = int(round(dw - 0.1)), int(round(dw + 0.1))
+        
+        # Add border
+        img_padded = cv2.copyMakeBorder(img_resized, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(114, 114, 114))
+        
+        img_rgb = cv2.cvtColor(img_padded, cv2.COLOR_BGR2RGB)
         input_data = np.expand_dims(img_rgb, axis=0).astype(np.uint8)
 
         # Infer
@@ -63,9 +86,9 @@ class HailoYolov8Pose:
         
         outputs = self.output_buffers
         
-        return self._post_process(outputs, image.shape, conf)
+        return self._post_process(outputs, image.shape, conf, r, dw, dh)
 
-    def _post_process(self, outputs, orig_shape, conf_thresh):
+    def _post_process(self, outputs, orig_shape, conf_thresh, r, dw, dh):
         # We need to find the DFL, Cls, and Kpt tensors for each stride.
         # Group them by spatial shape (e.g. 80x80, 40x40, 20x20)
         groups = {}
@@ -148,22 +171,30 @@ class HailoYolov8Pose:
         if len(indices) > 0:
             for i in indices.flatten():
                 box = boxes[i]
-                scale_x = orig_shape[1] / 640.0
-                scale_y = orig_shape[0] / 640.0
                 
-                x1 = int(box[0] * scale_x)
-                y1 = int(box[1] * scale_y)
-                w = int(box[2] * scale_x)
-                h_box = int(box[3] * scale_y)
+                # Undo letterbox scaling and padding for boxes
+                x1 = (box[0] - dw) / r
+                y1 = (box[1] - dh) / r
+                w = box[2] / r
+                h_box = box[3] / r
+                x2 = x1 + w
+                y2 = y1 + h_box
                 
-                scaled_box = [x1, y1, x1 + w, y1 + h_box]
+                # Clip boxes to image boundaries
+                x1 = max(0.0, min(float(x1), float(orig_shape[1])))
+                y1 = max(0.0, min(float(y1), float(orig_shape[0])))
+                x2 = max(0.0, min(float(x2), float(orig_shape[1])))
+                y2 = max(0.0, min(float(y2), float(orig_shape[0])))
+                
+                scaled_box = [x1, y1, x2, y2]
                 
                 scaled_kpts = []
                 for kpt_idx in range(17):
-                    x = kpts[i, kpt_idx, 0] * scale_x
-                    y = kpts[i, kpt_idx, 1] * scale_y
+                    # Undo letterbox scaling and padding for keypoints
+                    x = (kpts[i, kpt_idx, 0] - dw) / r
+                    y = (kpts[i, kpt_idx, 1] - dh) / r
                     vis = kpts[i, kpt_idx, 2]
-                    scaled_kpts.append((int(x), int(y), float(vis)))
+                    scaled_kpts.append((float(x), float(y), float(vis)))
                     
                 results.append({
                     "bbox": scaled_box,
