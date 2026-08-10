@@ -31,7 +31,7 @@ class FaceTrackerNode(Node):
         current_roll_topic = self.get_parameter('current_roll_topic').get_parameter_value().string_value
         
         # Maintain absolute target angles
-        self.home_pitch = 63.0
+        self.home_pitch = 50.0
         self.home_roll = 300.0
         self.pitch_angle = self.home_pitch  # Tilt home pose
         self.roll_angle = self.home_roll  # Pan home pose

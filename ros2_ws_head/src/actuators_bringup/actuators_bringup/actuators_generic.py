@@ -76,7 +76,7 @@ class GenericServoController(Node):
             self.get_logger().error(f"Servo {self.sts_id} not connected!")
             
         # Target angle in degrees
-        initial_target = 63.0  # Default starting target
+        initial_target = 50.0  # Default starting target
         self.target_angle_deg = max(self.min_angle, min(self.max_angle, initial_target))
         
         # Initialize PID controller for calculating speed based on position error
