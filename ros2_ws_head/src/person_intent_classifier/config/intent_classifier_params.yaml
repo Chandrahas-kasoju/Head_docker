@@ -61,7 +61,7 @@
     smoothing_window: 10                         # Number of previous camera bounding boxes to average
     radar_smoothing_window: 5                    # Number of previous radar measurements to average
     
-    persistence_threshold: 15                    # Number of consecutive identical states required before 
+    persistence_threshold: 30                   # Number of consecutive identical states required before 
                                                  # officially changing the published intent (debouncing)
 
     
