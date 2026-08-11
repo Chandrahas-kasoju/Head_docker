@@ -28,7 +28,12 @@ class StateStabilizer:
         
         if len(self.history) == self.history.maxlen:
             most_common = max(set(self.history), key=self.history.count)
-            self.current_state = most_common
+            count = self.history.count(most_common)
+            
+            # Require an 80% dominant majority to change the stable state
+            # This prevents bouncing between states if the history is 5 vs 5 or 6 vs 4
+            if count >= int(self.history.maxlen * 0.8):
+                self.current_state = most_common
             
         return self.current_state
 
