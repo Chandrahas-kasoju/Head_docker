@@ -85,7 +85,7 @@ class FaceTrackerNode(Node):
         """Triggered when a message is received on /person_intent"""
         intent = msg.data.strip().upper()
         
-        if intent in ['WANT_TO_INTERACT', 'CLOSE_PROXIMITY']:
+        if intent == 'WANT_TO_INTERACT':
             if self.current_intent != intent:
                 self.current_intent = intent
                 self.get_logger().info(f"Intent updated to: {self.current_intent} -> Tracking enabled.")
@@ -99,8 +99,8 @@ class FaceTrackerNode(Node):
         elapsed = (now - self.last_eye_center_time).nanoseconds / 1e9
         timeout_sec = self.get_parameter('timeout_sec').get_parameter_value().double_value
 
-        # Go home if timeout is reached OR if the robot does not want to interact/is not close
-        if elapsed > timeout_sec or self.current_intent not in ['WANT_TO_INTERACT', 'CLOSE_PROXIMITY']:
+        # Go home if timeout is reached OR if the robot does not want to interact
+        if elapsed > timeout_sec or self.current_intent != 'WANT_TO_INTERACT':
             if self.roll_angle != self.home_roll or self.pitch_angle != self.home_pitch:
                 self.roll_angle = self.home_roll
                 self.pitch_angle = self.home_pitch
@@ -123,8 +123,8 @@ class FaceTrackerNode(Node):
         # Always update the timestamp so it doesn't immediately time out when tracking resumes
         self.last_eye_center_time = self.get_clock().now()
 
-        # --- NEW LOGIC: Only move motors if intent is WANT_TO_INTERACT or CLOSE_PROXIMITY ---
-        if self.current_intent not in ['WANT_TO_INTERACT', 'CLOSE_PROXIMITY']:
+        # --- NEW LOGIC: Only move motors if intent is WANT_TO_INTERACT ---
+        if self.current_intent != 'WANT_TO_INTERACT':
             return  # Exit the function immediately. Do not process tracking.
 
         width = self.get_parameter('image_width').get_parameter_value().integer_value
