@@ -25,6 +25,8 @@ class ThermalPoseSimple(Node):
         )
         self.publisher_ = self.create_publisher(Image, '/hospibot/image_pose_annotated', 10)
         self.bb_pub = self.create_publisher(BoundingBox2D, '/hospibot/pose_bbox', 10)
+        self.tight_bb_pub = self.create_publisher(BoundingBox2D, '/hospibot/pose_bbox_tight', 10)
+        self.mask_pub = self.create_publisher(Image, '/hospibot/pose_mask', 10)
         self.eye_center_pub = self.create_publisher(Point2D, '/face_tracker/eye_center', 10)
         
         self.get_logger().info('Simple Pose Node started. (No heuristic logic or rotations)')
@@ -134,6 +136,22 @@ class ThermalPoseSimple(Node):
                     bb_msg.size_y = float(y2 - y1)
                     self.bb_pub.publish(bb_msg)
                     
+                    if 'tight_bbox' in best_det:
+                        tx1, ty1, tx2, ty2 = best_det['tight_bbox']
+                        tight_bb_msg = BoundingBox2D()
+                        tight_bb_msg.center.position.x = float((tx1 + tx2) / 2.0)
+                        tight_bb_msg.center.position.y = float((ty1 + ty2) / 2.0)
+                        tight_bb_msg.center.theta = 0.0
+                        tight_bb_msg.size_x = float(tx2 - tx1)
+                        tight_bb_msg.size_y = float(ty2 - ty1)
+                        self.tight_bb_pub.publish(tight_bb_msg)
+                        
+                        # Draw tight bounding box in green
+                        cv2.rectangle(final_output, (int(tx1), int(ty1)), (int(tx2), int(ty2)), (0, 255, 0), 2)
+                    
+                    # Create a blank mask for the best detection
+                    mask_img = np.zeros((orig_h, orig_w), dtype=np.uint8)
+                    
                     for idx in indices.flatten():
                         det = results[idx]
                         
@@ -155,6 +173,10 @@ class ThermalPoseSimple(Node):
                                 pt2 = (int(kpts_np[pt2_idx][0]), int(kpts_np[pt2_idx][1]))
                                 color = self.limb_colors[i]
                                 cv2.line(final_output, pt1, pt2, color, 2, cv2.LINE_AA)
+                                
+                                # Draw thick limb on mask if it's the tracked person
+                                if idx == best_idx:
+                                    cv2.line(mask_img, pt1, pt2, 255, 35, cv2.LINE_AA)
                         
                         # 2. Draw Keypoints
                         for i, pt in enumerate(kpts_np):
@@ -164,9 +186,19 @@ class ThermalPoseSimple(Node):
                                 cv2.circle(final_output, (int(pt[0]), int(pt[1])), 4, color, -1, cv2.LINE_AA)
                                 cv2.circle(final_output, (int(pt[0]), int(pt[1])), 4, (255, 255, 255), 1, cv2.LINE_AA)
                                 
+                                # Draw thick circle on mask if it's the tracked person
+                                if idx == best_idx:
+                                    # Make head slightly larger for better coverage
+                                    radius = 30 if i <= 4 else 20
+                                    cv2.circle(mask_img, (int(pt[0]), int(pt[1])), radius, 255, -1, cv2.LINE_AA)
+                                
                         # 3. Draw Bounding Box
                         bx1, by1, bx2, by2 = det['bbox']
                         cv2.rectangle(final_output, (int(bx1), int(by1)), (int(bx2), int(by2)), (255, 0, 0), 2)
+
+                    mask_msg = self.bridge.cv2_to_imgmsg(mask_img, encoding="mono8")
+                    mask_msg.header = msg.header
+                    self.mask_pub.publish(mask_msg)
 
             annotated_msg = self.bridge.cv2_to_imgmsg(final_output, encoding="bgr8")
             annotated_msg.header = msg.header

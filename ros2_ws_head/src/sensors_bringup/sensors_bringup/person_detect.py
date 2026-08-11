@@ -3,7 +3,8 @@ import rclpy
 from rclpy.node import Node
 import cv2
 from sensor_msgs.msg import Image, CameraInfo
-from sensor_msgs.msg import PointCloud2, CameraInfo
+from sensor_msgs.msg import PointCloud2
+from cv_bridge import CvBridge
 import tf2_ros
 import numpy as np
 from image_geometry import PinholeCameraModel
@@ -36,10 +37,12 @@ class PersonDetect(Node):
         # self.camera_info_pub = self.create_publisher(
         #     CameraInfo, '/person_detect/camera_info', 10)
         
-        self.bb_sub = self.create_subscription(
-            BoundingBox2D, 
-            '/hospibot/pose_bbox',
-            self.bbox_callback,
+        self.bridge = CvBridge()
+        
+        self.mask_sub = self.create_subscription(
+            Image, 
+            '/hospibot/pose_mask',
+            self.mask_callback,
             10)
         
         self.point_cloud_sub = self.create_subscription(
@@ -59,18 +62,14 @@ class PersonDetect(Node):
         self.current_image = None
         self.camera_info = None
         self.point_cloud = None
-        self.x1, self.y1, self.x2, self.y2 = 0, 0, 0, 0  # Initialize bounding box coordinates
+        self.current_mask = None
         #self.timer= self.create_timer(0.04, self.detect_person)
         
-    def bbox_callback(self, msg):
+    def mask_callback(self, msg):
         """
-        Callback function to receive bounding box coordinates.
+        Callback function to receive the pose mask image.
         """
-        self.x1 = int(msg.center.position.x - msg.size_x / 2)
-        self.y1 = int(msg.center.position.y - msg.size_y / 2)
-        self.x2 = int(msg.center.position.x + msg.size_x / 2)
-        self.y2 = int(msg.center.position.y + msg.size_y / 2)
-        self.get_logger().info(f'Received bounding box: ({self.x1}, {self.y1}), ({self.x2}, {self.y2})')
+        self.current_mask = self.bridge.imgmsg_to_cv2(msg, desired_encoding='mono8')
 
     def quaternion_to_rotation_matrix(self, q):
         """
@@ -111,8 +110,8 @@ class PersonDetect(Node):
         if self.camera_model is None:
             self.get_logger().warn("Camera model not yet initialized. Skipping point cloud.", throttle_duration_sec=5)
             return
-        if self.x1 is None:
-            self.get_logger().warn("Bounding box not yet received. Skipping point cloud.", throttle_duration_sec=5)
+        if self.current_mask is None:
+            self.get_logger().warn("Pose mask not yet received. Skipping point cloud.", throttle_duration_sec=5)
             return
         self.point_cloud = msg
         points_inside_bbox = []
@@ -159,23 +158,31 @@ class PersonDetect(Node):
             self.get_logger().error(f'Could not transform point cloud: {e}')
             return
         
+        mask_h, mask_w = self.current_mask.shape
+        
         # Now, project the transformed points to the image plane
         for point in pc2.read_points(transformed_cloud_msg, field_names=("x", "y", "z"), skip_nans=True):
             # Assuming self.camera_model is initialized and valid
             u, v = self.camera_model.project3dToPixel(point)
             
-            # Assuming self.x1, self.x2, self.y1, self.y2 are defined
-            if self.x1 < u < self.x2 and self.y1 < v < self.y2:
-                # Add the 3D point (which is already in the camera frame) to our list
-                points_inside_bbox.append(point)
+            u_int = int(round(u))
+            v_int = int(round(v))
+            
+            # Check if point falls inside the image dimensions
+            if 0 <= u_int < mask_w and 0 <= v_int < mask_h:
+                # Check if the pixel on the mask is white (>0)
+                if self.current_mask[v_int, u_int] > 0:
+                    points_inside_bbox.append(point)
 
         # Publish the filtered points if any were found
         if points_inside_bbox:
             # The header is already in the correct camera frame
             filtered_cloud_msg = pc2.create_cloud_xyz32(header, points_inside_bbox)
             self.filtered_cloud_pub.publish(filtered_cloud_msg)
-            self.get_logger().info(f"Published {len(points_inside_bbox)} points inside the bounding box.")
-            self.x1, self.y1, self.x2, self.y2 = 0, 0, 0, 0
+            self.get_logger().info(f"Published {len(points_inside_bbox)} points inside the person mask.")
+            
+            # Clear the mask so we don't reuse stale data if detection drops
+            self.current_mask = None
 
         
 

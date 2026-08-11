@@ -196,8 +196,31 @@ class HailoYolov8Pose:
                     vis = kpts[i, kpt_idx, 2]
                     scaled_kpts.append((float(x), float(y), float(vis)))
                     
+                # Compute tight bounding box from valid keypoints
+                valid_kpts = [k for k in scaled_kpts if k[2] > 0.5]
+                if valid_kpts:
+                    min_x = min(k[0] for k in valid_kpts)
+                    max_x = max(k[0] for k in valid_kpts)
+                    min_y = min(k[1] for k in valid_kpts)
+                    max_y = max(k[1] for k in valid_kpts)
+                    
+                    # Ensure the tight box is within the original box and image bounds
+                    tx1 = max(float(x1), min_x)
+                    ty1 = max(float(y1), min_y)
+                    tx2 = min(float(x2), max_x)
+                    ty2 = min(float(y2), max_y)
+                    
+                    # Make sure it's not inverted or completely zero area
+                    if tx1 >= tx2 or ty1 >= ty2:
+                        tight_scaled_box = scaled_box
+                    else:
+                        tight_scaled_box = [tx1, ty1, tx2, ty2]
+                else:
+                    tight_scaled_box = scaled_box
+
                 results.append({
                     "bbox": scaled_box,
+                    "tight_bbox": tight_scaled_box,
                     "score": float(scores[i]),
                     "keypoints": scaled_kpts
                 })
