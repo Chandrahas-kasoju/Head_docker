@@ -15,6 +15,7 @@ import numpy as np
 import yaml
 import math
 from pathlib import Path
+from sklearn.cluster import DBSCAN
 
 
 class StateStabilizer:
@@ -247,7 +248,25 @@ class PersonIntentNode(Node):
         
         if xyz.size == 0: return
 
-        centroid_raw = np.mean(xyz, axis=0)
+        # DBSCAN Clustering to find the main body of the person
+        if xyz.shape[0] < 3:
+            centroid_raw = np.mean(xyz, axis=0)
+        else:
+            clustering = DBSCAN(eps=0.4, min_samples=2).fit(xyz)
+            labels = clustering.labels_
+            
+            unique_labels, counts = np.unique(labels, return_counts=True)
+            valid_clusters = [l for l in unique_labels if l != -1]
+            
+            if len(valid_clusters) > 0:
+                cluster_counts = {l: c for l, c in zip(unique_labels, counts) if l != -1}
+                biggest_cluster_label = max(cluster_counts, key=cluster_counts.get)
+                biggest_cluster_points = xyz[labels == biggest_cluster_label]
+                centroid_raw = np.mean(biggest_cluster_points, axis=0)
+            else:
+                # Fallback to all points if DBSCAN categorizes everything as noise
+                centroid_raw = np.mean(xyz, axis=0)
+
         self.radar_centroid_history.append(centroid_raw)
         centroid = np.mean(self.radar_centroid_history, axis=0)
 

@@ -90,7 +90,8 @@ RUN python3 -m pip install --user \
     'git+https://github.com/Chandrahas-kasoju/python-st3215.git' \
     requests \
     pygame \
-    scipy
+    scipy \
+    scikit-learn
 
 # --- HAILO AI HAT+ SETUP ---
 # Install the provided HailoRT python wheel for Ubuntu 22.04 aarch64
