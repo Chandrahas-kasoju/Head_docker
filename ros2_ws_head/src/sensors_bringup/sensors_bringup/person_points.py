@@ -21,7 +21,7 @@ class DynamicPointCloudFilter(Node):
         # Create subscription to the input point cloud topic
         self.subscription = self.create_subscription(
             PointCloud2,
-            '/ti_mmwave/radar_scan_pcl',  # The topic to subscribe to
+            '/radar_vitals/points',  # The topic to subscribe to
             self.listener_callback,
             10)
 

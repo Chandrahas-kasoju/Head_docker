@@ -1,0 +1,240 @@
+#!/usr/bin/env python3
+"""Configure the radar, then publish its point cloud and estimated vital signs."""
+from collections import deque
+from itertools import islice
+import math
+import os
+import signal
+import time
+
+from ament_index_python.packages import get_package_share_directory
+import numpy as np
+import rclpy
+from rclpy.node import Node
+from radar_vitals_core.estimator import VitalsEstimator
+from radar_vitals_core.motion_points import MotionPoints
+from radar_vitals.msg import VitalSigns
+from radar_vitals_core.tlv import PacketDecoder, read_radar_config
+from sensor_msgs.msg import PointCloud2, PointField
+from sensor_msgs_py import point_cloud2
+import serial
+from std_msgs.msg import Float32MultiArray
+
+POINT_FIELDS = [
+    PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+    PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+    PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+    PointField(name='velocity', offset=12, datatype=PointField.FLOAT32, count=1),
+    PointField(name='intensity', offset=16, datatype=PointField.FLOAT32, count=1),  # SNR in dB
+    PointField(name='noise_db', offset=20, datatype=PointField.FLOAT32, count=1),
+]
+BREATHING_FIELDS = [
+    PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+    PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+    PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+    PointField(name='breathing_mm', offset=12, datatype=PointField.FLOAT32, count=1),
+]
+MOTION_FIELDS = [
+    PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+    PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+    PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+    PointField(name='power_db', offset=12, datatype=PointField.FLOAT32, count=1),  # Above the scene's noise
+]
+MOTION_POINTS_EVERY_FRAMES = 10
+
+
+def open_port(port, baud, timeout):
+    # Set the control lines before opening, so that opening does not toggle them
+    s = serial.Serial()
+    s.port, s.baudrate, s.timeout = port, baud, timeout
+    s.dtr = False
+    s.rts = False
+    s.open()
+    return s
+
+
+class RadarVitalsNode(Node):
+
+    def __init__(self):
+        super().__init__('radar_vitals')
+        default_cfg = os.path.join(
+            get_package_share_directory('radar_vitals'), 'cfg', 'vitals_iwr6843aop.cfg')
+        self.declare_parameter('cfg_file', default_cfg)
+        self.declare_parameter('command_port', '/dev/ttyUSB0')
+        self.declare_parameter('data_port', '/dev/ttyUSB1')
+        self.declare_parameter('frame_id', 'radar_link')
+        self.declare_parameter('min_range_m', 0.2)
+        self.declare_parameter('max_range_m', 2.5)
+        self.declare_parameter('motion_points', True)  # Publish fine motion points, like TI's people tracking demo
+        self.declare_parameter('record_file', '')  # Saves raw frames for replay_recording when set
+        param = lambda name: self.get_parameter(name).value
+
+        self.commands, range_bins, bin_m, frame_ms = read_radar_config(param('cfg_file'))
+        self.frame_id = param('frame_id')
+        self.record_file = param('record_file')
+        self.recorded_iq, self.recorded_numbers, self.recorded_stamps = [], [], []
+        self.bin_m, self.frame_ms = bin_m, frame_ms
+        self.decoder = PacketDecoder(range_bins)
+        self.frame_rate_hz = 1000 / frame_ms
+        self.estimator = VitalsEstimator(
+            self.frame_rate_hz, bin_m,
+            min_range_m=param('min_range_m'), max_range_m=param('max_range_m'))
+        self.frames_since_update = 0
+        self.motion_points = MotionPoints(self.frame_rate_hz, bin_m) if param('motion_points') else None
+        self.frames_since_motion_points = 0
+        self.chest_position = None  # (x, y, z) in ROS axes of the breathing marker, or None when nobody is found
+        # Breathing samples from the latest estimate, replayed one per frame so the cloud moves smoothly, 1 s late
+        self.breathing_samples = deque()
+        self.breathing_mm = math.nan
+
+        self.cloud_pub = self.create_publisher(PointCloud2, '~/points', 10)
+        self.vitals_pub = self.create_publisher(VitalSigns, '~/vital_signs', 10)
+        self.motion_pub = self.create_publisher(Float32MultiArray, '~/breathing_motion_mm', 10)
+        self.breathing_cloud_pub = self.create_publisher(PointCloud2, '~/breathing_points', 10)
+        self.motion_cloud_pub = self.create_publisher(PointCloud2, '~/motion_points', 10)
+
+        self.cli = open_port(param('command_port'), 115200, 0.1)
+        self.data = open_port(param('data_port'), 921600, 0.1)
+
+    def command(self, line, wait=2.0):
+        self.cli.reset_input_buffer()
+        self.cli.write((line + '\n').encode())
+        reply = b''
+        deadline = time.time() + wait
+        while time.time() < deadline:
+            reply += self.cli.read(self.cli.in_waiting or 1)
+            if reply.rstrip().endswith(b':/>') and (b'Done' in reply or b'Error' in reply):
+                break
+        return reply.decode('ascii', 'replace')
+
+    def start_sensor(self):
+        for line in self.commands:
+            reply = self.command(line, wait=5.0 if line == 'sensorStart' else 2.0)
+            # sensorStop reports an error if the sensor is already stopped, which is harmless
+            if 'Done' not in reply and line != 'sensorStop':
+                raise RuntimeError(f'Radar rejected "{line}": {reply.strip() or "no reply"}')
+        self.get_logger().info('Radar configured and running.')
+
+    def stop_sensor(self):
+        self.command('sensorStop')
+
+    def publish_cloud(self, frame, stamp):
+        header = point_cloud2.Header(frame_id=self.frame_id, stamp=stamp)
+        points = frame.points
+        count = len(points)
+        snr = np.zeros(count) if frame.side_info is None else frame.side_info['snr'] * 0.1
+        noise = np.zeros(count) if frame.side_info is None else frame.side_info['noise'] * 0.1
+        # ROS axes are x forward, y left, z up; radar axes are x right, y forward, z up
+        rows = np.c_[points['y'], -points['x'], points['z'], points['velocity'], snr, noise]
+        self.cloud_pub.publish(point_cloud2.create_cloud(header, POINT_FIELDS, rows.tolist()))
+
+    def publish_breathing_cloud(self, stamp):
+        """Publish one point where the breathing is, coloured by the current chest movement."""
+        if self.breathing_samples:
+            self.breathing_mm = self.breathing_samples.popleft()
+        header = point_cloud2.Header(frame_id=self.frame_id, stamp=stamp)
+        rows = [] if self.chest_position is None else [[*self.chest_position, self.breathing_mm]]
+        self.breathing_cloud_pub.publish(point_cloud2.create_cloud(header, BREATHING_FIELDS, rows))
+
+    def publish_motion_points(self, stamp):
+        frames = self.estimator.frames
+        count = self.motion_points.frames
+        if len(frames) < count:
+            return
+        points = self.motion_points.compute(np.stack(list(islice(frames, len(frames) - count, None))))
+        header = point_cloud2.Header(frame_id=self.frame_id, stamp=stamp)
+        # ROS axes are x forward, y left, z up; radar axes are x right, y forward, z up
+        rows = np.c_[points['y'], -points['x'], points['z'], points['power_db']]
+        self.motion_cloud_pub.publish(point_cloud2.create_cloud(header, MOTION_FIELDS, rows.tolist()))
+
+    def update_chest_position(self, estimate):
+        direction = self.estimator.chest_direction
+        if not estimate.person_detected or direction is None:
+            self.chest_position = None
+            return
+        azimuth, elevation = direction
+        # ROS axes are x forward, y left, z up; positive azimuth is the radar's right
+        r = estimate.range_m
+        self.chest_position = (r * math.cos(elevation) * math.cos(azimuth),
+                               -r * math.cos(elevation) * math.sin(azimuth), r * math.sin(elevation))
+
+    def publish_vitals(self, stamp):
+        started = time.time()
+        estimate = self.estimator.update(dt=self.frames_since_update / self.frame_rate_hz)
+        msg = VitalSigns()
+        msg.header.frame_id = self.frame_id
+        msg.header.stamp = stamp
+        for name, value in vars(estimate).items():
+            setattr(msg, name, value)
+        msg.missed_frames = self.estimator.missed_frames
+        self.vitals_pub.publish(msg)
+        self.update_chest_position(estimate)
+        motion = self.estimator.breathing_motion_mm
+        if motion is None:
+            self.breathing_samples.clear()
+            self.breathing_mm = math.nan
+        else:
+            self.motion_pub.publish(Float32MultiArray(data=motion.tolist()))
+            self.breathing_samples = deque(motion[-self.frames_since_update:])
+        self.get_logger().debug(f'Estimator update took {time.time() - started:.3f} s')
+
+    def spin_radar(self):
+        while rclpy.ok():
+            rclpy.spin_once(self, timeout_sec=0)
+            chunk = self.data.read(self.data.in_waiting or 1)
+            for frame in self.decoder.feed(chunk):
+                stamp = self.get_clock().now().to_msg()
+                self.publish_cloud(frame, stamp)
+                if frame.iq is None:
+                    continue
+                if self.record_file:
+                    self.recorded_iq.append(frame.iq)
+                    self.recorded_numbers.append(frame.number)
+                    self.recorded_stamps.append(time.time())
+                self.estimator.add_frame(frame.number, frame.iq)
+                self.frames_since_update += 1
+                if self.frames_since_update >= self.frame_rate_hz:
+                    self.publish_vitals(stamp)
+                    self.frames_since_update = 0
+                self.publish_breathing_cloud(stamp)
+                if self.motion_points is not None:
+                    self.frames_since_motion_points += 1
+                    if self.frames_since_motion_points >= MOTION_POINTS_EVERY_FRAMES:
+                        self.publish_motion_points(stamp)
+                        self.frames_since_motion_points = 0
+
+    def save_recording(self):
+        if not self.recorded_iq:
+            return
+        stamps = np.array(self.recorded_stamps)
+        np.savez_compressed(
+            self.record_file, iq=np.stack(self.recorded_iq), stamps=stamps - stamps[0],
+            frame_numbers=np.array(self.recorded_numbers), bin_m=self.bin_m, frame_ms=self.frame_ms)
+
+    def close(self):
+        self.cli.close()
+        self.data.close()
+
+
+def main():
+    rclpy.init()
+    node = None
+    try:
+        node = RadarVitalsNode()
+        node.start_sensor()
+        node.spin_radar()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        # Ctrl-C reaches the node from both the terminal and ros2 launch; finish stopping the sensor anyway
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        if node is not None:
+            node.stop_sensor()
+            node.close()
+            node.save_recording()
+            node.destroy_node()
+        rclpy.try_shutdown()
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+"""Run the estimator on a recording from vitals/iq_capture.py, with no radar or ROS graph.
+
+    ros2 run radar_vitals replay_recording data/sitting_1m.npz --every 10
+"""
+import argparse
+
+import numpy as np
+from radar_vitals_core.estimator import VitalsEstimator
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('recording')
+    parser.add_argument('--every', type=int, default=10, help='seconds between printed lines')
+    args = parser.parse_args()
+
+    rec = np.load(args.recording)
+    iq, numbers, frame_ms = rec['iq'], rec['frame_numbers'], float(rec['frame_ms'])
+    fs = 1000 / frame_ms
+    estimator = VitalsEstimator(fs, float(rec['bin_m']))
+    per_update = int(round(fs))
+
+    print('time  range  person motion  heart (std, confidence)    breathing (std, confidence)  amp breath/heart')
+    for i in range(len(iq)):
+        estimator.add_frame(int(numbers[i]), iq[i])
+        if (i + 1) % per_update:
+            continue
+        e = estimator.update(dt=1.0)
+        seconds = (i + 1) // per_update
+        if seconds % args.every == 0:
+            print(f'{seconds:4d}s {e.range_m:5.2f}m {str(e.person_detected):6s} {str(e.motion_detected):6s} '
+                  f'{e.heart_rate_bpm:6.1f} ({e.heart_rate_std_bpm:4.1f}, {e.heart_confidence:4.2f})        '
+                  f'{e.breathing_rate_bpm:6.1f} ({e.breathing_rate_std_bpm:4.1f}, {e.breathing_confidence:4.2f})     '
+                  f'{e.breathing_amplitude_mm:5.2f}/{e.heart_amplitude_mm:5.2f} mm')
+
+
+if __name__ == '__main__':
+    main()

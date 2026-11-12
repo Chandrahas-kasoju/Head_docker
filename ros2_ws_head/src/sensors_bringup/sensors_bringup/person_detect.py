@@ -47,7 +47,7 @@ class PersonDetect(Node):
         
         self.point_cloud_sub = self.create_subscription(
             PointCloud2,
-            '/ti_mmwave/radar_scan_pcl',
+            '/radar_vitals/points',
             self.point_cloud_callback,
             10)
         self.filtered_cloud_pub = self.create_publisher(

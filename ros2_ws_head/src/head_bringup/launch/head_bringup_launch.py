@@ -13,11 +13,12 @@ def generate_launch_description():
         LaunchDescription: The launch description object.
     """
 
-    # Get the path to the launch file of the ti_mmwave_rospkg package
-    ti_mmwave_rospkg_launch_file = os.path.join(
-       get_package_share_directory('ti_mmwave_rospkg'),
+    # Radar: radar_vitals publishes the point cloud and vital signs. It needs the
+    # out-of-box mmw demo firmware on the IWR6843AOP (not the people tracking one).
+    radar_vitals_launch_file = os.path.join(
+       get_package_share_directory('radar_vitals'),
        'launch',
-       '6843AOP_FineMotion.py'  # Assuming a standard launch file name and location
+       'vitals.launch.py'
     )
 
     return LaunchDescription([
@@ -63,7 +64,12 @@ def generate_launch_description():
         ),
         # Include the launch file for the radar node
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(ti_mmwave_rospkg_launch_file),
-            launch_arguments={'rviz': 'false'}.items()
+            PythonLaunchDescriptionSource(radar_vitals_launch_file),
+            launch_arguments={
+                'rviz': 'false',
+                # Keep the old driver's frame name, so the camera-radar
+                # calibration in static_transform still applies.
+                'frame_id': 'ti_mmwave_0',
+            }.items()
         ),
     ])
