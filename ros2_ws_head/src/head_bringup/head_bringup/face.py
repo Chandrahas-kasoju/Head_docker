@@ -53,6 +53,12 @@ class RobotFaceNode(Node):
         )
         self.get_logger().info("Robot Face Node Started. Listening to /person_intent")
 
+        # Tele's mode comes from the body. In Christmas mode the face turns into Santa.
+        self.tele_mode = 'PATROL'
+        self.last_mode_time = 0.0
+        self.snow = []
+        self.create_subscription(String, '/tele_mode', self.mode_callback, 10)
+
         # Application State
         self.target_emotion = 'NORMAL'
         self.current_phase = 0.0  # 0.0 = Normal, 1.0 = Smiling
@@ -80,6 +86,7 @@ class RobotFaceNode(Node):
         self.screen_width, self.screen_height = self.screen.get_size()
         self.screen_center_x = self.screen_width // 2
         self.screen_center_y = self.screen_height // 2
+        self.scale = min(self.screen_width, self.screen_height) / 1080.0
         
         self.left_eye_center = (self.screen_center_x - (EYE_SPACING // 2), self.screen_center_y - 100)
         self.right_eye_center = (self.screen_center_x + (EYE_SPACING // 2), self.screen_center_y - 100)
@@ -100,6 +107,51 @@ class RobotFaceNode(Node):
             if self.target_emotion != 'NORMAL':
                 self.target_emotion = 'NORMAL'
                 self.get_logger().info(f"Person Intent: {intent} -> Emotion set to NORMAL")
+
+    def mode_callback(self, msg):
+        self.tele_mode = msg.data.strip().upper()
+        self.last_mode_time = pygame.time.get_ticks()
+
+    def christmas_active(self):
+        if self.tele_mode != 'CHRISTMAS':
+            return False
+        if pygame.time.get_ticks() - self.last_mode_time > 5000:
+            self.tele_mode = 'PATROL'  # The mode manager went silent
+            return False
+        return True
+
+    def draw_snow(self):
+        if not self.snow:
+            self.snow = [[random.uniform(0, self.screen_width), random.uniform(0, self.screen_height),
+                          random.uniform(1.5, 4.5), random.randint(3, 7)] for _ in range(80)]
+        for flake in self.snow:
+            flake[1] += flake[2]
+            if flake[1] > self.screen_height:
+                flake[0], flake[1] = random.uniform(0, self.screen_width), -10
+            pygame.draw.circle(self.screen, (235, 240, 255), (int(flake[0]), int(flake[1])), flake[3])
+
+    def draw_beard(self):
+        """A fluffy white beard behind the mouth."""
+        cx, cy, k = self.screen_center_x, self.screen_center_y, self.scale
+        for i in range(13):
+            angle = math.pi * i / 12
+            x = cx + math.cos(angle) * 330 * k
+            y = cy + 150 * k + math.sin(angle) * 300 * k
+            pygame.draw.circle(self.screen, (250, 250, 250), (int(x), int(y)), int(95 * k))
+        pygame.draw.ellipse(self.screen, (250, 250, 250),
+                            pygame.Rect(cx - 330 * k, cy + 60 * k, 660 * k, 380 * k))
+
+    def draw_hat_and_cheeks(self):
+        cx, cy, k = self.screen_center_x, self.screen_center_y, self.scale
+        for side in (-1, 1):
+            pygame.draw.circle(self.screen, (255, 130, 150), (int(cx + side * 330 * k), int(cy + 70 * k)), int(50 * k))
+        brim_y = cy - 330 * k
+        tip = (cx + 250 * k, cy - 520 * k)
+        pygame.draw.polygon(self.screen, (200, 30, 40),
+                            [(cx - 360 * k, brim_y), (cx + 360 * k, brim_y), tip])
+        pygame.draw.rect(self.screen, (250, 250, 250),
+                         pygame.Rect(cx - 400 * k, brim_y - 45 * k, 800 * k, 100 * k), border_radius=int(50 * k))
+        pygame.draw.circle(self.screen, (250, 250, 250), (int(tip[0]), int(tip[1])), int(55 * k))
 
     def run(self):
         """Main Loop combining ROS 2 and Pygame"""
@@ -122,7 +174,8 @@ class RobotFaceNode(Node):
             # --- Update Animation Phase (Smooth Time-Based Morphing) ---
             phase_step = dt / TRANSITION_DURATION_MS 
             
-            if self.target_emotion == 'SMILE':
+            christmas = self.christmas_active()
+            if self.target_emotion == 'SMILE' or christmas:  # Santa always smiles
                 self.current_phase = min(1.0, self.current_phase + phase_step)
             else:
                 self.current_phase = max(0.0, self.current_phase - phase_step)
@@ -158,7 +211,10 @@ class RobotFaceNode(Node):
                     current_eye_draw_height = current_eye_base_height * progress
 
             # --- Drawing Phase ---
-            self.screen.fill(BACKGROUND_COLOR)
+            self.screen.fill((10, 20, 45) if christmas else BACKGROUND_COLOR)
+            if christmas:
+                self.draw_snow()
+                self.draw_beard()
 
             # Draw Eyes
             if current_eye_draw_height > 0:
@@ -218,8 +274,11 @@ class RobotFaceNode(Node):
             offset_points = [(self.screen_center_x + px, self.screen_center_y + current_m_y + py) for px, py in mouth_points]
             
             # Draw and smooth the polygon
-            pygame.draw.polygon(self.screen, FACE_COLOR, offset_points)
-            pygame.draw.aalines(self.screen, FACE_COLOR, True, offset_points)
+            mouth_color = (200, 30, 40) if christmas else FACE_COLOR
+            pygame.draw.polygon(self.screen, mouth_color, offset_points)
+            pygame.draw.aalines(self.screen, mouth_color, True, offset_points)
+            if christmas:
+                self.draw_hat_and_cheeks()
 
             pygame.display.flip()
             self.clock.tick(60)

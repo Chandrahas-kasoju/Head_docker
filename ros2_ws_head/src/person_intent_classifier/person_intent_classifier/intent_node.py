@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import time
+
 import rclpy
 from rclpy.node import Node
 from rclpy.time import Time
@@ -130,6 +132,10 @@ class PersonIntentNode(Node):
             self.get_logger().info("Odometry usage is DISABLED. Assuming robot is stationary.")
 
         self.intent_publisher = self.create_publisher(String, '/person_intent', 10)
+        # Tele's mode comes from the body. In Christmas mode nobody is classified.
+        self.tele_mode = 'PATROL'
+        self.last_mode_time = 0.0
+        self.create_subscription(String, '/tele_mode', self.mode_callback, 10)
         self.velocity_publisher = self.create_publisher(Float32, '/person_intent/radar_velocity', 10)
         self.distance_publisher = self.create_publisher(Float32, '/person_intent/radar_distance', 10)
 
@@ -243,6 +249,18 @@ class PersonIntentNode(Node):
     # ----------------------------
     # Radar
     # ----------------------------
+    def mode_callback(self, msg):
+        self.tele_mode = msg.data.strip().upper()
+        self.last_mode_time = time.time()
+
+    def publish_intent(self, out):
+        """Publishes the intent, except while the Christmas show runs."""
+        if self.tele_mode == 'CHRISTMAS':
+            if time.time() - self.last_mode_time <= 5.0:
+                return
+            self.tele_mode = 'PATROL'  # The mode manager went silent
+        self.intent_publisher.publish(out)
+
     def radar_callback(self, msg: PointCloud2):
         xyz = self._pc2_to_xyz(msg)
         if xyz.size == 0: return
@@ -470,7 +488,7 @@ class PersonIntentNode(Node):
 
         out = String()
         out.data = stable_intent
-        self.intent_publisher.publish(out)
+        self.publish_intent(out)
 
     def status_check_callback(self):
         now = self.get_clock().now().nanoseconds / 1e9
@@ -479,7 +497,7 @@ class PersonIntentNode(Node):
             self.get_logger().info("Intent: NO_PERSON_DETECTED | No bounding box received")
             out = String()
             out.data = "NO_PERSON_DETECTED"
-            self.intent_publisher.publish(out)
+            self.publish_intent(out)
 
 def main(args=None):
     rclpy.init(args=args)
