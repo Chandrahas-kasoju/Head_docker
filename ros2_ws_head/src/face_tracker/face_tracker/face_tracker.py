@@ -77,6 +77,12 @@ class FaceTrackerNode(Node):
             self.intent_callback,
             10)
             
+        # Tele's mode comes from the body. In Christmas mode the body moves the head
+        # for its show, so tracking is paused and the motors are left alone.
+        self.tele_mode = 'WORK'
+        self.last_mode_time = 0.0
+        self.create_subscription(String, '/tele_mode', self.mode_callback, 10)
+
         self.last_eye_center_time = self.get_clock().now()
         self.timer = self.create_timer(0.5, self.timer_callback)
         
@@ -95,7 +101,25 @@ class FaceTrackerNode(Node):
                 self.current_intent = 'NORMAL'
                 self.get_logger().info(f"Intent updated to: {intent} (Set as NORMAL) -> Tracking disabled. Returning home.")
 
+    def mode_callback(self, msg):
+        self.tele_mode = msg.data.strip().upper()
+        self.last_mode_time = self.now_sec()
+
+    def show_running(self):
+        """True while the body runs the Christmas show. Stale after 5 s without a mode message."""
+        if self.tele_mode != 'CHRISTMAS':
+            return False
+        if self.now_sec() - self.last_mode_time > 5.0:
+            self.tele_mode = 'WORK'
+            return False
+        return True
+
     def timer_callback(self):
+        if self.show_running():
+            # Forget the old targets, so tracking starts fresh after the show
+            self.roll_angle, self.pitch_angle = self.home_roll, self.home_pitch
+            self.roll_moving = self.pitch_moving = False
+            return
         now = self.get_clock().now()
         elapsed = (now - self.last_eye_center_time).nanoseconds / 1e9
         timeout_sec = self.get_parameter('timeout_sec').get_parameter_value().double_value
@@ -156,6 +180,8 @@ class FaceTrackerNode(Node):
         # --- NEW LOGIC: Only move motors if intent is WANT_TO_INTERACT ---
         if self.current_intent != 'WANT_TO_INTERACT':
             return  # Exit the function immediately. Do not process tracking.
+        if self.show_running():
+            return
 
         width = self.get_parameter('image_width').get_parameter_value().integer_value
         height = self.get_parameter('image_height').get_parameter_value().integer_value
