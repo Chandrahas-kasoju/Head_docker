@@ -145,8 +145,8 @@ class RobotFaceNode(Node):
         cx, cy, k = self.screen_center_x, self.screen_center_y, self.scale
         for side in (-1, 1):
             pygame.draw.circle(self.screen, (255, 130, 150), (int(cx + side * 330 * k), int(cy + 70 * k)), int(50 * k))
-        brim_y = cy - 330 * k
-        tip = (cx + 250 * k, cy - 520 * k)
+        brim_y = cy - 300 * k
+        tip = (cx + 250 * k, cy - 465 * k)
         pygame.draw.polygon(self.screen, (200, 30, 40),
                             [(cx - 360 * k, brim_y), (cx + 360 * k, brim_y), tip])
         pygame.draw.rect(self.screen, (250, 250, 250),
