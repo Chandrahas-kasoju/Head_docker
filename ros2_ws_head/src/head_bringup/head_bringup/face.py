@@ -8,49 +8,45 @@ import random
 import sys
 import math
 
-# Tele's face: a patrol robot on duty.
-#   Patrolling : narrow, serious eyes that scan from side to side, level brows, a straight
-#                mouth, a scan line across the eyes and "ON PATROL" on the status strip
-#   Noticing   : someone is in view -> the eyes open, turn to the person, the brows lift
-#   Greeting   : the person wants to interact -> happy eyes and a wide smile
+# Tele's face: a patrol robot on duty, drawn with sharp, angular shapes.
+#   On duty  : narrow slit eyes with a sensor bar that scans from side to side, a straight
+#              mouth, a scan line and "ON PATROL" on the status strip. This is the face
+#              whenever Tele is not greeting, also while someone is merely in view; then
+#              the sensor bars follow that person.
+#   Greeting : the person wants to interact -> the eyes turn into happy chevrons and
+#              the mouth opens into a smile
 # In Christmas mode the same face wears a Santa hat and beard.
 
 # --- Configuration Settings ---
-BACKGROUND_COLOR = (20, 20, 20)
+BACKGROUND_COLOR = (12, 14, 20)
 FACE_COLOR = (0, 200, 255)
-HALO_COLOR = (0, 80, 106)        # Soft glow under the eyes
-STRIP_COLOR = (0, 60, 82)        # Status strip and scan line
-ON_DUTY_COLOR = (60, 230, 140)   # Small light on the status strip while patrolling
-GLINT_COLOR = (235, 250, 255)
+HALO_COLOR = (0, 70, 95)         # Neon glow under the bright shapes
+DIM_COLOR = (0, 95, 125)         # Thin display lines
+TEXT_COLOR = (200, 245, 255)
 IS_TESTING_ON_LAPTOP = False
 FPS = 30
 
 # --- Geometry (pixels on a 1080 x 1080 screen, relative to the centre; scaled to the real screen) ---
-EYE_X, EYE_Y = 240, -95
-# Each value is (patrolling, noticing)
-EYE_WIDTH = (250, 240)
-EYE_HEIGHT = (100, 190)
-EYE_RADIUS = (50, 85)
-PUPIL_RADIUS = (40, 52)
-GLINT_RADIUS = (13, 16)
-LID_DROP = (0, 0)                # How far the upper eyelid hangs over the eye
-BROW_HEIGHT_ABOVE_EYE = (105, 175)
-BROW_WIDTH, BROW_THICKNESS = 200, 28
-BROW_ANGLE_NOTICING, BROW_ANGLE_GREETING = 2.0, 3.0
+EYE_X, EYE_Y = 245, -95
+EYE_WIDTH = 270
+EYE_HEIGHT = (84, 104)           # (nobody in view, someone in view)
+EYE_CHAMFER = 34                 # Size of the cut corners
+SENSOR_WIDTH = 54                # The dark bar inside each eye that does the looking
+HAPPY_WIDTH, HAPPY_HEIGHT, HAPPY_THICKNESS = 250, 120, 44
+BROW_HEIGHT_ABOVE_EYE = (92, 104)
+BROW_WIDTH, BROW_THICKNESS = 250, 12
 MOUTH_Y = 215
-MOUTH_WIDTH = (160, 200)
-MOUTH_CURVE = (0, 12)            # Straight while patrolling, barely curved when noticing someone
-MOUTH_THICKNESS = (24, 26)
-MOUTH_WIDTH_GREETING, MOUTH_HEIGHT_GREETING = 320, 125
+MOUTH_WIDTH, MOUTH_THICKNESS = 170, 16
+MOUTH_WIDTH_GREETING, MOUTH_HEIGHT_GREETING = 300, 105
 
 # Status strip along the bottom, like a duty display
-STRIP_Y, STRIP_WIDTH, STRIP_HEIGHT = 432, 640, 84
-STATUS_PATROLLING, STATUS_NOTICING, STATUS_GREETING = 'ON PATROL', 'HELLO THERE', 'HOW CAN I HELP?'
-STATUS_SPEAKING = "HELLO, I'M TELE"
+STRIP_Y, STRIP_WIDTH, STRIP_HEIGHT = 432, 520, 78
+STATUS_ON_DUTY, STATUS_GREETING = 'ON PATROL', 'HOW CAN I HELP?'
+STATUS_SPEAKING = "I'M TELE"
 
-SCAN_RANGE = 62                  # How far the pupils travel while scanning
+SCAN_RANGE = 88                  # How far the sensor bars travel while scanning
 SCAN_PERIOD_S = 7.0
-GAZE_RANGE_X, GAZE_RANGE_Y = 46, 20
+GAZE_RANGE_X = 80
 CAMERA_WIDTH, CAMERA_HEIGHT = 256, 192
 # A person on the camera's left stands on the screen's right for someone facing Tele.
 # Set to -1 if the eyes look away from the person instead of at them.
@@ -127,7 +123,7 @@ class RobotFaceNode(Node):
         self.screen_center_x = self.screen_width // 2
         self.screen_center_y = self.screen_height // 2
         self.scale = min(self.screen_width, self.screen_height) / 1080.0
-        self.status_font = pygame.font.Font(None, int(58 * self.scale))
+        self.status_font = pygame.font.Font(None, int(50 * self.scale))
         self.status_cache = {}
 
         now = pygame.time.get_ticks()
@@ -186,84 +182,93 @@ class RobotFaceNode(Node):
         pygame.draw.rect(self.screen, color, self.rect_at(x, y, w, h),
                          border_radius=int(min(radius, w / 2, h / 2) * self.scale))
 
+    def polygon(self, color, points, grow=0.0):
+        """Filled polygon from design coordinates. grow enlarges it around its centre (for the glow)."""
+        if grow:
+            cx = sum(p[0] for p in points) / len(points)
+            cy = sum(p[1] for p in points) / len(points)
+            points = [(x + math.copysign(grow, x - cx), y + math.copysign(grow, y - cy)) for x, y in points]
+        pygame.draw.polygon(self.screen, color, [self.px(x, y) for x, y in points])
+
     def draw_eyes(self, notice, smile, openness, background):
-        w, h = mix(EYE_WIDTH, notice), mix(EYE_HEIGHT, notice)
-        radius = mix(EYE_RADIUS, notice)
-        pupil_r, glint_r = mix(PUPIL_RADIUS, notice), mix(GLINT_RADIUS, notice)
-        lid = mix(LID_DROP, notice)
+        w, c = EYE_WIDTH, EYE_CHAMFER
+        h = max(10, mix(EYE_HEIGHT, notice) * openness)
+        c = min(c, h / 2)
         for side in (-1, 1):
             ex = side * EYE_X
-            draw_h = max(16, h * openness)
-            self.rounded_rect(HALO_COLOR, ex, EYE_Y, w + 30, draw_h + 30, radius + 14)
-            self.rounded_rect(FACE_COLOR, ex, EYE_Y, w, draw_h, radius)
-            if openness > 0.55:
-                # Everything inside the eye stays inside its outline
-                self.screen.set_clip(self.rect_at(ex, EYE_Y, w + 32, draw_h + 32))  # Eye and its glow
-                px_, py_ = ex + self.gaze[0], EYE_Y + 6 + self.gaze[1] - 14 * smile
-                pygame.draw.circle(self.screen, background, self.px(px_, py_), int(pupil_r * self.scale))
-                pygame.draw.circle(self.screen, GLINT_COLOR, self.px(px_ + pupil_r * 0.32, py_ - pupil_r * 0.3),
-                                   int(glint_r * self.scale))
-                # Greeting: a cheek rises and turns the eye into a happy arch
-                if smile > 0.01:
-                    cheek = self.rect_at(ex, EYE_Y + h * (1.5 - 0.62 * smile), w * 1.7, h * 1.24)
-                    pygame.draw.ellipse(self.screen, background, cheek)
-                self.screen.set_clip(None)
-                # Patrolling: the upper eyelid hangs low, which gives the watchful look
-                if lid > 0.5:
-                    pygame.draw.rect(self.screen, background,
-                                     self.rect_at(ex, EYE_Y - h / 2 + lid / 2 - 20, w + 60, lid + 40))
+            # A slit with two cut corners: top outer and bottom inner. o points outwards.
+            o = side
+            slit = [(-o * w / 2, -h / 2), (o * (w / 2 - c), -h / 2), (o * w / 2, -h / 2 + c),
+                    (o * w / 2, h / 2), (-o * (w / 2 - c), h / 2), (-o * w / 2, h / 2 - c)]
+            # A chevron pointing up: the happy eye
+            W, H, t = HAPPY_WIDTH, HAPPY_HEIGHT * max(0.3, openness), HAPPY_THICKNESS
+            happy = [(-o * W / 2, H / 2), (0, -H / 2), (o * W / 2, H / 2),
+                     (o * (W / 2 - t), H / 2), (0, -H / 2 + t * 1.25), (-o * (W / 2 - t), H / 2)]
+            shape = [(ex + interpolate(a[0], b[0], smile), EYE_Y + interpolate(a[1], b[1], smile))
+                     for a, b in zip(slit, happy)]
+            if smile < 0.05:
+                self.polygon(HALO_COLOR, shape, grow=14)  # The glow only suits the slit shape
+            self.polygon(FACE_COLOR, shape)
+            # The sensor bar: dark, with a bright line in its middle. It disappears in the happy eye.
+            if smile < 0.25 and openness > 0.5:
+                sx = ex + self.gaze[0]
+                half = SENSOR_WIDTH / 2
+                self.polygon(background, [(sx - half, EYE_Y - h / 2), (sx + half, EYE_Y - h / 2),
+                                          (sx + half, EYE_Y + h / 2), (sx - half, EYE_Y + h / 2)])
+                self.polygon(FACE_COLOR, [(sx - 5, EYE_Y - h / 2 + 12), (sx + 5, EYE_Y - h / 2 + 12),
+                                          (sx + 5, EYE_Y + h / 2 - 12), (sx - 5, EYE_Y + h / 2 - 12)])
 
     def draw_brows(self, notice, smile):
-        height = mix(BROW_HEIGHT_ABOVE_EYE, notice) + 8 * smile
-        angle = math.radians(interpolate(0.0, BROW_ANGLE_NOTICING, notice) +
-                             (BROW_ANGLE_GREETING - BROW_ANGLE_NOTICING) * smile)
-        thickness = max(2, int(BROW_THICKNESS * self.scale))
+        """Thin level lines above the eyes, with a small corner at the outer end."""
+        y = EYE_Y - mix(BROW_HEIGHT_ABOVE_EYE, notice) - 22 * smile
+        t = BROW_THICKNESS
         for side in (-1, 1):
-            cx, cy = side * EYE_X, EYE_Y - height
-            dx, dy = math.cos(angle) * BROW_WIDTH / 2, math.sin(angle) * BROW_WIDTH / 2 * side
-            a, b = self.px(cx - dx, cy - dy), self.px(cx + dx, cy + dy)
-            pygame.draw.line(self.screen, FACE_COLOR, a, b, thickness)
-            pygame.draw.circle(self.screen, FACE_COLOR, a, thickness // 2)
-            pygame.draw.circle(self.screen, FACE_COLOR, b, thickness // 2)
+            x0, x1 = side * (EYE_X - BROW_WIDTH / 2), side * (EYE_X + BROW_WIDTH / 2)
+            self.polygon(FACE_COLOR, [(x0, y), (x1, y), (x1 + side * 22, y + 26), (x1 + side * 8, y + 26),
+                                      (x1 - side * 6, y + t), (x0, y + t)])
 
     def draw_mouth(self, notice, smile, talk, color):
-        """A calm curved line that grows into a smile, and opens wide when greeting or speaking."""
-        width = interpolate(mix(MOUTH_WIDTH, notice), MOUTH_WIDTH_GREETING, smile)
-        curve_depth, thickness = mix(MOUTH_CURVE, notice), mix(MOUTH_THICKNESS, notice)
-        opened = max(smile, talk * 0.55)
-        steps = 40
-        upper, lower = [], []
-        for i in range(steps + 1):
-            x = -1.0 + 2.0 * i / steps
-            curve = math.sqrt(max(0.0, 1.0 - x * x))
-            taper = thickness / 2 * min(1.0, 0.25 + 2.5 * curve)  # Rounded ends
-            y_up = interpolate(curve_depth * curve - taper, 0.0, opened)
-            y_down = interpolate(curve_depth * curve + taper, MOUTH_HEIGHT_GREETING * curve, opened)
-            upper.append(self.px(x * width / 2, MOUTH_Y + y_up))
-            lower.append(self.px(x * width / 2, MOUTH_Y + y_down))
-        points = upper + lower[::-1]
-        pygame.draw.polygon(self.screen, color, points)
-        pygame.draw.aalines(self.screen, color, True, points)
+        """A straight line; it opens into an angular smile when greeting, and moves when speaking."""
+        opened = max(smile, talk * 0.5)
+        w = interpolate(MOUTH_WIDTH, MOUTH_WIDTH_GREETING, opened)
+        h = interpolate(MOUTH_THICKNESS, MOUTH_HEIGHT_GREETING, opened)
+        inset = interpolate(0, 64, opened)   # The lower corners move in: flat top, narrower bottom
+        self.polygon(color, [(-w / 2, MOUTH_Y), (w / 2, MOUTH_Y),
+                             (w / 2 - inset, MOUTH_Y + h), (-w / 2 + inset, MOUTH_Y + h)])
 
     def draw_scan_line(self, now, strength):
         """A faint line through the eyes with a brighter part sweeping along it: Tele is scanning."""
         if strength < 0.02:
             return
         fade = lambda color: tuple(int(b + (c - b) * strength) for c, b in zip(color, BACKGROUND_COLOR))
-        self.rounded_rect(fade(STRIP_COLOR), 0, EYE_Y, 940, 6, 3)
-        sweep = math.sin(now / 1000.0 * 2 * math.pi / SCAN_PERIOD_S)
-        self.rounded_rect(fade((0, 120, 160)), sweep * 380, EYE_Y, 180, 10, 5)
+        self.polygon(fade(HALO_COLOR), [(-480, EYE_Y - 2), (480, EYE_Y - 2), (480, EYE_Y + 2), (-480, EYE_Y + 2)])
+        x = math.sin(now / 1000.0 * 2 * math.pi / SCAN_PERIOD_S) * 390
+        self.polygon(fade(DIM_COLOR), [(x - 90, EYE_Y - 4), (x + 90, EYE_Y - 4), (x + 90, EYE_Y + 4), (x - 90, EYE_Y + 4)])
 
-    def draw_status(self, text, on_duty):
+    def draw_frame(self):
+        """Corner marks around the face, like a display's targeting frame."""
+        k, length = 470, 70
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                x, y = sx * k, sy * k - (40 if sy > 0 else 0)
+                self.polygon(DIM_COLOR, [(x, y), (x - sx * length, y), (x - sx * length, y - sy * 5), (x, y - sy * 5)])
+                self.polygon(DIM_COLOR, [(x, y), (x, y - sy * length), (x - sx * 5, y - sy * length), (x - sx * 5, y)])
+
+    def draw_status(self, text, on_duty, now):
         """The strip at the bottom that says what Tele is doing."""
-        self.rounded_rect(STRIP_COLOR, 0, STRIP_Y, STRIP_WIDTH, STRIP_HEIGHT, STRIP_HEIGHT / 2)
         if text not in self.status_cache:
-            self.status_cache[text] = self.status_font.render(text, True, GLINT_COLOR)
+            self.status_cache[text] = self.status_font.render(' '.join(text), True, TEXT_COLOR)
         label = self.status_cache[text]
-        dot_x = -label.get_width() / 2 / self.scale - 34
-        pygame.draw.circle(self.screen, ON_DUTY_COLOR if on_duty else GLINT_COLOR,
-                           self.px(dot_x, STRIP_Y), int(15 * self.scale))
-        self.screen.blit(label, label.get_rect(center=self.px(14, STRIP_Y + 2)))
+        w, h, c = max(STRIP_WIDTH, label.get_width() / self.scale + 150), STRIP_HEIGHT, 22
+        outline = [(-w / 2 + c, STRIP_Y - h / 2), (w / 2, STRIP_Y - h / 2), (w / 2, STRIP_Y + h / 2 - c),
+                   (w / 2 - c, STRIP_Y + h / 2), (-w / 2, STRIP_Y + h / 2), (-w / 2, STRIP_Y - h / 2 + c)]
+        pygame.draw.polygon(self.screen, DIM_COLOR, [self.px(x, y) for x, y in outline], max(2, int(4 * self.scale)))
+        self.screen.blit(label, label.get_rect(center=self.px(18, STRIP_Y + 2)))
+        # A small square that blinks slowly while on duty
+        if not on_duty or (now // 700) % 2 == 0:
+            x = -label.get_width() / 2 / self.scale - 22
+            self.polygon(FACE_COLOR, [(x - 11, STRIP_Y - 11), (x + 11, STRIP_Y - 11),
+                                      (x + 11, STRIP_Y + 11), (x - 11, STRIP_Y + 11)])
 
     def draw_snow(self):
         if not self.snow:
@@ -294,15 +299,11 @@ class RobotFaceNode(Node):
 
     # ------------------------------------------------------------------ animation
     def update_gaze(self, now, dt, notice):
-        """Scans from side to side on patrol; looks at the person once one is noticed."""
+        """The sensor bars scan from side to side; they follow a person once one is in view."""
         # Pauses a little at each side, like someone looking down a corridor
         sweep = max(-1.0, min(1.0, 1.35 * math.sin(now / 1000.0 * 2 * math.pi / SCAN_PERIOD_S)))
-        scan = (sweep * SCAN_RANGE, 0.0)
-        person = (self.person_gaze[0] * GAZE_RANGE_X, self.person_gaze[1] * GAZE_RANGE_Y)
-        target = (interpolate(scan[0], person[0], notice), interpolate(scan[1], person[1], notice))
-        follow = min(1.0, dt / 160.0)
-        self.gaze[0] += (target[0] - self.gaze[0]) * follow
-        self.gaze[1] += (target[1] - self.gaze[1]) * follow
+        target = interpolate(sweep * SCAN_RANGE, self.person_gaze[0] * GAZE_RANGE_X, notice)
+        self.gaze[0] += (target - self.gaze[0]) * min(1.0, dt / 160.0)
 
     def update_blink(self, now):
         """Returns how open the eyes are, from 0 to 1."""
@@ -373,16 +374,10 @@ class RobotFaceNode(Node):
                 self.draw_snow()
                 self.draw_beard()
             if not christmas:
-                self.draw_scan_line(now, 1.0 - notice)
-                if speaking:
-                    status = STATUS_SPEAKING
-                elif smile > 0.5:
-                    status = STATUS_GREETING
-                elif notice > 0.5:
-                    status = STATUS_NOTICING
-                else:
-                    status = STATUS_PATROLLING
-                self.draw_status(status, status == STATUS_PATROLLING)
+                self.draw_frame()
+                self.draw_scan_line(now, 1.0 - smile)
+                status = STATUS_SPEAKING if speaking else STATUS_GREETING if smile > 0.5 else STATUS_ON_DUTY
+                self.draw_status(status, status == STATUS_ON_DUTY, now)
             self.draw_eyes(notice, smile, openness, background)
             self.draw_brows(notice, smile)
             self.draw_mouth(notice, smile, talk, (200, 30, 40) if christmas else FACE_COLOR)
