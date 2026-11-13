@@ -12,14 +12,22 @@ services:
       #   - VIDEO_GID=${VIDEO_GID}
     image: ros2-head-control
     container_name: tele_head_container
+    # Start the whole head on boot and after a crash. To work in the container by
+    # hand: docker exec -it tele_head_container bash. To stop it: docker stop tele_head_container
+    restart: unless-stopped
+    command: /home/docker_user/start_head.sh
     environment:
       - ROS_DISTRO=humble
-      - DISPLAY=${DISPLAY}
+      - DISPLAY=${DISPLAY:-:0}
+      # The desktop writes a new .Xauthority at every login. Read it through the
+      # mounted home folder: a mount of the file itself would keep showing the old one.
+      - XAUTHORITY=/host_home/.Xauthority
       - XDG_RUNTIME_DIR=/tmp/runtime-docker
     volumes:
       - ./ros2_ws_head:/home/docker_user/ros2_ws_head
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - ~/.Xauthority:/home/docker_user/.Xauthority:rw
+      - ~/:/host_home:ro
+      - ./start_head.sh:/home/docker_user/start_head.sh:ro
     devices:
       - /dev/video0:/dev/video4
       - /dev/ttyACM0:/dev/ttyACM0
