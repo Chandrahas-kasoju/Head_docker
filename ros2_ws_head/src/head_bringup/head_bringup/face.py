@@ -13,8 +13,8 @@ import math
 #              mouth, a scan line and "ON PATROL" on the status strip. This is the face
 #              whenever Tele is not greeting, also while someone is merely in view; then
 #              the sensor bars follow that person.
-#   Greeting : the person wants to interact -> the eyes turn into happy chevrons and
-#              the mouth opens into a smile
+#   Greeting : the person wants to interact -> the same face with a small smile: the
+#              ends of the mouth lift, the eyes narrow slightly and the brows rise
 # In Christmas mode the same face wears a Santa hat and beard.
 
 # --- Configuration Settings ---
@@ -32,12 +32,14 @@ EYE_WIDTH = 270
 EYE_HEIGHT = (84, 104)           # (nobody in view, someone in view)
 EYE_CHAMFER = 34                 # Size of the cut corners
 SENSOR_WIDTH = 54                # The dark bar inside each eye that does the looking
-HAPPY_WIDTH, HAPPY_HEIGHT, HAPPY_THICKNESS = 250, 120, 44
+SMILE_EYE_RISE = 18              # Greeting: the eyes' lower edge rises by this much
 BROW_HEIGHT_ABOVE_EYE = (92, 104)
 BROW_WIDTH, BROW_THICKNESS = 250, 12
 MOUTH_Y = 215
 MOUTH_WIDTH, MOUTH_THICKNESS = 170, 16
-MOUTH_WIDTH_GREETING, MOUTH_HEIGHT_GREETING = 300, 105
+MOUTH_WIDTH_GREETING = 230
+MOUTH_SMILE_LIFT = 26            # Greeting: the ends of the mouth rise by this much
+MOUTH_OPEN_SPEAKING = 40         # Speaking: the mouth opens by up to this much
 
 # Status strip along the bottom, like a duty display
 STRIP_Y, STRIP_WIDTH, STRIP_HEIGHT = 432, 520, 78
@@ -194,33 +196,28 @@ class RobotFaceNode(Node):
         w, c = EYE_WIDTH, EYE_CHAMFER
         h = max(10, mix(EYE_HEIGHT, notice) * openness)
         c = min(c, h / 2)
+        # Greeting: the lower edge rises a little, like eyes narrowing in a smile
+        rise = SMILE_EYE_RISE * smile * openness
         for side in (-1, 1):
             ex = side * EYE_X
             # A slit with two cut corners: top outer and bottom inner. o points outwards.
             o = side
-            slit = [(-o * w / 2, -h / 2), (o * (w / 2 - c), -h / 2), (o * w / 2, -h / 2 + c),
-                    (o * w / 2, h / 2), (-o * (w / 2 - c), h / 2), (-o * w / 2, h / 2 - c)]
-            # A chevron pointing up: the happy eye
-            W, H, t = HAPPY_WIDTH, HAPPY_HEIGHT * max(0.3, openness), HAPPY_THICKNESS
-            happy = [(-o * W / 2, H / 2), (0, -H / 2), (o * W / 2, H / 2),
-                     (o * (W / 2 - t), H / 2), (0, -H / 2 + t * 1.25), (-o * (W / 2 - t), H / 2)]
-            shape = [(ex + interpolate(a[0], b[0], smile), EYE_Y + interpolate(a[1], b[1], smile))
-                     for a, b in zip(slit, happy)]
-            if smile < 0.05:
-                self.polygon(HALO_COLOR, shape, grow=14)  # The glow only suits the slit shape
+            shape = [(ex + x, EYE_Y + y) for x, y in (
+                (-o * w / 2, -h / 2), (o * (w / 2 - c), -h / 2), (o * w / 2, -h / 2 + c),
+                (o * w / 2, h / 2 - rise), (-o * (w / 2 - c), h / 2 - rise), (-o * w / 2, h / 2 - c - rise))]
+            self.polygon(HALO_COLOR, shape, grow=14)
             self.polygon(FACE_COLOR, shape)
-            # The sensor bar: dark, with a bright line in its middle. It disappears in the happy eye.
-            if smile < 0.25 and openness > 0.5:
+            # The sensor bar: dark, with a bright line in its middle
+            if openness > 0.5:
                 sx = ex + self.gaze[0]
                 half = SENSOR_WIDTH / 2
-                self.polygon(background, [(sx - half, EYE_Y - h / 2), (sx + half, EYE_Y - h / 2),
-                                          (sx + half, EYE_Y + h / 2), (sx - half, EYE_Y + h / 2)])
-                self.polygon(FACE_COLOR, [(sx - 5, EYE_Y - h / 2 + 12), (sx + 5, EYE_Y - h / 2 + 12),
-                                          (sx + 5, EYE_Y + h / 2 - 12), (sx - 5, EYE_Y + h / 2 - 12)])
+                top, bottom = EYE_Y - h / 2, EYE_Y + h / 2 - rise
+                self.polygon(background, [(sx - half, top), (sx + half, top), (sx + half, bottom), (sx - half, bottom)])
+                self.polygon(FACE_COLOR, [(sx - 5, top + 12), (sx + 5, top + 12), (sx + 5, bottom - 12), (sx - 5, bottom - 12)])
 
     def draw_brows(self, notice, smile):
         """Thin level lines above the eyes, with a small corner at the outer end."""
-        y = EYE_Y - mix(BROW_HEIGHT_ABOVE_EYE, notice) - 22 * smile
+        y = EYE_Y - mix(BROW_HEIGHT_ABOVE_EYE, notice) - 12 * smile
         t = BROW_THICKNESS
         for side in (-1, 1):
             x0, x1 = side * (EYE_X - BROW_WIDTH / 2), side * (EYE_X + BROW_WIDTH / 2)
@@ -228,13 +225,14 @@ class RobotFaceNode(Node):
                                       (x1 - side * 6, y + t), (x0, y + t)])
 
     def draw_mouth(self, notice, smile, talk, color):
-        """A straight line; it opens into an angular smile when greeting, and moves when speaking."""
-        opened = max(smile, talk * 0.5)
-        w = interpolate(MOUTH_WIDTH, MOUTH_WIDTH_GREETING, opened)
-        h = interpolate(MOUTH_THICKNESS, MOUTH_HEIGHT_GREETING, opened)
-        inset = interpolate(0, 64, opened)   # The lower corners move in: flat top, narrower bottom
-        self.polygon(color, [(-w / 2, MOUTH_Y), (w / 2, MOUTH_Y),
-                             (w / 2 - inset, MOUTH_Y + h), (-w / 2 + inset, MOUTH_Y + h)])
+        """A straight line. Greeting lifts its ends into a small smile; speaking opens it."""
+        w = interpolate(MOUTH_WIDTH, MOUTH_WIDTH_GREETING, smile)
+        t = MOUTH_THICKNESS + MOUTH_OPEN_SPEAKING * talk
+        lift = MOUTH_SMILE_LIFT * smile          # How far the two ends rise
+        bend = interpolate(0, 44, smile)         # Where the line bends upwards
+        y = MOUTH_Y
+        self.polygon(color, [(-w / 2, y - lift), (-w / 2 + bend, y), (w / 2 - bend, y), (w / 2, y - lift),
+                             (w / 2, y - lift + t), (w / 2 - bend, y + t), (-w / 2 + bend, y + t), (-w / 2, y - lift + t)])
 
     def draw_scan_line(self, now, strength):
         """A faint line through the eyes with a brighter part sweeping along it: Tele is scanning."""
@@ -375,7 +373,7 @@ class RobotFaceNode(Node):
                 self.draw_beard()
             if not christmas:
                 self.draw_frame()
-                self.draw_scan_line(now, 1.0 - smile)
+                self.draw_scan_line(now, 1.0)
                 status = STATUS_SPEAKING if speaking else STATUS_GREETING if smile > 0.5 else STATUS_ON_DUTY
                 self.draw_status(status, status == STATUS_ON_DUTY, now)
             self.draw_eyes(notice, smile, openness, background)
