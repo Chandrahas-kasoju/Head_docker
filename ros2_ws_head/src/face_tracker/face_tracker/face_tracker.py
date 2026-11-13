@@ -21,7 +21,7 @@ class FaceTrackerNode(Node):
         self.declare_parameter('current_pitch_topic', '/servo_current_angle')
         self.declare_parameter('current_roll_topic', '/servo_current_angle_pan')
         self.declare_parameter('Kp_pan', 0.07)
-        self.declare_parameter('Kp_tilt', 0.07)
+        self.declare_parameter('Kp_tilt', 0.03)  # 0.07 made the tilt swing up and down before settling
 
         # --- Publishers and Subscribers ---
         pitch_topic = self.get_parameter('pitch_topic').get_parameter_value().string_value

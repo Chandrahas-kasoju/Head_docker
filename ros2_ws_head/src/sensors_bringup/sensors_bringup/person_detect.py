@@ -68,6 +68,15 @@ class PersonDetect(Node):
         # Points very close to the radar are reflections from the robot itself.
         self.declare_parameter('min_radar_range_m', 0.5)
         self.declare_parameter('cluster_depth_m', 0.3)
+        # A person standing still often gives no radar point for a moment, and the
+        # nearest point in the mask is then the wall behind them. A real person
+        # cannot move away faster than max_retreat_speed, so a sudden jump backwards
+        # is ignored and the last person points are repeated for up to hold_time_s.
+        self.declare_parameter('max_retreat_speed_mps', 2.0)
+        self.declare_parameter('hold_time_s', 3.0)
+        self.last_person_points = None
+        self.last_person_depth = None
+        self.last_person_time = None
         #self.timer= self.create_timer(0.04, self.detect_person)
         
     def mask_callback(self, msg):
@@ -107,6 +116,24 @@ class PersonDetect(Node):
         """
         self.current_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
         
+
+    def reject_background_jump(self, points):
+        """Repeat the last person points while the radar only sees the background."""
+        now = self.get_clock().now().nanoseconds / 1e9
+        hold = self.get_parameter('hold_time_s').value
+        recent = self.last_person_time is not None and now - self.last_person_time <= hold
+        if points:
+            depth = min(p[2] for p in points)
+            if recent:
+                allowed = self.last_person_depth + \
+                    self.get_parameter('max_retreat_speed_mps').value * (now - self.last_person_time) + 0.2
+                if depth > allowed:
+                    return self.last_person_points  # Background only: keep the person
+            self.last_person_points = points
+            self.last_person_depth = depth
+            self.last_person_time = now
+            return points
+        return self.last_person_points if recent else points
 
     def point_cloud_callback(self, msg):
         """
@@ -189,6 +216,8 @@ class PersonDetect(Node):
             nearest = min(p[2] for p in points_inside_bbox)
             limit = nearest + self.get_parameter('cluster_depth_m').value
             points_inside_bbox = [p for p in points_inside_bbox if p[2] <= limit]
+
+        points_inside_bbox = self.reject_background_jump(points_inside_bbox)
 
         # Publish the filtered points if any were found
         if points_inside_bbox:
