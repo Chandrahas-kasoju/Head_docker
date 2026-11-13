@@ -28,9 +28,9 @@ class FaceTrackerNode(Node):
         # Age of the image when its result arrives. Measured on the head Pi: about 0.5 s
         # between a tilt movement and the matching shift of the person box.
         self.declare_parameter('latency_sec', 0.5)
-        self.declare_parameter('start_error_deg', 4.0) # Start moving when the face is this far off centre
+        self.declare_parameter('start_error_deg', 7.0) # Start moving when the face is this far off centre
         self.declare_parameter('stop_error_deg', 1.5)  # Stop once it is this close
-        self.declare_parameter('smoothing', 0.4)       # 1.0 = no smoothing of the target
+        self.declare_parameter('smoothing', 0.2)       # 1.0 = no smoothing of the target
 
         # --- Publishers and Subscribers ---
         pitch_topic = self.get_parameter('pitch_topic').get_parameter_value().string_value
