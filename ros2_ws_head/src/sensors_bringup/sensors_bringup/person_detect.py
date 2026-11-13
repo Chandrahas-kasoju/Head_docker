@@ -63,6 +63,11 @@ class PersonDetect(Node):
         self.camera_info = None
         self.point_cloud = None
         self.current_mask = None
+        # radar_vitals keeps static objects in the cloud. A person stands in front
+        # of the walls, so only the nearest group of points inside the mask is kept.
+        # Points very close to the radar are reflections from the robot itself.
+        self.declare_parameter('min_radar_range_m', 0.5)
+        self.declare_parameter('cluster_depth_m', 0.3)
         #self.timer= self.create_timer(0.04, self.detect_person)
         
     def mask_callback(self, msg):
@@ -160,19 +165,30 @@ class PersonDetect(Node):
         
         mask_h, mask_w = self.current_mask.shape
         
+        # Drop reflections from the robot itself, using the range in the radar frame
+        min_range = self.get_parameter('min_radar_range_m').value
+        far_enough = np.linalg.norm(xyz_points, axis=1) > min_range
+
         # Now, project the transformed points to the image plane
-        for point in pc2.read_points(transformed_cloud_msg, field_names=("x", "y", "z"), skip_nans=True):
-            # Assuming self.camera_model is initialized and valid
+        for point in transformed_points[far_enough]:
+            if point[2] <= 0:
+                continue  # Behind the camera
             u, v = self.camera_model.project3dToPixel(point)
-            
+
             u_int = int(round(u))
             v_int = int(round(v))
-            
+
             # Check if point falls inside the image dimensions
             if 0 <= u_int < mask_w and 0 <= v_int < mask_h:
                 # Check if the pixel on the mask is white (>0)
                 if self.current_mask[v_int, u_int] > 0:
                     points_inside_bbox.append(point)
+
+        # Keep only the nearest group: everything further back is background
+        if points_inside_bbox:
+            nearest = min(p[2] for p in points_inside_bbox)
+            limit = nearest + self.get_parameter('cluster_depth_m').value
+            points_inside_bbox = [p for p in points_inside_bbox if p[2] <= limit]
 
         # Publish the filtered points if any were found
         if points_inside_bbox:
