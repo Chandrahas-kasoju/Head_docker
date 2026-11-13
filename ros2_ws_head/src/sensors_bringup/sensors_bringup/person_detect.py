@@ -63,20 +63,17 @@ class PersonDetect(Node):
         self.camera_info = None
         self.point_cloud = None
         self.current_mask = None
-        # radar_vitals keeps static objects in the cloud. A person stands in front
-        # of the walls, so only the nearest group of points inside the mask is kept.
-        # Points very close to the radar are reflections from the robot itself.
-        self.declare_parameter('min_radar_range_m', 0.5)
-        self.declare_parameter('cluster_depth_m', 0.3)
-        # A person standing still often gives no radar point for a moment, and the
-        # nearest point in the mask is then the wall behind them. A real person
-        # cannot move away faster than max_retreat_speed, so a sudden jump backwards
-        # is ignored and the last person points are repeated for up to hold_time_s.
-        self.declare_parameter('max_retreat_speed_mps', 2.0)
-        self.declare_parameter('hold_time_s', 3.0)
-        self.last_person_points = None
-        self.last_person_depth = None
-        self.last_person_time = None
+        # radar_vitals keeps static objects in the cloud: walls, furniture and fixed
+        # reflections all show up as points, and some of them fall inside the mask.
+        # A person is therefore only picked up once the radar sees them move, and is
+        # then followed at their distance, where points without velocity count too.
+        self.declare_parameter('min_radar_range_m', 0.5)   # Closer points are the robot itself
+        self.declare_parameter('moving_speed_mps', 0.05)   # Above this a point counts as moving
+        self.declare_parameter('follow_gate_m', 0.5)       # Points this close to the person's depth belong to them
+        self.declare_parameter('hold_time_s', 3.0)         # Repeat the last points this long without new ones
+        self.person_depth = None
+        self.person_points = None
+        self.person_time = None
         #self.timer= self.create_timer(0.04, self.detect_person)
         
     def mask_callback(self, msg):
@@ -117,23 +114,37 @@ class PersonDetect(Node):
         self.current_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
         
 
-    def reject_background_jump(self, points):
-        """Repeat the last person points while the radar only sees the background."""
+    def follow_person(self, points, speeds):
+        """Pick the person's points out of the radar points inside the mask.
+
+        points: (N, 3) in the camera frame, speeds: (N,) radial speed in m/s.
+        Returns the points to publish, possibly the previous ones, or None.
+        """
         now = self.get_clock().now().nanoseconds / 1e9
-        hold = self.get_parameter('hold_time_s').value
-        recent = self.last_person_time is not None and now - self.last_person_time <= hold
-        if points:
-            depth = min(p[2] for p in points)
-            if recent:
-                allowed = self.last_person_depth + \
-                    self.get_parameter('max_retreat_speed_mps').value * (now - self.last_person_time) + 0.2
-                if depth > allowed:
-                    return self.last_person_points  # Background only: keep the person
-            self.last_person_points = points
-            self.last_person_depth = depth
-            self.last_person_time = now
-            return points
-        return self.last_person_points if recent else points
+        gate = self.get_parameter('follow_gate_m').value
+        moving = np.abs(speeds) > self.get_parameter('moving_speed_mps').value
+        tracked = self.person_time is not None and \
+            now - self.person_time <= self.get_parameter('hold_time_s').value
+        if not tracked:
+            self.person_depth = None
+
+        chosen = None
+        if moving.any():
+            # Moving points are the person. Take the nearest group of them.
+            nearest = points[moving][:, 2].min()
+            chosen = points[np.abs(points[:, 2] - nearest) <= gate]
+        elif self.person_depth is not None:
+            # Nothing moves: keep the points at the distance where the person was
+            near = np.abs(points[:, 2] - self.person_depth) <= gate
+            if near.any():
+                chosen = points[near]
+
+        if chosen is not None:
+            self.person_depth = float(np.median(chosen[:, 2]))
+            self.person_points = chosen
+            self.person_time = now
+            return chosen
+        return self.person_points if tracked else None
 
     def point_cloud_callback(self, msg):
         """
@@ -158,9 +169,11 @@ class PersonDetect(Node):
             # This directly fixes the IndexError
             xyz_points = pc2.read_points_numpy(
                 self.point_cloud,
-                field_names=("x", "y", "z"),
+                field_names=("x", "y", "z", "velocity"),
                 skip_nans=True
             )
+            speeds = xyz_points[:, 3]
+            xyz_points = xyz_points[:, :3]
 
             if xyz_points.size == 0:
                 self.get_logger().info("Received empty point cloud.")
@@ -197,7 +210,9 @@ class PersonDetect(Node):
         far_enough = np.linalg.norm(xyz_points, axis=1) > min_range
 
         # Now, project the transformed points to the image plane
-        for point in transformed_points[far_enough]:
+        inside = []
+        for i in np.flatnonzero(far_enough):
+            point = transformed_points[i]
             if point[2] <= 0:
                 continue  # Behind the camera
             u, v = self.camera_model.project3dToPixel(point)
@@ -209,15 +224,10 @@ class PersonDetect(Node):
             if 0 <= u_int < mask_w and 0 <= v_int < mask_h:
                 # Check if the pixel on the mask is white (>0)
                 if self.current_mask[v_int, u_int] > 0:
-                    points_inside_bbox.append(point)
+                    inside.append(i)
 
-        # Keep only the nearest group: everything further back is background
-        if points_inside_bbox:
-            nearest = min(p[2] for p in points_inside_bbox)
-            limit = nearest + self.get_parameter('cluster_depth_m').value
-            points_inside_bbox = [p for p in points_inside_bbox if p[2] <= limit]
-
-        points_inside_bbox = self.reject_background_jump(points_inside_bbox)
+        person = self.follow_person(transformed_points[inside], speeds[inside])
+        points_inside_bbox = [] if person is None else person.tolist()
 
         # Publish the filtered points if any were found
         if points_inside_bbox:
