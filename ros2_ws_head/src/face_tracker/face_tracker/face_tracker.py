@@ -6,6 +6,7 @@ from collections import deque
 
 from std_msgs.msg import Float64, String  # Added String import
 from vision_msgs.msg import Point2D
+from geometry_msgs.msg import Vector3
 
 class FaceTrackerNode(Node):
     def __init__(self):
@@ -82,6 +83,10 @@ class FaceTrackerNode(Node):
         self.tele_mode = 'WORK'
         self.last_mode_time = 0.0
         self.create_subscription(String, '/tele_mode', self.mode_callback, 10)
+        # While the VR page is open it sends head commands all the time (also "go home"
+        # with the safety trigger released). Tracking then stays out of the way.
+        self.last_vr_time = -100.0
+        self.create_subscription(Vector3, '/vr_head_commands', self.vr_callback, 10)
 
         self.last_eye_center_time = self.get_clock().now()
         self.timer = self.create_timer(0.5, self.timer_callback)
@@ -105,8 +110,13 @@ class FaceTrackerNode(Node):
         self.tele_mode = msg.data.strip().upper()
         self.last_mode_time = self.now_sec()
 
+    def vr_callback(self, msg):
+        self.last_vr_time = self.now_sec()
+
     def show_running(self):
-        """True while the body runs the Christmas show. Stale after 5 s without a mode message."""
+        """True while something else moves the head: the VR operator or the Christmas show."""
+        if self.now_sec() - self.last_vr_time < 2.0:
+            return True
         if self.tele_mode != 'CHRISTMAS':
             return False
         if self.now_sec() - self.last_mode_time > 5.0:
